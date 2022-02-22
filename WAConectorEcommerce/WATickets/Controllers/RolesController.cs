@@ -102,7 +102,8 @@ namespace WATickets.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPost]
+
         [Route("api/Roles/Actualizar")]
         public HttpResponseMessage Put([FromBody] Roles rol)
         {
@@ -134,7 +135,7 @@ namespace WATickets.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpPost]
         [Route("api/Roles/Eliminar")]
         public HttpResponseMessage Delete([FromUri] int id)
         {

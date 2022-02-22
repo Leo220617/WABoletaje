@@ -103,7 +103,7 @@ namespace WATickets.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPost]
         [Route("api/Garantias/Actualizar")]
         public HttpResponseMessage Put([FromBody] Garantias garantias)
         {
@@ -136,7 +136,7 @@ namespace WATickets.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpPost]
         [Route("api/Garantias/Eliminar")]
         public HttpResponseMessage Delete([FromUri] int id)
         {

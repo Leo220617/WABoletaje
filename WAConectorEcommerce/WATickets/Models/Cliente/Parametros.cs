@@ -11,5 +11,8 @@ namespace WATickets.Models.Cliente
         public int id { get; set; }
 
         public int? SerieBoleta { get; set; }
+        public string SQLProductos { get; set; }
+        public string SQLClientes { get; set; }
+        public string SQLDocNum { get; set; }
     }
 }

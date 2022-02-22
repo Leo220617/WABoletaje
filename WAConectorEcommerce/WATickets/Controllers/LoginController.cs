@@ -148,7 +148,7 @@ namespace WATickets.Controllers
         }
 
         //Actualiza la contraseña del usuario 
-        [HttpPut]
+        [HttpPost]
         [Route("api/Login/Actualizar")]
         public HttpResponseMessage Put([FromBody] Login usuario)
         {
@@ -206,7 +206,7 @@ namespace WATickets.Controllers
         }
 
 
-        [HttpDelete]
+        [HttpPost]
         [Route("api/Login/Eliminar")]
         public HttpResponseMessage Delete([FromUri] int id)
         {

@@ -15,26 +15,25 @@ namespace WATickets.Controllers
 {
     [Authorize]
 
-    public class SucursalesController : ApiController
+    public class TiposCasosController : ApiController
     {
         ModelCliente db = new ModelCliente();
-
 
         public async Task<HttpResponseMessage> Get([FromUri] Filtros filtro)
         {
             try
             {
 
-                var Sucursales = db.Sucursales.ToList();
+                var TP = db.TiposCasos.ToList();
 
                 if (!string.IsNullOrEmpty(filtro.Texto))
                 {
-                    Sucursales = Sucursales.Where(a => a.Nombre.ToUpper().Contains(filtro.Texto.ToUpper())).ToList();
+                    TP = TP.Where(a => a.Nombre.ToUpper().Contains(filtro.Texto.ToUpper())).ToList();
                 }
 
 
 
-                return Request.CreateResponse(HttpStatusCode.OK, Sucursales);
+                return Request.CreateResponse(HttpStatusCode.OK, TP);
 
             }
             catch (Exception ex)
@@ -44,7 +43,7 @@ namespace WATickets.Controllers
             }
         }
 
-        [Route("api/Sucursales/Consultar")]
+        [Route("api/TiposCasos/Consultar")]
         public HttpResponseMessage GetOne([FromUri]int id)
         {
             try
@@ -52,15 +51,15 @@ namespace WATickets.Controllers
 
 
 
-                var Sucursales = db.Sucursales.Where(a => a.id == id).FirstOrDefault();
+                var TP = db.TiposCasos.Where(a => a.id == id).FirstOrDefault();
 
 
-                if (Sucursales == null)
+                if (TP == null)
                 {
-                    throw new Exception("Este Sucursales no se encuentra registrado");
+                    throw new Exception("Este Tipo de caso no se encuentra registrado");
                 }
 
-                return Request.CreateResponse(HttpStatusCode.OK, Sucursales);
+                return Request.CreateResponse(HttpStatusCode.OK, TP);
             }
             catch (Exception ex)
             {
@@ -70,31 +69,31 @@ namespace WATickets.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage Post([FromBody] Sucursales sucursales)
+        public HttpResponseMessage Post([FromBody] TiposCasos tipocaso)
         {
             try
             {
 
 
-                var Sucursales = db.Sucursales.Where(a => a.id == sucursales.id).FirstOrDefault();
+                var TP = db.TiposCasos.Where(a => a.id == tipocaso.id).FirstOrDefault();
 
-                if (Sucursales == null)
+                if (TP == null)
                 {
-                    Sucursales = new Sucursales();
-                    Sucursales.idSAP = sucursales.idSAP;
-                    Sucursales.Nombre = sucursales.Nombre;
+                    TP = new TiposCasos();
+                    TP.idSAP = tipocaso.idSAP;
+                    TP.Nombre = tipocaso.Nombre;
 
-                    db.Sucursales.Add(Sucursales);
+                    db.TiposCasos.Add(TP);
                     db.SaveChanges();
 
                 }
                 else
                 {
-                    throw new Exception("Este Sucursales  YA existe");
+                    throw new Exception("Este Tipo de caso  YA existe");
                 }
 
 
-                return Request.CreateResponse(HttpStatusCode.OK, Sucursales);
+                return Request.CreateResponse(HttpStatusCode.OK, TP);
             }
             catch (Exception ex)
             {
@@ -105,30 +104,30 @@ namespace WATickets.Controllers
 
         [HttpPost]
 
-        [Route("api/Sucursales/Actualizar")]
-        public HttpResponseMessage Put([FromBody] Sucursales sucursales)
+        [Route("api/TiposCasos/Actualizar")]
+        public HttpResponseMessage Put([FromBody] TiposCasos tipocaso)
         {
             try
             {
 
 
-                var Sucursales = db.Sucursales.Where(a => a.id == sucursales.id).FirstOrDefault();
+                var TP = db.TiposCasos.Where(a => a.id == tipocaso.id).FirstOrDefault();
 
-                if (Sucursales != null)
+                if (TP != null)
                 {
-                    db.Entry(Sucursales).State = EntityState.Modified;
-                    Sucursales.idSAP = sucursales.idSAP;
-                    Sucursales.Nombre = sucursales.Nombre;
+                    db.Entry(TP).State = EntityState.Modified;
+                    TP.idSAP = tipocaso.idSAP;
+                    TP.Nombre = tipocaso.Nombre;
 
                     db.SaveChanges();
 
                 }
                 else
                 {
-                    throw new Exception("Sucursales no existe");
+                    throw new Exception("Tipo de caso no existe");
                 }
 
-                return Request.CreateResponse(HttpStatusCode.OK, Sucursales);
+                return Request.CreateResponse(HttpStatusCode.OK, TP);
             }
             catch (Exception ex)
             {
@@ -138,26 +137,26 @@ namespace WATickets.Controllers
         }
 
         [HttpPost]
-        [Route("api/Sucursales/Eliminar")]
+        [Route("api/TiposCasos/Eliminar")]
         public HttpResponseMessage Delete([FromUri] int id)
         {
             try
             {
 
 
-                var Sucursales = db.Sucursales.Where(a => a.id == id).FirstOrDefault();
+                var TP = db.TiposCasos.Where(a => a.id == id).FirstOrDefault();
 
-                if (Sucursales != null)
+                if (TP != null)
                 {
 
 
-                    db.Sucursales.Remove(Sucursales);
+                    db.TiposCasos.Remove(TP);
                     db.SaveChanges();
 
                 }
                 else
                 {
-                    throw new Exception("Sucursales no existe");
+                    throw new Exception("Tipo de Caso no existe");
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK);

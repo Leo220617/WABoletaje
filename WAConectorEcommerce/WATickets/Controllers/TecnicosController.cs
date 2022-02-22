@@ -101,8 +101,8 @@ namespace WATickets.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+        [HttpPost]
 
-        [HttpPut]
         [Route("api/Tecnicos/Actualizar")]
         public HttpResponseMessage Put([FromBody] Tecnicos tecnicos)
         {
@@ -135,7 +135,7 @@ namespace WATickets.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpPost]
         [Route("api/Tecnicos/Eliminar")]
         public HttpResponseMessage Delete([FromUri] int id)
         {

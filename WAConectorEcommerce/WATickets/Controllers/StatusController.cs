@@ -80,7 +80,7 @@ namespace WATickets.Controllers
                 {
                     Status = new Status();
                     Status.idSAP = status.idSAP;
-                    Status.Nombre = Status.Nombre;
+                    Status.Nombre = status.Nombre;
 
                     db.Status.Add(Status);
                     db.SaveChanges();
@@ -101,7 +101,8 @@ namespace WATickets.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPost]
+
         [Route("api/Status/Actualizar")]
         public HttpResponseMessage Put([FromBody] Status status)
         {
@@ -115,7 +116,7 @@ namespace WATickets.Controllers
                 {
                     db.Entry(Status).State = EntityState.Modified;
                     Status.idSAP = status.idSAP;
-                    Status.Nombre = Status.Nombre;
+                    Status.Nombre = status.Nombre;
 
                     db.SaveChanges();
 
@@ -134,7 +135,7 @@ namespace WATickets.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpPost]
         [Route("api/Status/Eliminar")]
         public HttpResponseMessage Delete([FromUri] int id)
         {

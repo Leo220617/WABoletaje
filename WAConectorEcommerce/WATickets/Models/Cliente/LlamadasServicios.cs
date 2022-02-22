@@ -52,5 +52,6 @@ namespace WATickets.Models.Cliente
         public int? Tecnico { get; set; }
 
         public bool? ProcesadaSAP { get; set; }
+        public DateTime FechaCreacion { get; set; }
     }
 }
