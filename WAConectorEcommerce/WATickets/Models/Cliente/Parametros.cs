@@ -14,5 +14,7 @@ namespace WATickets.Models.Cliente
         public string SQLProductos { get; set; }
         public string SQLClientes { get; set; }
         public string SQLDocNum { get; set; }
+        public string SQLItemPadres { get; set; }
+        public string SQLItemHijos { get; set; }
     }
 }

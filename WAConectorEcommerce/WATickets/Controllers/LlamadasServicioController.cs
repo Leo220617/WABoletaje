@@ -28,8 +28,9 @@ namespace WATickets.Controllers
             try
             {
                 var time = new DateTime();
-
-                var Llamada = db.LlamadasServicios.Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)).ToList();
+                
+                var Llamada = db.LlamadasServicios.Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true))
+                 .ToList();
 
                 if (!string.IsNullOrEmpty(filtro.Texto))
                 {
@@ -103,10 +104,11 @@ namespace WATickets.Controllers
                     Llamada.SucRetiro = llamada.SucRetiro;
                     Llamada.Comentarios = llamada.Comentarios;
                     Llamada.TratadoPor = llamada.TratadoPor;
-                    Llamada.Garantia = llamada.Garantia;
+                    //Llamada.Garantia = llamada.Garantia;
                     Llamada.Tecnico = llamada.Tecnico;
                     Llamada.ProcesadaSAP = false;
                     Llamada.FechaCreacion = DateTime.Now;
+                    Llamada.Firma = !string.IsNullOrEmpty(llamada.Firma) ? llamada.Firma : "";
                     db.LlamadasServicios.Add(Llamada);
                     db.SaveChanges();
 
@@ -138,7 +140,7 @@ namespace WATickets.Controllers
                         client.UserFields.Fields.Item("U_SRECIB").Value = db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault().Nombre;
                         client.Description = Llamada.Comentarios;
                         client.AssigneeCode = Llamada.TratadoPor.Value;
-                        client.CallType = Llamada.Garantia.Value;
+                       // client.CallType = Llamada.Garantia.Value;
                         client.TechnicianCode = Llamada.Tecnico.Value;
                         //client.ProblemSubType =  
 
