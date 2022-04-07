@@ -233,14 +233,22 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\BitacoraController.cs" />
+    <Compile Include="Controllers\BitacoraMovimientosController.cs" />
+    <Compile Include="Controllers\BodegasController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\Conexion.cs" />
+    <Compile Include="Controllers\DetReparacionController.cs" />
+    <Compile Include="Controllers\DiagnosticosController.cs" />
+    <Compile Include="Controllers\EncReparacionController.cs" />
+    <Compile Include="Controllers\ErroresController.cs" />
     <Compile Include="Controllers\G.cs" />
     <Compile Include="Controllers\GarantiasController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LlamadasServicioController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
+    <Compile Include="Controllers\ProductosHijosController.cs" />
+    <Compile Include="Controllers\ProductosPadresController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\SeguridadModulosController.cs" />
     <Compile Include="Controllers\SeguridadRolesModulosController.cs" />
@@ -254,12 +262,21 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Cliente\BitacoraErrores.cs" />
+    <Compile Include="Models\Cliente\BitacoraMovimientos.cs" />
+    <Compile Include="Models\Cliente\Bodegas.cs" />
     <Compile Include="Models\Cliente\ConexionSAP.cs" />
+    <Compile Include="Models\Cliente\DetBitacoraMovimientos.cs" />
+    <Compile Include="Models\Cliente\DetReparacion.cs" />
+    <Compile Include="Models\Cliente\Diagnosticos.cs" />
+    <Compile Include="Models\Cliente\EncReparacion.cs" />
+    <Compile Include="Models\Cliente\Errores.cs" />
     <Compile Include="Models\Cliente\Garantias.cs" />
     <Compile Include="Models\Cliente\LlamadasServicios.cs" />
     <Compile Include="Models\Cliente\Login.cs" />
     <Compile Include="Models\Cliente\ModelCliente.cs" />
     <Compile Include="Models\Cliente\Parametros.cs" />
+    <Compile Include="Models\Cliente\ProductosHijos.cs" />
+    <Compile Include="Models\Cliente\ProductosPadres.cs" />
     <Compile Include="Models\Cliente\Roles.cs" />
     <Compile Include="Models\Cliente\SeguridadModulos.cs" />
     <Compile Include="Models\Cliente\SeguridadRolesModulos.cs" />
@@ -267,6 +284,8 @@
     <Compile Include="Models\Cliente\Sucursales.cs" />
     <Compile Include="Models\Cliente\Tecnicos.cs" />
     <Compile Include="Models\Cliente\TiposCasos.cs" />
+    <Compile Include="Models\ColeccionProductos.cs" />
+    <Compile Include="Models\ColeccionRepuestos.cs" />
     <Compile Include="Models\Filtros.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

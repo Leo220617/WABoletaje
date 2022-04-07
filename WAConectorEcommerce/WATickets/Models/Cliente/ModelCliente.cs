@@ -25,6 +25,19 @@ namespace WATickets.Models.Cliente
         public virtual DbSet<TiposCasos> TiposCasos { get; set; }
         public virtual DbSet<Tecnicos> Tecnicos { get; set; }
         public virtual DbSet<ConexionSAP> ConexionSAP { get; set; }
+        public virtual DbSet<ProductosPadres> ProductosPadres { get; set; }
+        public virtual DbSet<ProductosHijos> ProductosHijos { get; set; }
+        public virtual DbSet<EncReparacion> EncReparacion { get; set; }
+        public virtual DbSet<Bodegas> Bodegas { get; set; }
+
+        public virtual DbSet<DetReparacion> DetReparacion { get; set; }
+        public virtual DbSet<BitacoraMovimientos> BitacoraMovimientos { get; set; }
+        public virtual DbSet<DetBitacoraMovimientos> DetBitacoraMovimientos { get; set; }
+        public virtual DbSet<Diagnosticos> Diagnosticos { get; set; }
+        public virtual DbSet<Errores> Errores { get; set; }
+
+
+
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

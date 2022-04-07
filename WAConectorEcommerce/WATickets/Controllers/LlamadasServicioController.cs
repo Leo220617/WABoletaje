@@ -37,7 +37,10 @@ namespace WATickets.Controllers
                     Llamada = Llamada.Where(a => a.Asunto.ToUpper().Contains(filtro.Texto.ToUpper())).ToList();
                 }
 
-
+                if(filtro.Codigo1 > 0)
+                {
+                    Llamada = Llamada.Where(a => a.Tecnico == filtro.Codigo1).ToList();
+                }
 
                 return Request.CreateResponse(HttpStatusCode.OK, Llamada);
 
@@ -112,6 +115,37 @@ namespace WATickets.Controllers
                     db.LlamadasServicios.Add(Llamada);
                     db.SaveChanges();
 
+                    try
+                    {
+                        EncReparacion enc = new EncReparacion();
+                        enc.idLlamada = Llamada.id;
+                        enc.idTecnico = Llamada.Tecnico.Value;
+                        enc.FechaCreacion = DateTime.Now;
+                        enc.FechaModificacion = DateTime.Now;
+                        enc.idProductoArreglar = Llamada.ItemCode;
+                        enc.TipoReparacion = 0;
+                        enc.Status = 0;
+                        enc.ProcesadaSAP = false;
+                        enc.BodegaOrigen = "0";
+                        enc.BodegaFinal = "0";
+                        db.EncReparacion.Add(enc);
+                        db.SaveChanges();
+
+
+                    }
+                    catch (Exception ex3)
+                    {
+
+                        BitacoraErrores be = new BitacoraErrores();
+
+                        be.Descripcion = ex3.Message;
+                        be.StackTrace = ex3.StackTrace;
+                        be.Fecha = DateTime.Now;
+
+                        db.BitacoraErrores.Add(be);
+                        db.SaveChanges();
+                    }
+
 
                     try
                     {
@@ -143,6 +177,8 @@ namespace WATickets.Controllers
                        // client.CallType = Llamada.Garantia.Value;
                         client.TechnicianCode = Llamada.Tecnico.Value;
                         //client.ProblemSubType =  
+
+                      
 
                         var respuesta = client.Add();
 
@@ -185,6 +221,10 @@ namespace WATickets.Controllers
 
 
                             Conexion.Desconectar();
+
+                         
+
+
                         }
                         else
                         {
@@ -347,6 +387,30 @@ namespace WATickets.Controllers
                             Llamada.Tecnico = llamada.Tecnico;
                             client.TechnicianCode = Llamada.Tecnico.Value;
 
+                            try
+                            {
+                                var enc = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
+                                db.Entry(enc).State = EntityState.Modified;
+                                
+                                enc.idTecnico = Llamada.Tecnico.Value;
+                               
+                                db.SaveChanges();
+
+
+                            }
+                            catch (Exception ex3)
+                            {
+
+                                BitacoraErrores be = new BitacoraErrores();
+
+                                be.Descripcion = ex3.Message;
+                                be.StackTrace = ex3.StackTrace;
+                                be.Fecha = DateTime.Now;
+
+                                db.BitacoraErrores.Add(be);
+                                db.SaveChanges();
+                            }
+
                         }
 
                         Llamada.ProcesadaSAP = false;
@@ -365,6 +429,8 @@ namespace WATickets.Controllers
 
 
                             Conexion.Desconectar();
+
+                 
                         }
                         else
                         {
@@ -483,6 +549,35 @@ namespace WATickets.Controllers
 
 
                             Conexion.Desconectar();
+
+                            //try
+                            //{
+                            //    EncReparacion enc = new EncReparacion();
+                            //    enc.idLlamada = Llamada.id;
+                            //    enc.idTecnico = Llamada.Tecnico.Value;
+                            //    enc.FechaCreacion = DateTime.Now;
+                            //    enc.FechaModificacion = new DateTime();
+                            //    enc.idProductoArreglar = Llamada.ItemCode;
+                            //    enc.TipoReparacion = 0;
+                            //    enc.Status = 0;
+                            //    enc.ProcesadaSAP = false;
+                            //    db.EncReparacion.Add(enc);
+                            //    db.SaveChanges();
+
+
+                            //}
+                            //catch (Exception ex3)
+                            //{
+
+                            //    BitacoraErrores be = new BitacoraErrores();
+
+                            //    be.Descripcion = ex3.Message;
+                            //    be.StackTrace = ex3.StackTrace;
+                            //    be.Fecha = DateTime.Now;
+
+                            //    db.BitacoraErrores.Add(be);
+                            //    db.SaveChanges();
+                            //}
                         }
                         else
                         {
