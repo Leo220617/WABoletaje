@@ -9,6 +9,7 @@ namespace WATickets.Models
     public class ColeccionRepuestos
     {
         public EncReparacion EncReparacion { get; set; }
-        public DetReparacion[] DetReparacion { get; set; } 
+        public DetReparacion[] DetReparacion { get; set; }
+        public AdjuntosViewModel[] Adjuntos { get; set; }
     }
 }

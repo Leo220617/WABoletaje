@@ -40,7 +40,8 @@ namespace WATickets.Controllers
                     a.Comentarios,
                     a.BodegaOrigen,
                     a.BodegaFinal,
-                    Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList()
+                    Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
+                    Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList()
                 })
                     
                     .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)).ToList();
@@ -89,7 +90,8 @@ namespace WATickets.Controllers
                     a.Comentarios,
                     a.BodegaOrigen,
                     a.BodegaFinal,
-                    Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList()
+                    Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
+                    Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList()
                 }).Where(a => a.id == id).FirstOrDefault();
 
 
@@ -287,6 +289,17 @@ namespace WATickets.Controllers
                     det.Cantidad = item.Cantidad;
                     det.idError = item.idError;
                     db.DetReparacion.Add(det);
+                    db.SaveChanges();
+                }
+
+                foreach(var item in coleccion.Adjuntos)
+                {
+                    Adjuntos adjunto = new Adjuntos();
+                    adjunto.idEncabezado = Encabezado.id;
+
+                    byte[] hex = Convert.FromBase64String(item.base64.Replace("data:image/jpeg;base64,", "").Replace("data:image/png;base64,", ""));
+                    adjunto.base64 = hex;
+                    db.Adjuntos.Add(adjunto);
                     db.SaveChanges();
                 }
 

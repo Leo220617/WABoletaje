@@ -261,6 +261,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AdjuntosViewModel.cs" />
+    <Compile Include="Models\Cliente\Adjuntos.cs" />
     <Compile Include="Models\Cliente\BitacoraErrores.cs" />
     <Compile Include="Models\Cliente\BitacoraMovimientos.cs" />
     <Compile Include="Models\Cliente\Bodegas.cs" />
