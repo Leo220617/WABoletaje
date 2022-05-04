@@ -153,3 +153,6 @@ C:\GIT\WABoletaje\WAConectorEcommerce\WATickets\bin\es\System.Web.WebPages.resou
 C:\GIT\WABoletaje\WAConectorEcommerce\WATickets\bin\es\System.Web.WebPages.Deployment.resources.dll
 C:\GIT\WABoletaje\WAConectorEcommerce\WATickets\bin\es\System.Web.WebPages.Razor.resources.dll
 C:\GIT\WABoletaje\WAConectorEcommerce\WATickets\obj\Release\WABoletaje.csproj.CopyComplete
+C:\GIT\WABoletaje\WAConectorEcommerce\WATickets\bin\Select.HtmlToPdf.dll
+C:\GIT\WABoletaje\WAConectorEcommerce\WATickets\bin\Select.HtmlToPdf.xml
+C:\GIT\WABoletaje\WAConectorEcommerce\WATickets\bin\Select.Html.dep

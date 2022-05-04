@@ -109,6 +109,9 @@
     <Reference Include="S22.Imap, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\S22.Imap.3.6.0.0\lib\net40\S22.Imap.dll</HintPath>
     </Reference>
+    <Reference Include="Select.HtmlToPdf, Version=22.1.0.0, Culture=neutral, PublicKeyToken=e0ae9f6e27a97018, processorArchitecture=MSIL">
+      <HintPath>..\packages\Select.HtmlToPdf.22.1.0\lib\net40\Select.HtmlToPdf.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -235,6 +238,8 @@
     <Compile Include="Controllers\BitacoraController.cs" />
     <Compile Include="Controllers\BitacoraMovimientosController.cs" />
     <Compile Include="Controllers\BodegasController.cs" />
+    <Compile Include="Controllers\BoletasController.cs" />
+    <Compile Include="Controllers\ClientController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\Conexion.cs" />
     <Compile Include="Controllers\DetReparacionController.cs" />
@@ -262,11 +267,14 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AdjuntosViewModel.cs" />
+    <Compile Include="Models\BoletaViewModel.cs" />
+    <Compile Include="Models\ClientesViewModel.cs" />
     <Compile Include="Models\Cliente\Adjuntos.cs" />
     <Compile Include="Models\Cliente\BitacoraErrores.cs" />
     <Compile Include="Models\Cliente\BitacoraMovimientos.cs" />
     <Compile Include="Models\Cliente\Bodegas.cs" />
     <Compile Include="Models\Cliente\ConexionSAP.cs" />
+    <Compile Include="Models\Cliente\CorreoEnvio.cs" />
     <Compile Include="Models\Cliente\DetBitacoraMovimientos.cs" />
     <Compile Include="Models\Cliente\DetReparacion.cs" />
     <Compile Include="Models\Cliente\Diagnosticos.cs" />
@@ -289,7 +297,9 @@
     <Compile Include="Models\ColeccionProductos.cs" />
     <Compile Include="Models\ColeccionRepuestos.cs" />
     <Compile Include="Models\Filtros.cs" />
+    <Compile Include="Models\html.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\ProductosBoleta.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Startup.cs" />

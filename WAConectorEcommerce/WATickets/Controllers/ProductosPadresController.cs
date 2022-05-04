@@ -22,6 +22,42 @@ namespace WATickets.Controllers
     {
         ModelCliente db = new ModelCliente();
         G G = new G();
+
+        [Route("api/ProductosPadres/Boleta")]
+        public async Task<HttpResponseMessage> GetBoleta()
+        {
+            try
+            {
+                List<ProductosBoleta> productos = new List<ProductosBoleta>();
+                Parametros parametros = db.Parametros.FirstOrDefault();
+                var conexion = G.DevuelveCadena(db);
+
+                var SQL = parametros.SQLProductosBoleta;
+
+                SqlConnection Cn = new SqlConnection(conexion);
+                SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                DataSet Ds = new DataSet();
+                Cn.Open();
+                Da.Fill(Ds, "Productos");
+                foreach (DataRow item in Ds.Tables["Productos"].Rows)
+                {
+                    ProductosBoleta pr = new ProductosBoleta();
+                    pr.ItemCode = item["ItemCode"].ToString();
+                    pr.ItemName = item["ItemName"].ToString();
+                    productos.Add(pr);
+                }
+                    Cn.Close();
+                return Request.CreateResponse(HttpStatusCode.OK, productos);
+
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
         [Route("api/ProductosPadres/InsertarProductos")]
         public async Task<HttpResponseMessage> Get()
         {

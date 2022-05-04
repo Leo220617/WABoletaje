@@ -1,9 +1,11 @@
 ﻿using SAPbobsCOM;
+using SelectPdf;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -42,6 +44,11 @@ namespace WATickets.Controllers
                     Llamada = Llamada.Where(a => a.Tecnico == filtro.Codigo1).ToList();
                 }
 
+                if (filtro.Codigo2 != 0)
+                {
+                    Llamada = Llamada.Where(a => a.Status.Value == filtro.Codigo2).ToList();
+                }
+
                 return Request.CreateResponse(HttpStatusCode.OK, Llamada);
 
             }
@@ -62,7 +69,7 @@ namespace WATickets.Controllers
 
 
 
-                var LlamadasServicio = db.LlamadasServicios.Where(a => a.id == id).FirstOrDefault();
+                var LlamadasServicio = db.LlamadasServicios.Where(a => a.id == id ).FirstOrDefault();
 
 
                 if (LlamadasServicio == null)
@@ -78,6 +85,160 @@ namespace WATickets.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+
+        [HttpGet]
+        [Route("api/LlamadasServicio/ConsultarPorDocEntry")]
+        public HttpResponseMessage GetOneLLamada([FromUri]int id)
+        {
+            try
+            {
+
+
+
+                var LlamadasServicio = db.LlamadasServicios.Where(a => a.DocEntry == id).FirstOrDefault();
+
+
+                if (LlamadasServicio == null)
+                {
+                    throw new Exception("Este LlamadasServicio no se encuentra registrado");
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, LlamadasServicio);
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+        //Reenviar correo
+        [HttpGet]
+        [Route("api/LlamadasServicio/Correo")]
+        public HttpResponseMessage GeCorreo([FromUri]int id)
+        {
+            try
+            {
+
+
+
+                var Llamada = db.LlamadasServicios.Where(a => a.id == id).FirstOrDefault();
+
+
+                if (Llamada == null)
+                {
+                    throw new Exception("Este LlamadasServicio no se encuentra registrado");
+                }
+                ////Enviar Correo
+                ///
+                try
+                {
+                    var EmailDestino = "";
+                    Parametros parametros = db.Parametros.FirstOrDefault();
+                    var CorreoEnvio = db.CorreoEnvio.FirstOrDefault();
+                    var conexion = g.DevuelveCadena(db);
+
+                    var SQL = parametros.HtmlLlamada + "'" + Llamada.CardCode + "'";
+
+                    SqlConnection Cn = new SqlConnection(conexion);
+                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                    DataSet Ds = new DataSet();
+                    Cn.Open();
+                    Da.Fill(Ds, "Encabezado");
+
+                    List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
+                    html Html = new html();
+                    var bodyH = Html.texto;
+                    bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
+                    bodyH = bodyH.Replace("@telefono", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
+                    bodyH = bodyH.Replace("@celular", "      ");
+                    bodyH = bodyH.Replace("@email", Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString());
+                    EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
+                    bodyH = bodyH.Replace("@NombreContacto", Ds.Tables["Encabezado"].Rows[0]["Name"].ToString());
+                    bodyH = bodyH.Replace("@telcontacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
+
+                    Cn.Close();
+                    Cn.Dispose();
+
+
+                    SQL = parametros.SQLProductos + " where itemCode = '" + Llamada.ItemCode + "'";
+                    Cn = new SqlConnection(conexion);
+                    Cmd = new SqlCommand(SQL, Cn);
+                    Da = new SqlDataAdapter(Cmd);
+                    Ds = new DataSet();
+                    Cn.Open();
+                    Da.Fill(Ds, "Producto");
+
+                    bodyH = bodyH.Replace("@EquipoDelClie", Ds.Tables["Producto"].Rows[0]["itemName"].ToString());
+                    bodyH = bodyH.Replace("@Serie", Ds.Tables["Producto"].Rows[0]["manufSN"].ToString());
+                    bodyH = bodyH.Replace("@Fecha", Llamada.FechaCreacion.ToString("dd/MM/yyyy"));
+                    var sucR = Llamada.SucRecibo.Value.ToString();
+                    var sucE = Llamada.SucRetiro.Value.ToString();
+
+                    bodyH = bodyH.Replace("@SucursalR", db.Sucursales.Where(a => a.idSAP == sucR).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.idSAP == sucR).FirstOrDefault().Nombre);
+                    bodyH = bodyH.Replace("@SE", db.Sucursales.Where(a => a.idSAP == sucE).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.idSAP == sucE).FirstOrDefault().Nombre);
+
+                    bodyH = bodyH.Replace("@DiagnosticosDelCliente", Llamada.Asunto);
+                    bodyH = bodyH.Replace("@Observaciones", Llamada.Comentarios);
+                    bodyH = bodyH.Replace("@NumBoleta", Llamada.DocEntry.ToString());
+                    bodyH = bodyH.Replace("@Imagen", "<img src="+Llamada.Firma+" width='100' style='margin-left: -50%;' />");
+
+
+                    Cn.Close();
+                    Cn.Dispose();
+
+
+
+
+                    HtmlToPdf converter = new HtmlToPdf();
+
+                    // set converter options
+                    converter.Options.PdfPageSize = PdfPageSize.A4;
+                    converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
+                    converter.Options.MarginLeft = 5;
+                    converter.Options.MarginRight = 5;
+
+                    // create a new pdf document converting an html string
+                    SelectPdf.PdfDocument doc = converter.ConvertHtmlString(bodyH);
+
+                    var bytes = doc.Save();
+                    doc.Close();
+
+                    System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Contrato_Servicio.pdf");
+                    adjuntos.Add(att3);
+
+
+                    var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail, "Contrato de Servicio", "Contrato de Servicio para el cliente", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Contrato de servicio</h1> <p> En el presente correo se le hace entrega del contrato de servicio, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+
+                    if (!resp)
+                    {
+                        throw new Exception("No se ha podido enviar el correo con la liquidación");
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    BitacoraErrores be = new BitacoraErrores();
+
+                    be.Descripcion = ex.Message;
+                    be.StackTrace = ex.StackTrace;
+                    be.Fecha = DateTime.Now;
+
+                    db.BitacoraErrores.Add(be);
+                    db.SaveChanges();
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, Llamada);
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+
 
         [HttpPost]
         public HttpResponseMessage Post([FromBody] LlamadasServicios llamada)
@@ -112,6 +273,7 @@ namespace WATickets.Controllers
                     Llamada.ProcesadaSAP = false;
                     Llamada.FechaCreacion = DateTime.Now;
                     Llamada.Firma = !string.IsNullOrEmpty(llamada.Firma) ? llamada.Firma : "";
+                    Llamada.Horas = llamada.Horas;
                     db.LlamadasServicios.Add(Llamada);
                     db.SaveChanges();
 
@@ -169,7 +331,7 @@ namespace WATickets.Controllers
 
                         }
                         client.UserFields.Fields.Item("U_WATTS").Value = Llamada.LugarReparacion.Value.ToString();
-
+                        client.UserFields.Fields.Item("U_CONTHRS").Value = Llamada.Horas.ToString();
                         client.UserFields.Fields.Item("U_SENTRE").Value = db.Sucursales.Where(a => a.id == Llamada.SucRetiro).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.id == Llamada.SucRetiro).FirstOrDefault().Nombre;
                         client.UserFields.Fields.Item("U_SRECIB").Value = db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault().Nombre;
                         client.Description = Llamada.Comentarios;
@@ -261,6 +423,109 @@ namespace WATickets.Controllers
                 {
                     throw new Exception("Esta LLamada de servicio YA existe");
                 }
+
+
+                ////Enviar Correo
+                ///
+                try
+                {
+                    var EmailDestino = "";
+                    Parametros parametros = db.Parametros.FirstOrDefault();
+                    var CorreoEnvio = db.CorreoEnvio.FirstOrDefault();
+                    var conexion = g.DevuelveCadena(db);
+
+                    var SQL = parametros.HtmlLlamada + "'" + Llamada.CardCode + "'";
+
+                    SqlConnection Cn = new SqlConnection(conexion);
+                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                    DataSet Ds = new DataSet();
+                    Cn.Open();
+                    Da.Fill(Ds, "Encabezado");
+
+                    List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
+                    html Html = new html();
+                    var bodyH = Html.texto;
+                    bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
+                    bodyH = bodyH.Replace("@telefono", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
+                    bodyH = bodyH.Replace("@celular", "      ");
+                    bodyH = bodyH.Replace("@email", Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString());
+                    EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
+                    bodyH = bodyH.Replace("@NombreContacto", Ds.Tables["Encabezado"].Rows[0]["Name"].ToString());
+                    bodyH = bodyH.Replace("@telcontacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
+
+                    Cn.Close();
+                    Cn.Dispose();
+
+
+                    SQL = parametros.SQLProductos + " where itemCode = '" + Llamada.ItemCode + "'";
+                    Cn = new SqlConnection(conexion);
+                    Cmd = new SqlCommand(SQL, Cn);
+                    Da = new SqlDataAdapter(Cmd);
+                    Ds = new DataSet();
+                    Cn.Open();
+                    Da.Fill(Ds, "Producto");
+
+                    bodyH = bodyH.Replace("@EquipoDelClie", Ds.Tables["Producto"].Rows[0]["itemName"].ToString());
+                    bodyH = bodyH.Replace("@Serie", Ds.Tables["Producto"].Rows[0]["manufSN"].ToString());
+                    bodyH = bodyH.Replace("@Fecha",Llamada.FechaCreacion.ToString("dd/MM/yyyy"));
+                    var sucR = Llamada.SucRecibo.Value.ToString();
+                    var sucE = Llamada.SucRetiro.Value.ToString();
+
+                    bodyH = bodyH.Replace("@SucursalR", db.Sucursales.Where(a => a.idSAP == sucR).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.idSAP == sucR).FirstOrDefault().Nombre);
+                    bodyH = bodyH.Replace("@SE", db.Sucursales.Where(a => a.idSAP == sucE).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.idSAP == sucE).FirstOrDefault().Nombre);
+
+                    bodyH = bodyH.Replace("@DiagnosticosDelCliente", Llamada.Asunto);
+                    bodyH = bodyH.Replace("@Observaciones", Llamada.Comentarios);
+                    bodyH = bodyH.Replace("@NumBoleta", Llamada.DocEntry.ToString());
+                    bodyH = bodyH.Replace("@Imagen", "<img src=" + Llamada.Firma + " width='100' style='margin-left: -50%;' />");
+
+
+
+                    Cn.Close();
+                    Cn.Dispose();
+
+
+
+
+                    HtmlToPdf converter = new HtmlToPdf();
+
+                    // set converter options
+                    converter.Options.PdfPageSize = PdfPageSize.A4;
+                    converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
+                    converter.Options.MarginLeft = 5;
+                    converter.Options.MarginRight = 5;
+
+                    // create a new pdf document converting an html string
+                    SelectPdf.PdfDocument doc = converter.ConvertHtmlString(bodyH);
+
+                    var bytes = doc.Save();
+                    doc.Close();
+
+                    System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Contrato_Servicio.pdf");
+                    adjuntos.Add(att3);
+
+
+                    var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail,"Contrato de Servicio", "Contrato de Servicio para el cliente", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Contrato de servicio</h1> <p> En el presente correo se le hace entrega del contrato de servicio, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+
+                    if (!resp)
+                    {
+                        throw new Exception("No se ha podido enviar el correo con la liquidación");
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    BitacoraErrores be = new BitacoraErrores();
+
+                    be.Descripcion = ex.Message;
+                    be.StackTrace = ex.StackTrace;
+                    be.Fecha = DateTime.Now;
+
+                    db.BitacoraErrores.Add(be);
+                    db.SaveChanges();
+                }
+
 
 
                 return Request.CreateResponse(HttpStatusCode.OK, Llamada);
@@ -380,6 +645,12 @@ namespace WATickets.Controllers
                             Llamada.Garantia = llamada.Garantia;
                             client.CallType = Llamada.Garantia.Value;
 
+                        }
+
+                        if(Llamada.Horas != llamada.Horas)
+                        {
+                            Llamada.Horas = llamada.Horas;
+                            client.UserFields.Fields.Item("U_CONTHRS").Value = Llamada.Horas.ToString();
                         }
 
                         if (Llamada.Tecnico != llamada.Tecnico)

@@ -18,5 +18,7 @@ namespace WATickets.Models.Cliente
         public string SQLItemHijos { get; set; }
         public string BodegaInicial { get; set; }
         public string BodegaFinal { get; set; }
+        public string SQLProductosBoleta { get; set; }
+        public string HtmlLlamada { get; set; }
     }
 }

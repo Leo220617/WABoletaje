@@ -32,7 +32,10 @@ namespace WATickets.Controllers
                 var conexion = G.DevuelveCadena(db);
 
                 var SQL = parametros.SQLClientes;
-
+                if(filtro.Codigo1>0)
+                {
+                    SQL = SQL.Replace("inner join OINS t1 on t0.CardCode = t1.customer", "");
+                }
                 SqlConnection Cn = new SqlConnection(conexion);
                 SqlCommand Cmd = new SqlCommand(SQL, Cn);
                 SqlDataAdapter Da = new SqlDataAdapter(Cmd);

@@ -28,7 +28,7 @@ namespace WATickets.Controllers
                 var EncReparacion = db.EncReparacion.Select(a => new
                 {
                     a.id,
-                    idLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry,
+                    idLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry,
                     a.idTecnico,
                     a.idDiagnostico,
                     a.FechaCreacion,
@@ -56,6 +56,12 @@ namespace WATickets.Controllers
                     EncReparacion = EncReparacion.Where(a => a.idTecnico == filtro.Codigo1).ToList();
                 }
 
+                if (filtro.Codigo2 > 0)
+                {
+                    filtro.Codigo2--;
+                    EncReparacion = EncReparacion.Where(a => a.Status == filtro.Codigo2).ToList();
+                }
+
                 return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
 
             }
@@ -77,7 +83,7 @@ namespace WATickets.Controllers
                 var EncReparacion = db.EncReparacion.Select(a => new
                 {
                     a.id,
-                    idLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry,
+                    idLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry,
 
                     a.idTecnico,
                     a.FechaCreacion,
