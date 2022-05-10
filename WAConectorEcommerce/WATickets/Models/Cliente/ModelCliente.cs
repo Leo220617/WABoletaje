@@ -37,6 +37,11 @@ namespace WATickets.Models.Cliente
         public virtual DbSet<Errores> Errores { get; set; }
         public virtual DbSet<Adjuntos> Adjuntos { get; set; }
         public virtual DbSet<CorreoEnvio> CorreoEnvio { get; set; }
+        public virtual DbSet<BackOffice> BackOffice { get; set; }
+        public virtual DbSet<EncMovimiento> EncMovimiento { get; set; }
+        public virtual DbSet<DetMovimiento> DetMovimiento { get; set; }
+
+
 
 
 

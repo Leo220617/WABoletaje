@@ -235,6 +235,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\BackOfficeController.cs" />
     <Compile Include="Controllers\BitacoraController.cs" />
     <Compile Include="Controllers\BitacoraMovimientosController.cs" />
     <Compile Include="Controllers\BodegasController.cs" />
@@ -251,6 +252,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LlamadasServicioController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\MovimientosController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\ProductosHijosController.cs" />
     <Compile Include="Controllers\ProductosPadresController.cs" />
@@ -270,14 +272,17 @@
     <Compile Include="Models\BoletaViewModel.cs" />
     <Compile Include="Models\ClientesViewModel.cs" />
     <Compile Include="Models\Cliente\Adjuntos.cs" />
+    <Compile Include="Models\Cliente\BackOffice.cs" />
     <Compile Include="Models\Cliente\BitacoraErrores.cs" />
     <Compile Include="Models\Cliente\BitacoraMovimientos.cs" />
     <Compile Include="Models\Cliente\Bodegas.cs" />
     <Compile Include="Models\Cliente\ConexionSAP.cs" />
     <Compile Include="Models\Cliente\CorreoEnvio.cs" />
     <Compile Include="Models\Cliente\DetBitacoraMovimientos.cs" />
+    <Compile Include="Models\Cliente\DetMovimiento.cs" />
     <Compile Include="Models\Cliente\DetReparacion.cs" />
     <Compile Include="Models\Cliente\Diagnosticos.cs" />
+    <Compile Include="Models\Cliente\EncMovimiento.cs" />
     <Compile Include="Models\Cliente\EncReparacion.cs" />
     <Compile Include="Models\Cliente\Errores.cs" />
     <Compile Include="Models\Cliente\Garantias.cs" />
@@ -294,6 +299,7 @@
     <Compile Include="Models\Cliente\Sucursales.cs" />
     <Compile Include="Models\Cliente\Tecnicos.cs" />
     <Compile Include="Models\Cliente\TiposCasos.cs" />
+    <Compile Include="Models\ColeccionMovimientos.cs" />
     <Compile Include="Models\ColeccionProductos.cs" />
     <Compile Include="Models\ColeccionRepuestos.cs" />
     <Compile Include="Models\Filtros.cs" />
