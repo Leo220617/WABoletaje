@@ -31,6 +31,11 @@ namespace WATickets.Controllers
             {
                 var time = new DateTime();
                 
+                if(filtro.FechaFinal != time)
+                {
+                    filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
+                }
+
                 var Llamada = db.LlamadasServicios.Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true))
                  .ToList();
 
@@ -330,6 +335,9 @@ namespace WATickets.Controllers
                             client.UserFields.Fields.Item("U_SISO").Value = Llamada.FechaSISO.Value;
 
                         }
+                        var Tratado = Llamada.TratadoPor.ToString();
+                        client.UserFields.Fields.Item("U_UsuarioCreador").Value = db.Login.Where(a => a.CardCode == Tratado).FirstOrDefault() == null ? "" : db.Login.Where(a => a.CardCode == Tratado).FirstOrDefault().Nombre;
+
                         client.UserFields.Fields.Item("U_WATTS").Value = Llamada.LugarReparacion.Value.ToString();
                         client.UserFields.Fields.Item("U_CONTHRS").Value = Llamada.Horas.ToString();
                         client.UserFields.Fields.Item("U_SENTRE").Value = db.Sucursales.Where(a => a.id == Llamada.SucRetiro).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.id == Llamada.SucRetiro).FirstOrDefault().Nombre;
@@ -769,13 +777,15 @@ namespace WATickets.Controllers
                             client.UserFields.Fields.Item("U_SISO").Value = Llamada.FechaSISO.Value;
 
                         }
+                        var Tratado = Llamada.TratadoPor.ToString();
+                        client.UserFields.Fields.Item("U_UsuarioCreador").Value = db.Login.Where(a => a.CardCode == Tratado).FirstOrDefault() == null ? "" : db.Login.Where(a => a.CardCode == Tratado).FirstOrDefault().Nombre;
                         client.UserFields.Fields.Item("U_WATTS").Value = Llamada.LugarReparacion.Value.ToString();
-                     
+                        client.UserFields.Fields.Item("U_CONTHRS").Value = Llamada.Horas.ToString();
                         client.UserFields.Fields.Item("U_SENTRE").Value = db.Sucursales.Where(a => a.id == Llamada.SucRetiro).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.id == Llamada.SucRetiro).FirstOrDefault().Nombre;
                         client.UserFields.Fields.Item("U_SRECIB").Value = db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault().Nombre;
                         client.Description = Llamada.Comentarios;
                         client.AssigneeCode = Llamada.TratadoPor.Value;
-                        client.CallType = Llamada.Garantia.Value;
+                        //client.CallType = Llamada.Garantia.Value;
                         client.TechnicianCode = Llamada.Tecnico.Value;
                         //client.ProblemSubType =  
 

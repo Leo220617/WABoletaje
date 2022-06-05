@@ -37,7 +37,15 @@ namespace WATickets.Controllers
                 if(!string.IsNullOrEmpty(filtro.Texto))
                 {
                     var ProdPadre = db.ProductosPadres.Where(a => a.codSAP.ToUpper().Contains(filtro.Texto.ToUpper())).FirstOrDefault();
-                    ProductosHijos = ProductosHijos.Where(a => a.idPadre == ProdPadre.id).ToList();
+                    if(ProdPadre != null)
+                    {
+                        ProductosHijos = ProductosHijos.Where(a => a.idPadre == ProdPadre.id).ToList();
+
+                    }
+                    else
+                    {
+                        ProductosHijos = null;
+                    }
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK, ProductosHijos);

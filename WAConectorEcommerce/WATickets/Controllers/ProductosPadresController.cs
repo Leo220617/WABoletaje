@@ -164,7 +164,7 @@ namespace WATickets.Controllers
                             productos.Stock = Convert.ToDecimal(item["Stock"].ToString());
                             productos.Precio = Convert.ToDecimal(item["Precio"].ToString());
                             productos.Cantidad = 0;
-
+                            productos.Localizacion = item["localizacion"].ToString();
                             db.ProductosHijos.Add(productos);
                             db.SaveChanges();
                         }
@@ -192,6 +192,7 @@ namespace WATickets.Controllers
                             Prod.Stock = Convert.ToDecimal(item["Stock"].ToString());
                             //productos.Cantidad = 0;
                             Prod.Precio = Convert.ToDecimal(item["Precio"].ToString());
+                            Prod.Localizacion = item["localizacion"].ToString();
                             db.SaveChanges();
                         }
                         catch (Exception ex1)

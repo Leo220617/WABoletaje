@@ -26,6 +26,10 @@ namespace WATickets.Controllers
             try
             {
                 var time = new DateTime();
+                if (filtro.FechaFinal != time)
+                {
+                    filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
+                }
 
                 var EncReparacion = db.EncReparacion.Select(a => new
                 {
@@ -277,12 +281,12 @@ namespace WATickets.Controllers
                 Encabezado.idDiagnostico = coleccion.EncReparacion.idDiagnostico;
                 db.SaveChanges();
 
-
+                //Para generar una entrega
                 if(Encabezado.Status == 2)
                 {
                     try
                     {
-                        var Existe = db.BackOffice.Where(a => a.idEncabezadoReparacion == Encabezado.id && a.TipoMovimiento == 2).FirstOrDefault() == null;
+                        var Existe = true;//db.BackOffice.Where(a => a.idEncabezadoReparacion == Encabezado.id && a.TipoMovimiento == 2).FirstOrDefault() == null;
 
                         if (Existe)
                         {
@@ -356,6 +360,7 @@ namespace WATickets.Controllers
                                         detMovimiento.Descuento = 0;
                                         detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
                                         detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
+                                        detMovimiento.idError = item2.idError;
                                         db.DetMovimiento.Add(detMovimiento);
                                         db.SaveChanges();
                                     }
@@ -365,6 +370,11 @@ namespace WATickets.Controllers
                                         Item.Cantidad += item2.Cantidad;
                                         Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
                                         Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
+                                        if( Item.idError == 0 || Item.idError == null)
+                                        {
+                                            Item.idError = item2.idError;
+                                        }
+                                            
                                         db.SaveChanges();
                                     }
                                 }
@@ -398,13 +408,33 @@ namespace WATickets.Controllers
 
                             }
 
-                            var MovimientosDetalles = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).ToList();
-                            db.Entry(encMovimiento).State = EntityState.Modified;
-                            encMovimiento.Subtotal = MovimientosDetalles.Sum(a => a.Cantidad * a.PrecioUnitario);
-                            encMovimiento.Descuento = MovimientosDetalles.Sum(a => a.Descuento);
-                            encMovimiento.Impuestos = MovimientosDetalles.Sum(a => a.Impuestos);
-                            encMovimiento.TotalComprobante = MovimientosDetalles.Sum(a => a.TotalLinea);
-                            db.SaveChanges();
+
+                            var MovimientosEnCero = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id && a.Cantidad <= 0).ToList();
+                            foreach(var item in MovimientosEnCero)
+                            {
+                                db.DetMovimiento.Remove(item);
+                                db.SaveChanges();
+                            }
+
+                            var CantidadMovimientos = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).Count();
+
+                            if(CantidadMovimientos == 0)
+                            {
+                                db.EncMovimiento.Remove(encMovimiento);
+                                db.SaveChanges();
+                            }
+                            else
+                            {
+                                var MovimientosDetalles = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).ToList();
+                                db.Entry(encMovimiento).State = EntityState.Modified;
+                                encMovimiento.Subtotal = MovimientosDetalles.Sum(a => a.Cantidad * a.PrecioUnitario);
+                                encMovimiento.Descuento = MovimientosDetalles.Sum(a => a.Descuento);
+                                encMovimiento.Impuestos = MovimientosDetalles.Sum(a => a.Impuestos);
+                                encMovimiento.TotalComprobante = MovimientosDetalles.Sum(a => a.TotalLinea);
+                                db.SaveChanges();
+                            }
+
+                           
 
 
                         }
@@ -461,7 +491,7 @@ namespace WATickets.Controllers
                     db.Adjuntos.Add(adjunto);
                     db.SaveChanges();
                 }
-
+                //Esto es para Solicitud y Devolucion
                 if(Encabezado.TipoReparacion == 1 || Encabezado.TipoReparacion == 2)
                 {
                     try
@@ -503,6 +533,7 @@ namespace WATickets.Controllers
                             dbt.idProducto = item.idProducto;
                             dbt.Cantidad = item.Cantidad;
                             dbt.ItemCode = item.ItemCode;
+                            dbt.idError = item.idError;
                             db.DetBitacoraMovimientos.Add(dbt);
                             db.SaveChanges();
                         }
@@ -513,6 +544,16 @@ namespace WATickets.Controllers
                         Encabezado.BodegaOrigen = "0";
                         Encabezado.BodegaFinal = "0";
                         db.SaveChanges();
+
+
+                        //if(Encabezado.TipoReparacion == 2)
+                        //{
+                        //    foreach (var item in coleccion.DetReparacion)
+                        //    {
+                        //        db.DetReparacion.Remove(item);
+                        //        db.SaveChanges();
+                        //    }
+                        //}
                     }
                     catch (Exception ex)
                     {
@@ -530,11 +571,13 @@ namespace WATickets.Controllers
                     }
                 }
 
+
+                //Para generar Oferta de venta
                 if(Encabezado.TipoReparacion == 3)
                 {
                     try
                     {
-                        var Existe = db.BackOffice.Where(a => a.idEncabezadoReparacion == Encabezado.id && a.TipoMovimiento == 1).FirstOrDefault() == null;
+                        var Existe = true;//db.BackOffice.Where(a => a.idEncabezadoReparacion == Encabezado.id && a.TipoMovimiento == 1).FirstOrDefault() == null;
 
                         if(Existe)
                         {
@@ -609,6 +652,7 @@ namespace WATickets.Controllers
                                         detMovimiento.Descuento = 0;
                                         detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
                                         detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
+                                        detMovimiento.idError = item2.idError;
                                         db.DetMovimiento.Add(detMovimiento);
                                         db.SaveChanges();
                                     }
@@ -618,6 +662,10 @@ namespace WATickets.Controllers
                                         Item.Cantidad += item2.Cantidad;
                                         Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
                                         Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
+                                        if (Item.idError == 0 || Item.idError == null)
+                                        {
+                                            Item.idError = item2.idError;
+                                        }
                                         db.SaveChanges();
                                     }
                                 }
@@ -650,14 +698,31 @@ namespace WATickets.Controllers
                                 }
 
                             }
+                            var MovimientosEnCero = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id && a.Cantidad <= 0).ToList();
+                            foreach (var item in MovimientosEnCero)
+                            {
+                                db.DetMovimiento.Remove(item);
+                                db.SaveChanges();
+                            }
 
-                            var MovimientosDetalles = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).ToList();
-                            db.Entry(encMovimiento).State = EntityState.Modified;
-                            encMovimiento.Subtotal = MovimientosDetalles.Sum(a => a.Cantidad * a.PrecioUnitario);
-                            encMovimiento.Descuento = MovimientosDetalles.Sum(a => a.Descuento);
-                            encMovimiento.Impuestos = MovimientosDetalles.Sum(a => a.Impuestos);
-                            encMovimiento.TotalComprobante = MovimientosDetalles.Sum(a => a.TotalLinea);
-                            db.SaveChanges();
+                            var CantidadMovimientos = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).Count();
+
+                            if (CantidadMovimientos == 0)
+                            {
+                                db.EncMovimiento.Remove(encMovimiento);
+                                db.SaveChanges();
+                            }
+                            else
+                            {
+                                var MovimientosDetalles = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).ToList();
+                                db.Entry(encMovimiento).State = EntityState.Modified;
+                                encMovimiento.Subtotal = MovimientosDetalles.Sum(a => a.Cantidad * a.PrecioUnitario);
+                                encMovimiento.Descuento = MovimientosDetalles.Sum(a => a.Descuento);
+                                encMovimiento.Impuestos = MovimientosDetalles.Sum(a => a.Impuestos);
+                                encMovimiento.TotalComprobante = MovimientosDetalles.Sum(a => a.TotalLinea);
+                                db.SaveChanges();
+                            }
+                                
 
                         }
                         else
@@ -690,5 +755,38 @@ namespace WATickets.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+        [HttpPost]
+        [Route("api/EncReparacion/Actualizar")]
+        public HttpResponseMessage Put([FromBody] ColeccionRepuestos coleccion)
+        {
+            try
+            {
+                
+                var encReparacion = db.EncReparacion.Where(a => a.id == coleccion.EncReparacion.id).FirstOrDefault();
+
+                if (encReparacion != null)
+                {
+                    db.Entry(encReparacion).State = EntityState.Modified;
+                    encReparacion.Status = coleccion.EncReparacion.Status;
+                    db.SaveChanges();
+        
+                }
+                else
+                {
+                    throw new Exception("Reparacion no existe");
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, encReparacion);
+
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+
+            }
+        }
+
     }
 }

@@ -26,6 +26,11 @@ namespace WATickets.Controllers
             {
                 var time = new DateTime();
                 
+                if(filtro.FechaFinal != time)
+                {
+                    filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
+                }
+
                 var Bitacora = db.BitacoraMovimientos.Select(a => new {
 
 
@@ -48,14 +53,19 @@ namespace WATickets.Controllers
                 {
                     Bitacora = Bitacora.Where(a => a.idEncabezado == filtro.Codigo1).ToList();
                 }
+                else if (filtro.Codigo3 >= 0)
+                {
+                    string status = filtro.Codigo3.ToString();
+                    Bitacora = Bitacora.Where(a => a.Status == status).ToList();
+                }
 
-                if(filtro.Codigo2 > 0)
+
+                if (filtro.Codigo2 > 0)
                 {
                     Bitacora = Bitacora.Where(a => a.idTecnico == filtro.Codigo2).ToList();
                 }
-                    
 
-
+               
 
                 return Request.CreateResponse(HttpStatusCode.OK, Bitacora);
 

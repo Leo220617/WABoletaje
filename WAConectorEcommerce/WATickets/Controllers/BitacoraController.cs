@@ -24,6 +24,11 @@ namespace WATickets.Controllers
             try
             {
                 var time = new DateTime();
+                if (filtro.FechaFinal != time)
+                {
+                    filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
+                }
+
                 var Bitacora = db.BitacoraErrores.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)).ToList();
 
               
