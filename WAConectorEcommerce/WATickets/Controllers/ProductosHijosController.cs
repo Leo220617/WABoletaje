@@ -31,7 +31,27 @@ namespace WATickets.Controllers
 
                 if(filtro.Codigo1 > 0)
                 {
-                    ProductosHijos = ProductosHijos.Where(a => a.idPadre == filtro.Codigo1).ToList();
+                    var ProdPadre = db.ProductosPadres.Where(a => a.id == filtro.Codigo1).FirstOrDefault();
+
+                    if (ProdPadre != null)
+                    {
+                        var PH = db.PadresHijosProductos.Where(a => a.idProductoPadre == ProdPadre.id).ToList();
+                        var PH2 = db.ProductosHijos.ToList();
+
+                        ProductosHijos = new List<ProductosHijos>();
+
+                        foreach (var item in PH)
+                        {
+                            var PHC = PH2.Where(a => a.id == item.idProductoHijo).FirstOrDefault();
+                            PHC.Cantidad = item.Cantidad;
+                            ProductosHijos.Add(PHC);
+                        }
+
+                    }
+                    else
+                    {
+                        ProductosHijos = null;
+                    }
                 }
 
                 if(!string.IsNullOrEmpty(filtro.Texto))
@@ -39,7 +59,18 @@ namespace WATickets.Controllers
                     var ProdPadre = db.ProductosPadres.Where(a => a.codSAP.ToUpper().Contains(filtro.Texto.ToUpper())).FirstOrDefault();
                     if(ProdPadre != null)
                     {
-                        ProductosHijos = ProductosHijos.Where(a => a.idPadre == ProdPadre.id).ToList();
+                        var PH = db.PadresHijosProductos.Where(a => a.idProductoPadre == ProdPadre.id).ToList();
+                        var PH2 = db.ProductosHijos.ToList();
+
+                        ProductosHijos = new List<ProductosHijos>();
+
+                        foreach(var item in PH)
+                        {
+                            var PHC = PH2.Where(a => a.id == item.idProductoHijo).FirstOrDefault();
+                            PHC.Cantidad = item.Cantidad;
+
+                            ProductosHijos.Add(PHC);
+                        }
 
                     }
                     else

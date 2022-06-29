@@ -19,7 +19,7 @@ namespace WATickets.Controllers
     public class BitacoraMovimientosController: ApiController
     {
         ModelCliente db = new ModelCliente();
-
+        //Este api es el encargado de llevar el control de los movimientos en cuanto a traslados
         public async Task<HttpResponseMessage> Get([FromUri] Filtros filtro)
         {
             try
@@ -166,16 +166,8 @@ namespace WATickets.Controllers
                             var Det = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id).ToList();
                             foreach (var item in Det)
                             {
-                                //  client.Lines.SetCurrentLine(i);
                                 client.Lines.ItemCode = item.ItemCode.Split('|')[0].Trim();
-
                                 client.Lines.Quantity = item.Cantidad;
-
-
-
-
-
-
                                 client.Lines.Add();
                                 i++;
                             }
@@ -184,6 +176,7 @@ namespace WATickets.Controllers
 
                             if (respuesta == 0)
                             {
+                                //Ligar el traslado a la llamada de servicio
                                 var idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
                                 var count = -1;
                                 var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
@@ -202,8 +195,6 @@ namespace WATickets.Controllers
                                     client2.Expenses.DocumentNumber = idEntry;
 
                                     client2.Expenses.DocEntry = idEntry;
-
-                                    //client2.Expenses.StockTransferDirection = BoStckTrnDir.bos_TransferToTechnician;
 
                                     if (count == 0)
                                     {

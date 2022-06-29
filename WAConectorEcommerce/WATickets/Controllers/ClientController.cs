@@ -64,16 +64,7 @@ namespace WATickets.Controllers
 
                     if (respuesta == 0)
                     {
-
-
-
-
-
                         Conexion.Desconectar();
-
-
-
-
                     }
                     else
                     {

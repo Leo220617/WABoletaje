@@ -26,10 +26,6 @@ namespace WATickets.Controllers
                 var time = new DateTime();
                 var Bodegas = db.Bodegas.ToList();
 
-
-
-
-
                 return Request.CreateResponse(HttpStatusCode.OK, Bodegas);
 
             }

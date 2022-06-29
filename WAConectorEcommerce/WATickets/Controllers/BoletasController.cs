@@ -56,25 +56,14 @@ namespace WATickets.Controllers
 
                         if (respuesta == 0)
                         {
-
-                            
-                            
-
-
                             Conexion.Desconectar();
-
-
-
-
                         }
                         else
                         {
                             BitacoraErrores be = new BitacoraErrores();
-
                             be.Descripcion = Conexion.Company.GetLastErrorDescription();
                             be.StackTrace = "Tarjeta de Equipo";
                             be.Fecha = DateTime.Now;
-
                             db.BitacoraErrores.Add(be);
                             db.SaveChanges();
                             Conexion.Desconectar();

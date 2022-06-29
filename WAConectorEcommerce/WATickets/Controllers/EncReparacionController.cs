@@ -16,6 +16,7 @@ using WATickets.Models.Cliente;
 
 namespace WATickets.Controllers
 {
+    //Este api se encarga de llevar el control de las reparaciones realizadas al producto
     [Authorize]
     public class EncReparacionController : ApiController
     {
@@ -120,7 +121,7 @@ namespace WATickets.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
-
+        //Este es una prueba para realizar un traslado no usar
         [Route("api/EncReparacion/PruebaTraslado")]
         public HttpResponseMessage GetOneTraslado([FromUri]int id)
         {
@@ -361,6 +362,7 @@ namespace WATickets.Controllers
                                         detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
                                         detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
                                         detMovimiento.idError = item2.idError;
+                                        detMovimiento.Garantia = false;
                                         db.DetMovimiento.Add(detMovimiento);
                                         db.SaveChanges();
                                     }
@@ -546,14 +548,7 @@ namespace WATickets.Controllers
                         db.SaveChanges();
 
 
-                        //if(Encabezado.TipoReparacion == 2)
-                        //{
-                        //    foreach (var item in coleccion.DetReparacion)
-                        //    {
-                        //        db.DetReparacion.Remove(item);
-                        //        db.SaveChanges();
-                        //    }
-                        //}
+                      
                     }
                     catch (Exception ex)
                     {
@@ -653,6 +648,7 @@ namespace WATickets.Controllers
                                         detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
                                         detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
                                         detMovimiento.idError = item2.idError;
+                                        detMovimiento.Garantia = false;
                                         db.DetMovimiento.Add(detMovimiento);
                                         db.SaveChanges();
                                     }

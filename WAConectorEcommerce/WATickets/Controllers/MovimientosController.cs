@@ -430,7 +430,7 @@ namespace WATickets.Controllers
             try
             {
 
-
+                var Parametros = db.Parametros.FirstOrDefault();
                 var EncMovimiento = db.EncMovimiento.Where(a => a.id == encMovimiento.id).FirstOrDefault();
 
                 if (EncMovimiento != null)
@@ -458,6 +458,7 @@ namespace WATickets.Controllers
                             Det.Descuento = item.Descuento;
                             Det.Impuestos = item.Impuestos;
                             Det.TotalLinea = item.TotalLinea;
+                            Det.Garantia = item.Garantia;
                             db.SaveChanges();
                         }
                         
@@ -471,7 +472,7 @@ namespace WATickets.Controllers
 
                 if(encMovimiento.Generar)
                 {
-                    if(EncMovimiento.TipoMovimiento == 1)
+                    if(EncMovimiento.TipoMovimiento == 1 && db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).Count() > 0)
                     {
                         var client = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oQuotations);
                         client.DocObjectCode = BoObjectTypes.oQuotations;
@@ -484,21 +485,21 @@ namespace WATickets.Controllers
                         client.HandWritten = BoYesNoEnum.tNO;
                         client.NumAtCard = EncMovimiento.NumLlamada; //orderid               
                         client.ReserveInvoice = BoYesNoEnum.tNO;
-                        client.Series = 11; //11 quemado
+                        client.Series = Parametros.SerieOferta; //11; //11 quemado
                         client.Comments = EncMovimiento.Comentarios; //direccion
                         client.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
 
                         client.DocumentsOwner = Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
                         client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString() ;
 
-                        var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id).ToList();
+                        var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).ToList();
                         var i = 0;
                         foreach (var item in DetalleSAP)
                         {
                             client.Lines.SetCurrentLine(i);
                             client.Lines.CostingCode = "";
                             client.Lines.CostingCode2 = "";
-                            client.Lines.CostingCode3 = "TA-01";
+                            client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                             client.Lines.CostingCode4 = "";
                             client.Lines.CostingCode5 = "";
                             client.Lines.Currency = "COL";
@@ -507,7 +508,7 @@ namespace WATickets.Controllers
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = "IVA-13";
+                            client.Lines.TaxCode = Parametros.TaxCode;//"IVA-13";
                             client.Lines.TaxOnly = BoYesNoEnum.tNO;
                             client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
                             client.Lines.Add();
@@ -680,6 +681,279 @@ namespace WATickets.Controllers
                             db.SaveChanges();
                             Conexion.Desconectar();
                         }
+
+                        //Pregunto si existe algun producto con garantia, para generar entonces una entrega
+                        if(db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).Count() > 0)
+
+                        {
+                            var clientEntrega = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
+                            clientEntrega.DocObjectCode = BoObjectTypes.oDeliveryNotes;
+                            clientEntrega.CardCode = EncMovimiento.CardCode;
+                            clientEntrega.DocCurrency = "COL";
+                            clientEntrega.DocDate = EncMovimiento.Fecha; //listo
+                            clientEntrega.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
+                            clientEntrega.DocNum = 0; //automatico
+                            clientEntrega.DocType = BoDocumentTypes.dDocument_Items;
+                            clientEntrega.HandWritten = BoYesNoEnum.tNO;
+                            clientEntrega.NumAtCard = EncMovimiento.NumLlamada; //orderid               
+                            clientEntrega.ReserveInvoice = BoYesNoEnum.tNO;
+                            clientEntrega.Series = Parametros.SerieEntrega;//3; //3 quemado
+                            clientEntrega.Comments = "Esta es la entrega de los productos por garantia"; //direccion
+                            clientEntrega.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
+
+                            clientEntrega.DocumentsOwner = Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
+                            clientEntrega.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
+
+                            var DetalleSAPEntrega = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).ToList();
+                            var iE = 0;
+                            foreach (var item in DetalleSAPEntrega)
+                            {
+                                clientEntrega.Lines.SetCurrentLine(iE);
+                                clientEntrega.Lines.CostingCode = "";
+                                clientEntrega.Lines.CostingCode2 = "";
+                                clientEntrega.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
+                                clientEntrega.Lines.CostingCode4 = "";
+                                clientEntrega.Lines.CostingCode5 = "";
+                                clientEntrega.Lines.Currency = "COL";
+                                clientEntrega.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
+                                clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                                clientEntrega.Lines.ItemCode = item.ItemCode;
+                                clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                                clientEntrega.Lines.Quantity = Convert.ToDouble(item.Cantidad);
+                                clientEntrega.Lines.TaxCode = Parametros.TaxCode;// "IVA-13";
+                                clientEntrega.Lines.TaxOnly = BoYesNoEnum.tNO;
+                                clientEntrega.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
+                                clientEntrega.Lines.Add();
+
+
+                                iE++;
+                            }
+
+                            var respuestaE = clientEntrega.Add();
+
+                            if (respuestaE == 0)
+                            {
+
+                                var EncMovimientoEntrega = EncMovimiento;
+                                EncMovimientoEntrega.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                EncMovimientoEntrega.TipoMovimiento = 2;
+                                EncMovimientoEntrega.Descuento = 0;
+                                EncMovimientoEntrega.Impuestos = 0;
+                                EncMovimientoEntrega.Subtotal = 0;
+                                EncMovimientoEntrega.PorDescuento = 0;
+                                EncMovimientoEntrega.TotalComprobante = 0;
+                                EncMovimientoEntrega.Comentarios = "Esta es la entrega de los productos por garantia";
+                                db.EncMovimiento.Add(EncMovimientoEntrega);
+                                db.SaveChanges();
+
+                                foreach(var item in DetalleSAPEntrega)
+                                {
+                                    item.idEncabezado = EncMovimientoEntrega.id;
+
+                                    db.DetMovimiento.Add(item);
+                                    db.SaveChanges();
+
+
+                                    db.Entry(EncMovimientoEntrega).State = EntityState.Modified;
+
+                                    EncMovimientoEntrega.Descuento += item.Descuento;
+                                    EncMovimientoEntrega.Impuestos += item.Impuestos;
+                                    EncMovimientoEntrega.Subtotal += item.TotalLinea - item.Impuestos;
+                                    EncMovimientoEntrega.PorDescuento += item.PorDescuento;
+                                    EncMovimientoEntrega.TotalComprobante += item.TotalLinea;
+                               
+                                    db.SaveChanges();
+                                }
+
+
+
+
+                               
+                                var idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
+                                if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
+                                {
+                                    if (client2.Expenses.Count > 0)
+                                    {
+                                        client2.Expenses.Add();
+                                    }
+                                    client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Delivery;
+                                    client2.Expenses.DocumentNumber = idEntry;
+                                    client2.Expenses.DocEntry = idEntry;
+
+                                    if (client2.Expenses.Count == 0)
+                                    {
+                                        client2.Expenses.Add();
+                                    }
+                                    client2.Expenses.Add();
+                                    var respuesta2 = client2.Update();
+                                    if (respuesta2 == 0)
+                                    {
+                                        Conexion.Desconectar();
+                                    }
+                                    else
+                                    {
+                                        BitacoraErrores be = new BitacoraErrores();
+
+                                        be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                        be.StackTrace = "Llamada de Servicio - Actualizar";
+                                        be.Fecha = DateTime.Now;
+
+                                        db.BitacoraErrores.Add(be);
+                                        db.SaveChanges();
+                                        Conexion.Desconectar();
+                                        throw new Exception(be.Descripcion);
+
+                                    }
+                                }
+
+                                Conexion.Desconectar();
+
+
+
+                                ////Enviar Correo
+                                ///
+                                try
+                                {
+                                    var EmailDestino = "";
+                                    Parametros parametros = db.Parametros.FirstOrDefault();
+                                    var CorreoEnvio = db.CorreoEnvio.FirstOrDefault();
+                                    var conexion = g.DevuelveCadena(db);
+
+                                    var SQL = parametros.HtmlLlamada + "'" + EncMovimiento.CardCode + "'";
+
+                                    SqlConnection Cn = new SqlConnection(conexion);
+                                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                    DataSet Ds = new DataSet();
+                                    Cn.Open();
+                                    Da.Fill(Ds, "Encabezado");
+
+                                    List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
+                                    html Html = new html();
+                                    var bodyH = Html.textoEntrega;
+                                    bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
+                                    bodyH = bodyH.Replace("@Telefono", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
+                                    bodyH = bodyH.Replace("@Celular", "      ");
+                                    bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
+                                    bodyH = bodyH.Replace("@NumBoleta", EncMovimiento.NumLlamada);
+
+
+                                    bodyH = bodyH.Replace("@Fecha", EncMovimiento.Fecha.ToString("dd/MM/yyyy"));
+                                    EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
+
+                                    bodyH = bodyH.Replace("@NumContacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
+
+                                    bodyH = bodyH.Replace("@SubTotal", EncMovimiento.Subtotal.ToString());
+                                    bodyH = bodyH.Replace("@Descuento", EncMovimiento.Descuento.ToString());
+                                    bodyH = bodyH.Replace("@Impuestos", EncMovimiento.Impuestos.ToString());
+                                    bodyH = bodyH.Replace("@TotalEntrega", EncMovimiento.TotalComprobante.ToString());
+
+
+
+                                    Cn.Close();
+                                    Cn.Dispose();
+
+                                    var inyectado = "";
+                                    var z = 0;
+                                    var top1 = 454;
+                                    var top2 = 453;
+
+
+                                    foreach (var item in DetalleSAP)
+                                    {
+                                        if (z == 0)
+                                        {
+                                            inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+
+                                        }
+                                        else
+                                        {
+                                            top1 += 23;
+                                            top2 += 23;
+                                            inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+                                        }
+
+
+                                        z++;
+                                    }
+                                    bodyH = bodyH.Replace("@Inyectado", inyectado);
+
+
+
+
+
+                                    HtmlToPdf converter = new HtmlToPdf();
+
+                                    // set converter options
+                                    converter.Options.PdfPageSize = PdfPageSize.A4;
+                                    converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
+                                    converter.Options.MarginLeft = 5;
+                                    converter.Options.MarginRight = 5;
+
+                                    // create a new pdf document converting an html string
+                                    SelectPdf.PdfDocument doc = converter.ConvertHtmlString(bodyH);
+
+                                    var bytes = doc.Save();
+                                    doc.Close();
+
+                                    System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Entrega_Mercaderia.pdf");
+                                    adjuntos.Add(att3);
+
+                                    var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                                    var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
+                                    var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
+                                    var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
+                                    var ui = 1;
+                                    foreach (var det in Adjuntos)
+                                    {
+
+                                        {
+                                            System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(det.base64), ui.ToString() + ".png");
+                                            adjuntos.Add(att2);
+                                            ui++;
+                                        }
+                                    }
+
+
+                                    var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail, "Entrega de Mercaderia", "Entrega de Producto", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Entrega Mercaderia</h1> <p> En el presente correo se le hace el envio de la entrega de mercaderia, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+
+                                    g.GuardarTxt("html.txt", bodyH);
+
+                                    if (!resp)
+                                    {
+                                        throw new Exception("No se ha podido enviar el correo con la entrega");
+                                    }
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    BitacoraErrores be = new BitacoraErrores();
+
+                                    be.Descripcion = ex.Message;
+                                    be.StackTrace = ex.StackTrace;
+                                    be.Fecha = DateTime.Now;
+
+                                    db.BitacoraErrores.Add(be);
+                                    db.SaveChanges();
+                                }
+
+
+                            }
+                            else
+                            {
+                                BitacoraErrores be = new BitacoraErrores();
+
+                                be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                be.StackTrace = "Movimientos";
+                                be.Fecha = DateTime.Now;
+
+                                db.BitacoraErrores.Add(be);
+                                db.SaveChanges();
+                                Conexion.Desconectar();
+                            }
+                        }
+
                     }
                     else
                     {
@@ -694,21 +968,21 @@ namespace WATickets.Controllers
                         client.HandWritten = BoYesNoEnum.tNO;
                         client.NumAtCard = EncMovimiento.NumLlamada; //orderid               
                         client.ReserveInvoice = BoYesNoEnum.tNO;
-                        client.Series = 3; //3 quemado
+                        client.Series = Parametros.SerieEntrega;//3; //3 quemado
                         client.Comments = EncMovimiento.Comentarios; //direccion
                         client.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
 
                         client.DocumentsOwner = Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
                         client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
 
-                        var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id).ToList();
+                        var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).ToList();
                         var i = 0;
                         foreach (var item in DetalleSAP)
                         {
                             client.Lines.SetCurrentLine(i);
                             client.Lines.CostingCode = "";
                             client.Lines.CostingCode2 = "";
-                            client.Lines.CostingCode3 = "TA-01";
+                            client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                             client.Lines.CostingCode4 = "";
                             client.Lines.CostingCode5 = "";
                             client.Lines.Currency = "COL";
@@ -717,7 +991,7 @@ namespace WATickets.Controllers
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = "IVA-13";
+                            client.Lines.TaxCode = Parametros.TaxCode;// "IVA-13";
                             client.Lines.TaxOnly = BoYesNoEnum.tNO;
                             client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
                             client.Lines.Add();

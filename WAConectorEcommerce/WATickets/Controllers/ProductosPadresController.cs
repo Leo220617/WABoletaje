@@ -285,20 +285,24 @@ namespace WATickets.Controllers
 
                 var Prod = db.ProductosPadres.Where(a => a.id == coleccion.ProductosPadres.id).FirstOrDefault();
 
-                        var Hijo = db.ProductosHijos.ToList();
+                var Hijo = db.ProductosHijos.ToList();
                 if (Prod != null)
                 {
-
+                    //Se borran
                     var HijosAnteriores = Hijo.Where(a => a.idPadre == Prod.id).ToList();
-
+                    var HijAnterios = db.PadresHijosProductos.Where(a => a.idProductoPadre == Prod.id).ToList();
                     for (int i = 0; i < HijosAnteriores.Count(); i++)
                     {
-
                         var HJa = Hijo.Where(a => a.id == HijosAnteriores[i].id).FirstOrDefault();
                         db.Entry(HJa).State = EntityState.Modified;
                         HJa.idPadre = 0;
                         HJa.Cantidad = 0;
                         db.SaveChanges();
+                    }
+
+                    foreach(var item in HijAnterios)
+                    {
+                        db.PadresHijosProductos.Remove(item);
                     }
 
 
@@ -311,6 +315,14 @@ namespace WATickets.Controllers
                         HJ.idPadre = Prod.id;
                         HJ.Cantidad = coleccion.ProductosHijos[i].Cantidad;
                         db.SaveChanges();
+
+                        var ProductoHijo = new PadresHijosProductos();
+                        ProductoHijo.idProductoPadre = Prod.id;
+                        ProductoHijo.idProductoHijo = HJ.id;
+                        ProductoHijo.Cantidad = coleccion.ProductosHijos[i].Cantidad;
+                        db.PadresHijosProductos.Add(ProductoHijo);
+                        db.SaveChanges();
+
                     }
 
                     

@@ -40,6 +40,8 @@ namespace WATickets.Models.Cliente
         public virtual DbSet<BackOffice> BackOffice { get; set; }
         public virtual DbSet<EncMovimiento> EncMovimiento { get; set; }
         public virtual DbSet<DetMovimiento> DetMovimiento { get; set; }
+        public virtual DbSet<PadresHijosProductos> PadresHijosProductos { get; set; }
+
 
 
 
