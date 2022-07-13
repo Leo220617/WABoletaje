@@ -22,6 +22,7 @@ namespace WATickets.Models
         public decimal Impuestos { get; set; }
         public decimal TotalComprobante { get; set; }
         public bool Generar { get; set; }
+        public string Moneda { get; set; }
         public DetMovimiento[] Detalle { get; set; }
     }
 }

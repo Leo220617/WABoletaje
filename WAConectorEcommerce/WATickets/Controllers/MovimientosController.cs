@@ -443,6 +443,7 @@ namespace WATickets.Controllers
                     EncMovimiento.PorDescuento = encMovimiento.PorDescuento;
                     EncMovimiento.TotalComprobante = encMovimiento.TotalComprobante;
                     EncMovimiento.Comentarios = encMovimiento.Comentarios;
+                    EncMovimiento.Moneda = encMovimiento.Moneda;
                     db.SaveChanges();
 
 
@@ -477,7 +478,7 @@ namespace WATickets.Controllers
                         var client = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oQuotations);
                         client.DocObjectCode = BoObjectTypes.oQuotations;
                         client.CardCode = EncMovimiento.CardCode;
-                        client.DocCurrency =   "COL";
+                        client.DocCurrency = EncMovimiento.Moneda; // "COL";
                         client.DocDate = EncMovimiento.Fecha; //listo
                         client.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
                         client.DocNum = 0; //automatico
@@ -689,7 +690,7 @@ namespace WATickets.Controllers
                             var clientEntrega = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
                             clientEntrega.DocObjectCode = BoObjectTypes.oDeliveryNotes;
                             clientEntrega.CardCode = EncMovimiento.CardCode;
-                            clientEntrega.DocCurrency = "COL";
+                            clientEntrega.DocCurrency = EncMovimiento.Moneda; //"COL";
                             clientEntrega.DocDate = EncMovimiento.Fecha; //listo
                             clientEntrega.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
                             clientEntrega.DocNum = 0; //automatico
@@ -714,7 +715,7 @@ namespace WATickets.Controllers
                                 clientEntrega.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                                 clientEntrega.Lines.CostingCode4 = "";
                                 clientEntrega.Lines.CostingCode5 = "";
-                                clientEntrega.Lines.Currency = "COL";
+                                clientEntrega.Lines.Currency = EncMovimiento.Moneda; //"COL";
                                 clientEntrega.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
                                 clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                                 clientEntrega.Lines.ItemCode = item.ItemCode;
@@ -765,10 +766,21 @@ namespace WATickets.Controllers
                                     db.SaveChanges();
                                 }
 
+                                //Aqui se descuenta en la oferta los totales
+                                    //db.Entry(EncMovimiento).State = EntityState.Modified;
+
+                                    //EncMovimiento.Descuento -= EncMovimientoEntrega.Descuento;
+                                    //EncMovimiento.Impuestos -= EncMovimientoEntrega.Impuestos;
+                                    //EncMovimiento.Subtotal -= EncMovimientoEntrega.Subtotal;
+                                    //EncMovimiento.PorDescuento -= EncMovimientoEntrega.PorDescuento;
+                                    //EncMovimiento.TotalComprobante -= EncMovimientoEntrega.TotalComprobante;
+
+                                    //db.SaveChanges();
+
+                                ///----
 
 
 
-                               
                                 var idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
                                 var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
                                 if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
@@ -835,8 +847,8 @@ namespace WATickets.Controllers
                                     bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                                     bodyH = bodyH.Replace("@Telefono", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
                                     bodyH = bodyH.Replace("@Celular", "      ");
-                                    bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
-                                    bodyH = bodyH.Replace("@NumBoleta", EncMovimiento.NumLlamada);
+                                    bodyH = bodyH.Replace("@DocEntry", EncMovimientoEntrega.DocEntry.ToString());
+                                    bodyH = bodyH.Replace("@NumBoleta", EncMovimientoEntrega.NumLlamada);
 
 
                                     bodyH = bodyH.Replace("@Fecha", EncMovimiento.Fecha.ToString("dd/MM/yyyy"));
@@ -844,10 +856,10 @@ namespace WATickets.Controllers
 
                                     bodyH = bodyH.Replace("@NumContacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
 
-                                    bodyH = bodyH.Replace("@SubTotal", EncMovimiento.Subtotal.ToString());
-                                    bodyH = bodyH.Replace("@Descuento", EncMovimiento.Descuento.ToString());
-                                    bodyH = bodyH.Replace("@Impuestos", EncMovimiento.Impuestos.ToString());
-                                    bodyH = bodyH.Replace("@TotalEntrega", EncMovimiento.TotalComprobante.ToString());
+                                    bodyH = bodyH.Replace("@SubTotal", EncMovimientoEntrega.Subtotal.ToString());
+                                    bodyH = bodyH.Replace("@Descuento", EncMovimientoEntrega.Descuento.ToString());
+                                    bodyH = bodyH.Replace("@Impuestos", EncMovimientoEntrega.Impuestos.ToString());
+                                    bodyH = bodyH.Replace("@TotalEntrega", EncMovimientoEntrega.TotalComprobante.ToString());
 
 
 
@@ -860,7 +872,7 @@ namespace WATickets.Controllers
                                     var top2 = 453;
 
 
-                                    foreach (var item in DetalleSAP)
+                                    foreach (var item in DetalleSAPEntrega)
                                     {
                                         if (z == 0)
                                         {
@@ -960,7 +972,7 @@ namespace WATickets.Controllers
                         var client = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
                         client.DocObjectCode = BoObjectTypes.oDeliveryNotes;
                         client.CardCode = EncMovimiento.CardCode;
-                        client.DocCurrency = "COL";
+                        client.DocCurrency = EncMovimiento.Moneda; //"COL";
                         client.DocDate = EncMovimiento.Fecha; //listo
                         client.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
                         client.DocNum = 0; //automatico
@@ -985,7 +997,7 @@ namespace WATickets.Controllers
                             client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                             client.Lines.CostingCode4 = "";
                             client.Lines.CostingCode5 = "";
-                            client.Lines.Currency = "COL";
+                            client.Lines.Currency = EncMovimiento.Moneda; //"COL";
                             client.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                             client.Lines.ItemCode = item.ItemCode;
@@ -1202,7 +1214,45 @@ namespace WATickets.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("api/Movimientos/Eliminar")]
+        public HttpResponseMessage Delete([FromUri] int id)
+        {
+            var t = db.Database.BeginTransaction();
+            try
+            {
 
+
+                var EncMovimiento = db.EncMovimiento.Where(a => a.id == id).FirstOrDefault();
+
+                if (EncMovimiento != null)
+                {
+
+                    var Detalles = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id).ToList();
+
+                    foreach(var item in Detalles)
+                    {
+                        db.DetMovimiento.Remove(item);
+                        db.SaveChanges();
+                    }
+
+                    db.EncMovimiento.Remove(EncMovimiento);
+                    db.SaveChanges();
+                    t.Commit();
+                }
+                else
+                {
+                    throw new Exception("EncMovimmiento no existe");
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                t.Rollback();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
 
     }
 }

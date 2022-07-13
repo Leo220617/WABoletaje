@@ -303,6 +303,7 @@ namespace WATickets.Controllers
                     foreach(var item in HijAnterios)
                     {
                         db.PadresHijosProductos.Remove(item);
+                        db.SaveChanges();
                     }
 
 

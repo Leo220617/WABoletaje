@@ -424,10 +424,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/17/2021 22:30:53</publishTime>
     </File>
     <File Include="bin/WATickets.dll">
-      <publishTime>06/29/2022 12:07:41</publishTime>
+      <publishTime>07/12/2022 11:08:36</publishTime>
     </File>
     <File Include="bin/WATickets.pdb">
-      <publishTime>06/29/2022 12:07:41</publishTime>
+      <publishTime>07/12/2022 11:08:36</publishTime>
     </File>
     <File Include="bin/WebGrease.dll">
       <publishTime>09/17/2021 23:44:39</publishTime>

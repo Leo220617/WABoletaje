@@ -119,8 +119,8 @@ namespace WATickets.Controllers
         }
         //Reenviar correo
         [HttpGet]
-        [Route("api/LlamadasServicio/Correo")]
-        public HttpResponseMessage GeCorreo([FromUri]int id)
+        [Route("api/LlamadasServicio/Reenvio")]
+        public HttpResponseMessage GeCorreo([FromUri]int id, string correo)
         {
             try
             {
@@ -212,9 +212,20 @@ namespace WATickets.Controllers
 
                     System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Contrato_Servicio.pdf");
                     adjuntos.Add(att3);
+                    var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
+                    var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
+                    var ui = 1;
+                    foreach (var det in Adjuntos)
+                    {
 
 
-                    var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail, "Contrato de Servicio", "Contrato de Servicio para el cliente", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Contrato de servicio</h1> <p> En el presente correo se le hace entrega del contrato de servicio, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+                        System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(det.base64), ui.ToString() + ".png");
+                        adjuntos.Add(att2);
+                        ui++;
+
+                    }
+
+                    var resp = G.SendV2(EmailDestino + ";" + correo, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail, "Contrato de Servicio", "Contrato de Servicio para el cliente", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Contrato de servicio</h1> <p> En el presente correo se le hace entrega del contrato de servicio, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
 
                     if (!resp)
                     {
@@ -246,7 +257,7 @@ namespace WATickets.Controllers
 
 
         [HttpPost]
-        public HttpResponseMessage Post([FromBody] LlamadasServicios llamada)
+        public HttpResponseMessage Post([FromBody] LlamadasServicioViewModel llamada)
         {
             try
             {
@@ -298,7 +309,16 @@ namespace WATickets.Controllers
                         db.EncReparacion.Add(enc);
                         db.SaveChanges();
 
+                        foreach (var item in llamada.Adjuntos)
+                        {
+                            Adjuntos adjunto = new Adjuntos();
+                            adjunto.idEncabezado = enc.id;
 
+                            byte[] hex = Convert.FromBase64String(item.base64.Replace("data:image/jpeg;base64,", "").Replace("data:image/png;base64,", ""));
+                            adjunto.base64 = hex;
+                            db.Adjuntos.Add(adjunto);
+                            db.SaveChanges();
+                        }
                     }
                     catch (Exception ex3)
                     {
@@ -513,6 +533,18 @@ namespace WATickets.Controllers
                     System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Contrato_Servicio.pdf");
                     adjuntos.Add(att3);
 
+                    var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
+                    var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
+                    var ui = 1;
+                    foreach (var det in Adjuntos)
+                    {
+
+                        
+                            System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(det.base64), ui.ToString() + ".png");
+                            adjuntos.Add(att2);
+                            ui++;
+                        
+                    }
 
                     var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail,"Contrato de Servicio", "Contrato de Servicio para el cliente", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Contrato de servicio</h1> <p> En el presente correo se le hace entrega del contrato de servicio, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
 

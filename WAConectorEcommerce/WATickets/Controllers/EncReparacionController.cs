@@ -348,23 +348,31 @@ namespace WATickets.Controllers
                                     var itemCode = item2.ItemCode.Split('|')[0].ToString().Trim();
                                     var itemName = item2.ItemCode.Split('|')[1].ToString().Trim();
                                     var Item = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id && a.ItemCode == itemCode).FirstOrDefault();
+                                    var EntregasPrevias = db.EncMovimiento.Where(a => a.NumLlamada == encMovimiento.NumLlamada && a.Comentarios.ToUpper().Contains("entrega de los productos por garantia".ToUpper())).FirstOrDefault();
+                                    var DetEntregasprevias = EntregasPrevias == null ? new List<DetMovimiento>() : db.DetMovimiento.Where(a => a.idEncabezado == EntregasPrevias.id).ToList();
+
                                     if (Item == null) //Si no existe el articulo en el detalle
                                     {
-                                        DetMovimiento detMovimiento = new DetMovimiento();
-                                        detMovimiento.idEncabezado = encMovimiento.id;
-                                        detMovimiento.NumLinea = 1;
-                                        detMovimiento.ItemCode = itemCode;
-                                        detMovimiento.ItemName = itemName;
-                                        detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
-                                        detMovimiento.Cantidad = item2.Cantidad;
-                                        detMovimiento.PorDescuento = 0;
-                                        detMovimiento.Descuento = 0;
-                                        detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
-                                        detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
-                                        detMovimiento.idError = item2.idError;
-                                        detMovimiento.Garantia = false;
-                                        db.DetMovimiento.Add(detMovimiento);
-                                        db.SaveChanges();
+                                        var ExisteEntrega = DetEntregasprevias.Where(a => a.ItemCode == itemCode).FirstOrDefault() == null;
+                                        if (ExisteEntrega)
+                                        {
+                                            DetMovimiento detMovimiento = new DetMovimiento();
+                                            detMovimiento.idEncabezado = encMovimiento.id;
+                                            detMovimiento.NumLinea = 1;
+                                            detMovimiento.ItemCode = itemCode;
+                                            detMovimiento.ItemName = itemName;
+                                            detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                            detMovimiento.Cantidad = item2.Cantidad;
+                                            detMovimiento.PorDescuento = 0;
+                                            detMovimiento.Descuento = 0;
+                                            detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                            detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
+                                            detMovimiento.idError = item2.idError;
+                                            detMovimiento.Garantia = false;
+                                            db.DetMovimiento.Add(detMovimiento);
+                                            db.SaveChanges();
+                                        }
+                                           
                                     }
                                     else //si si existe
                                     {
@@ -538,6 +546,8 @@ namespace WATickets.Controllers
                             dbt.idError = item.idError;
                             db.DetBitacoraMovimientos.Add(dbt);
                             db.SaveChanges();
+
+                           
                         }
 
 
@@ -547,8 +557,14 @@ namespace WATickets.Controllers
                         Encabezado.BodegaFinal = "0";
                         db.SaveChanges();
 
+                        var DetallesRemover = db.DetReparacion.Where(a => a.idEncabezado == coleccion.EncReparacion.id).ToList();
 
-                      
+                        foreach (var item in DetallesRemover)
+                        {
+                            db.DetReparacion.Remove(item);
+                            db.SaveChanges();
+                        }
+
                     }
                     catch (Exception ex)
                     {
@@ -634,23 +650,33 @@ namespace WATickets.Controllers
                                     var itemCode = item2.ItemCode.Split('|')[0].ToString().Trim();
                                     var itemName = item2.ItemCode.Split('|')[1].ToString().Trim();
                                     var Item = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id && a.ItemCode == itemCode).FirstOrDefault();
+                                    var EntregasPrevias = db.EncMovimiento.Where(a => a.NumLlamada == encMovimiento.NumLlamada && a.Comentarios.ToUpper().Contains("entrega de los productos por garantia".ToUpper())).FirstOrDefault();
+                                    var DetEntregasprevias = EntregasPrevias == null ? new List<DetMovimiento>() : db.DetMovimiento.Where(a => a.idEncabezado == EntregasPrevias.id).ToList();
+                                    
+
                                     if (Item == null) //Si no existe el articulo en el detalle
                                     {
-                                        DetMovimiento detMovimiento = new DetMovimiento();
-                                        detMovimiento.idEncabezado = encMovimiento.id;
-                                        detMovimiento.NumLinea = 1;
-                                        detMovimiento.ItemCode = itemCode;
-                                        detMovimiento.ItemName = itemName;
-                                        detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
-                                        detMovimiento.Cantidad = item2.Cantidad;
-                                        detMovimiento.PorDescuento = 0;
-                                        detMovimiento.Descuento = 0;
-                                        detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
-                                        detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
-                                        detMovimiento.idError = item2.idError;
-                                        detMovimiento.Garantia = false;
-                                        db.DetMovimiento.Add(detMovimiento);
-                                        db.SaveChanges();
+                                        var ExisteEntrega = DetEntregasprevias.Where(a => a.ItemCode == itemCode).FirstOrDefault() == null;
+                                        if(ExisteEntrega)
+                                        {
+                                            DetMovimiento detMovimiento = new DetMovimiento();
+                                            detMovimiento.idEncabezado = encMovimiento.id;
+                                            detMovimiento.NumLinea = 1;
+                                            detMovimiento.ItemCode = itemCode;
+                                            detMovimiento.ItemName = itemName;
+                                            detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                            detMovimiento.Cantidad = item2.Cantidad;
+                                            detMovimiento.PorDescuento = 0;
+                                            detMovimiento.Descuento = 0;
+                                            detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                            detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
+                                            detMovimiento.idError = item2.idError;
+                                            detMovimiento.Garantia = false;
+                                            db.DetMovimiento.Add(detMovimiento);
+                                            db.SaveChanges();
+                                        }
+
+                                        
                                     }
                                     else //si si existe
                                     {
@@ -716,6 +742,7 @@ namespace WATickets.Controllers
                                 encMovimiento.Descuento = MovimientosDetalles.Sum(a => a.Descuento);
                                 encMovimiento.Impuestos = MovimientosDetalles.Sum(a => a.Impuestos);
                                 encMovimiento.TotalComprobante = MovimientosDetalles.Sum(a => a.TotalLinea);
+                                
                                 db.SaveChanges();
                             }
                                 
@@ -725,7 +752,9 @@ namespace WATickets.Controllers
                         {
                             throw new Exception("Ya existe un movimiento de Oferta de Venta ");
                         }
-
+                        db.Entry(Encabezado).State = EntityState.Modified;
+                        Encabezado.TipoReparacion = 0;
+                        db.SaveChanges();
                     }
                     catch (Exception ex)
                     {
