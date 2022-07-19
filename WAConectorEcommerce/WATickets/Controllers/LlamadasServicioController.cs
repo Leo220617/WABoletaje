@@ -862,35 +862,7 @@ namespace WATickets.Controllers
 
 
                             Conexion.Desconectar();
-
-                            //try
-                            //{
-                            //    EncReparacion enc = new EncReparacion();
-                            //    enc.idLlamada = Llamada.id;
-                            //    enc.idTecnico = Llamada.Tecnico.Value;
-                            //    enc.FechaCreacion = DateTime.Now;
-                            //    enc.FechaModificacion = new DateTime();
-                            //    enc.idProductoArreglar = Llamada.ItemCode;
-                            //    enc.TipoReparacion = 0;
-                            //    enc.Status = 0;
-                            //    enc.ProcesadaSAP = false;
-                            //    db.EncReparacion.Add(enc);
-                            //    db.SaveChanges();
-
-
-                            //}
-                            //catch (Exception ex3)
-                            //{
-
-                            //    BitacoraErrores be = new BitacoraErrores();
-
-                            //    be.Descripcion = ex3.Message;
-                            //    be.StackTrace = ex3.StackTrace;
-                            //    be.Fecha = DateTime.Now;
-
-                            //    db.BitacoraErrores.Add(be);
-                            //    db.SaveChanges();
-                            //}
+ 
                         }
                         else
                         {
