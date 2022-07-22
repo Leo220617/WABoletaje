@@ -47,6 +47,7 @@ namespace WATickets.Controllers
                     a.Comentarios,
                     a.BodegaOrigen,
                     a.BodegaFinal,
+                  
                     Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
                     Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList()
                 })

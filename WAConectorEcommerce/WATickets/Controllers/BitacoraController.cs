@@ -31,9 +31,6 @@ namespace WATickets.Controllers
 
                 var Bitacora = db.BitacoraErrores.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)).ToList();
 
-              
-
-
 
                 return Request.CreateResponse(HttpStatusCode.OK, Bitacora);
 

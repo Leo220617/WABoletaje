@@ -503,7 +503,7 @@ namespace WATickets.Controllers
                             client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                             client.Lines.CostingCode4 = "";
                             client.Lines.CostingCode5 = "";
-                            client.Lines.Currency = "COL";
+                            client.Lines.Currency = EncMovimiento.Moneda;
                             client.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                             client.Lines.ItemCode = item.ItemCode;
@@ -534,140 +534,140 @@ namespace WATickets.Controllers
 
                             ////Enviar Correo
                             ///
-                            try
-                            {
-                                var EmailDestino = "";
-                                Parametros parametros = db.Parametros.FirstOrDefault();
-                                var CorreoEnvio = db.CorreoEnvio.FirstOrDefault();
-                                var conexion = g.DevuelveCadena(db);
+                            //try
+                            //{
+                            //    var EmailDestino = "";
+                            //    Parametros parametros = db.Parametros.FirstOrDefault();
+                            //    var CorreoEnvio = db.CorreoEnvio.FirstOrDefault();
+                            //    var conexion = g.DevuelveCadena(db);
 
-                                var SQL = parametros.HtmlLlamada + "'" + EncMovimiento.CardCode + "'";
+                            //    var SQL = parametros.HtmlLlamada + "'" + EncMovimiento.CardCode + "'";
 
-                                SqlConnection Cn = new SqlConnection(conexion);
-                                SqlCommand Cmd = new SqlCommand(SQL, Cn);
-                                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
-                                DataSet Ds = new DataSet();
-                                Cn.Open();
-                                Da.Fill(Ds, "Encabezado");
+                            //    SqlConnection Cn = new SqlConnection(conexion);
+                            //    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                            //    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                            //    DataSet Ds = new DataSet();
+                            //    Cn.Open();
+                            //    Da.Fill(Ds, "Encabezado");
 
-                                List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
-                                html Html = new html();
-                                var bodyH = Html.textoOferta;
-                                bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString()); 
-                                bodyH = bodyH.Replace("@NombreCliente2", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
-                                bodyH = bodyH.Replace("@Email", Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString());
+                            //    List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
+                            //    html Html = new html();
+                            //    var bodyH = Html.textoOferta;
+                            //    bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString()); 
+                            //    bodyH = bodyH.Replace("@NombreCliente2", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
+                            //    bodyH = bodyH.Replace("@Email", Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString());
 
                                 
-                                 bodyH = bodyH.Replace("@TelefonoCliente", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
+                            //     bodyH = bodyH.Replace("@TelefonoCliente", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
                                 
-                                bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
+                            //    bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
                              
 
 
-                                bodyH = bodyH.Replace("@Fecha", EncMovimiento.Fecha.ToString("dd/MM/yyyy"));
-                                EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
+                            //    bodyH = bodyH.Replace("@Fecha", EncMovimiento.Fecha.ToString("dd/MM/yyyy"));
+                            //    EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
 
-                                bodyH = bodyH.Replace("@PorDesc", EncMovimiento.PorDescuento.ToString());
+                            //    bodyH = bodyH.Replace("@PorDesc", EncMovimiento.PorDescuento.ToString());
 
-                                bodyH = bodyH.Replace("@Subtotal", EncMovimiento.Subtotal.ToString());
-                                bodyH = bodyH.Replace("@Descuento", EncMovimiento.Descuento.ToString());
-                                bodyH = bodyH.Replace("@Impuestos", EncMovimiento.Impuestos.ToString());
-                                bodyH = bodyH.Replace("@Total", EncMovimiento.TotalComprobante.ToString());
+                            //    bodyH = bodyH.Replace("@Subtotal", EncMovimiento.Subtotal.ToString());
+                            //    bodyH = bodyH.Replace("@Descuento", EncMovimiento.Descuento.ToString());
+                            //    bodyH = bodyH.Replace("@Impuestos", EncMovimiento.Impuestos.ToString());
+                            //    bodyH = bodyH.Replace("@Total", EncMovimiento.TotalComprobante.ToString());
 
 
 
-                                Cn.Close();
-                                Cn.Dispose();
+                            //    Cn.Close();
+                            //    Cn.Dispose();
 
-                                var inyectado = "";
-                                var z = 0;
-                                var top1 = 290;
+                            //    var inyectado = "";
+                            //    var z = 0;
+                            //    var top1 = 290;
 
-                                var diagnosticos = "";
+                            //    var diagnosticos = "";
 
-                                foreach (var item in DetalleSAP)
-                                {
-                                    if (z == 0)
-                                    {
+                            //    foreach (var item in DetalleSAP)
+                            //    {
+                            //        if (z == 0)
+                            //        {
                                         
-                                        inyectado = Html.InyectadoOferta.Replace("@NumLinea", (z+1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
-                                        diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
-                                    }
-                                    else
-                                    {
-                                        top1 += 20;
+                            //            inyectado = Html.InyectadoOferta.Replace("@NumLinea", (z+1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
+                            //            diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
+                            //        }
+                            //        else
+                            //        {
+                            //            top1 += 20;
                                         
-                                        inyectado += Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
-                                        diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
+                            //            inyectado += Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
+                            //            diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
-                                    }
-
-
-                                    z++;
-                                }
-
-                                diagnosticos += EncMovimiento.Comentarios + "<br/>";
-                                bodyH = bodyH.Replace("@INYECTADO", inyectado);
+                            //        }
 
 
-                                bodyH = bodyH.Replace("@Diagnosticos", diagnosticos);
+                            //        z++;
+                            //    }
+
+                            //    diagnosticos += EncMovimiento.Comentarios + "<br/>";
+                            //    bodyH = bodyH.Replace("@INYECTADO", inyectado);
+
+
+                            //    bodyH = bodyH.Replace("@Diagnosticos", diagnosticos);
 
 
 
-                                HtmlToPdf converter = new HtmlToPdf();
+                            //    HtmlToPdf converter = new HtmlToPdf();
 
-                                // set converter options
-                                converter.Options.PdfPageSize = PdfPageSize.A4;
-                                converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
-                                converter.Options.MarginLeft = 5;
-                                converter.Options.MarginRight = 5;
+                            //    // set converter options
+                            //    converter.Options.PdfPageSize = PdfPageSize.A4;
+                            //    converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
+                            //    converter.Options.MarginLeft = 5;
+                            //    converter.Options.MarginRight = 5;
 
-                                // create a new pdf document converting an html string
-                                SelectPdf.PdfDocument doc = converter.ConvertHtmlString(bodyH);
+                            //    // create a new pdf document converting an html string
+                            //    SelectPdf.PdfDocument doc = converter.ConvertHtmlString(bodyH);
 
-                                var bytes = doc.Save();
-                                doc.Close();
+                            //    var bytes = doc.Save();
+                            //    doc.Close();
 
-                                System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Oferta_Venta.pdf");
-                                adjuntos.Add(att3);
+                            //    System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Oferta_Venta.pdf");
+                            //    adjuntos.Add(att3);
 
-                                var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
-                                var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
-                                var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
-                                var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
-                                var ui = 1;
-                                foreach (var det in Adjuntos)
-                                {
+                            //    var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                            //    var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
+                            //    var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
+                            //    var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
+                            //    var ui = 1;
+                            //    foreach (var det in Adjuntos)
+                            //    {
 
-                                    {
-                                        System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(det.base64), ui.ToString() + ".png");
-                                        adjuntos.Add(att2);
-                                        ui++;
-                                    }
-                                }
+                            //        {
+                            //            System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(det.base64), ui.ToString() + ".png");
+                            //            adjuntos.Add(att2);
+                            //            ui++;
+                            //        }
+                            //    }
 
 
-                                var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail, "Oferta de Venta", "Oferta de Venta", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Oferta de Venta</h1> <p> En el presente correo se le hace el envio de la ofeta de venta, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+                            //    var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail, "Oferta de Venta", "Oferta de Venta", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Oferta de Venta</h1> <p> En el presente correo se le hace el envio de la ofeta de venta, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
 
-                                g.GuardarTxt("html.txt", bodyH);
+                            //    g.GuardarTxt("html.txt", bodyH);
 
-                                if (!resp)
-                                {
-                                    throw new Exception("No se ha podido enviar el correo con la oferta de venta");
-                                }
+                            //    if (!resp)
+                            //    {
+                            //        throw new Exception("No se ha podido enviar el correo con la oferta de venta");
+                            //    }
 
-                            }
-                            catch (Exception ex)
-                            {
-                                BitacoraErrores be = new BitacoraErrores();
+                            //}
+                            //catch (Exception ex)
+                            //{
+                            //    BitacoraErrores be = new BitacoraErrores();
 
-                                be.Descripcion = ex.Message;
-                                be.StackTrace = ex.StackTrace;
-                                be.Fecha = DateTime.Now;
+                            //    be.Descripcion = ex.Message;
+                            //    be.StackTrace = ex.StackTrace;
+                            //    be.Fecha = DateTime.Now;
 
-                                db.BitacoraErrores.Add(be);
-                                db.SaveChanges();
-                            }
+                            //    db.BitacoraErrores.Add(be);
+                            //    db.SaveChanges();
+                            //}
 
                         }
                         else
@@ -766,19 +766,7 @@ namespace WATickets.Controllers
                                     db.SaveChanges();
                                 }
 
-                                //Aqui se descuenta en la oferta los totales
-                                    //db.Entry(EncMovimiento).State = EntityState.Modified;
-
-                                    //EncMovimiento.Descuento -= EncMovimientoEntrega.Descuento;
-                                    //EncMovimiento.Impuestos -= EncMovimientoEntrega.Impuestos;
-                                    //EncMovimiento.Subtotal -= EncMovimientoEntrega.Subtotal;
-                                    //EncMovimiento.PorDescuento -= EncMovimientoEntrega.PorDescuento;
-                                    //EncMovimiento.TotalComprobante -= EncMovimientoEntrega.TotalComprobante;
-
-                                    //db.SaveChanges();
-
-                                ///----
-
+                              
 
 
                                 var idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
@@ -852,7 +840,7 @@ namespace WATickets.Controllers
 
 
                                     bodyH = bodyH.Replace("@Fecha", EncMovimiento.Fecha.ToString("dd/MM/yyyy"));
-                                    EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
+                                    EmailDestino = db.CorreoEnvio.FirstOrDefault().RecepcionEmail;// Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
 
                                     bodyH = bodyH.Replace("@NumContacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
 
@@ -1063,130 +1051,130 @@ namespace WATickets.Controllers
 
                             ////Enviar Correo
                             ///
-                            try
-                            {
-                                var EmailDestino = "";
-                                Parametros parametros = db.Parametros.FirstOrDefault();
-                                var CorreoEnvio = db.CorreoEnvio.FirstOrDefault();
-                                var conexion = g.DevuelveCadena(db);
+                            //try
+                            //{
+                            //    var EmailDestino = "";
+                            //    Parametros parametros = db.Parametros.FirstOrDefault();
+                            //    var CorreoEnvio = db.CorreoEnvio.FirstOrDefault();
+                            //    var conexion = g.DevuelveCadena(db);
 
-                                var SQL = parametros.HtmlLlamada + "'" + EncMovimiento.CardCode + "'";
+                            //    var SQL = parametros.HtmlLlamada + "'" + EncMovimiento.CardCode + "'";
 
-                                SqlConnection Cn = new SqlConnection(conexion);
-                                SqlCommand Cmd = new SqlCommand(SQL, Cn);
-                                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
-                                DataSet Ds = new DataSet();
-                                Cn.Open();
-                                Da.Fill(Ds, "Encabezado");
+                            //    SqlConnection Cn = new SqlConnection(conexion);
+                            //    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                            //    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                            //    DataSet Ds = new DataSet();
+                            //    Cn.Open();
+                            //    Da.Fill(Ds, "Encabezado");
 
-                                List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
-                                html Html = new html();
-                                var bodyH = Html.textoEntrega;
-                                bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
-                                bodyH = bodyH.Replace("@Telefono", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
-                                bodyH = bodyH.Replace("@Celular", "      ");
-                                bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
-                                bodyH = bodyH.Replace("@NumBoleta", EncMovimiento.NumLlamada);
+                            //    List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
+                            //    html Html = new html();
+                            //    var bodyH = Html.textoEntrega;
+                            //    bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
+                            //    bodyH = bodyH.Replace("@Telefono", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
+                            //    bodyH = bodyH.Replace("@Celular", "      ");
+                            //    bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
+                            //    bodyH = bodyH.Replace("@NumBoleta", EncMovimiento.NumLlamada);
 
                                 
-                                bodyH = bodyH.Replace("@Fecha", EncMovimiento.Fecha.ToString("dd/MM/yyyy"));
-                                EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
+                            //    bodyH = bodyH.Replace("@Fecha", EncMovimiento.Fecha.ToString("dd/MM/yyyy"));
+                            //    EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
                                
-                                bodyH = bodyH.Replace("@NumContacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
+                            //    bodyH = bodyH.Replace("@NumContacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
 
-                                bodyH = bodyH.Replace("@SubTotal", EncMovimiento.Subtotal.ToString());
-                                bodyH = bodyH.Replace("@Descuento", EncMovimiento.Descuento.ToString());
-                                bodyH = bodyH.Replace("@Impuestos", EncMovimiento.Impuestos.ToString());
-                                bodyH = bodyH.Replace("@TotalEntrega", EncMovimiento.TotalComprobante.ToString());
-
-
-
-                                Cn.Close();
-                                Cn.Dispose();
-
-                                    var inyectado = "";
-                                var z = 0;
-                                var top1 = 454;
-                                var top2 = 453;
+                            //    bodyH = bodyH.Replace("@SubTotal", EncMovimiento.Subtotal.ToString());
+                            //    bodyH = bodyH.Replace("@Descuento", EncMovimiento.Descuento.ToString());
+                            //    bodyH = bodyH.Replace("@Impuestos", EncMovimiento.Impuestos.ToString());
+                            //    bodyH = bodyH.Replace("@TotalEntrega", EncMovimiento.TotalComprobante.ToString());
 
 
-                                foreach (var item in DetalleSAP)
-                                {
-                                    if (z == 0)
-                                    {
-                                         inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+
+                            //    Cn.Close();
+                            //    Cn.Dispose();
+
+                            //        var inyectado = "";
+                            //    var z = 0;
+                            //    var top1 = 454;
+                            //    var top2 = 453;
+
+
+                            //    foreach (var item in DetalleSAP)
+                            //    {
+                            //        if (z == 0)
+                            //        {
+                            //             inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
                                          
-                                    }
-                                    else
-                                    {
-                                        top1 += 23;
-                                        top2 += 23;
-                                        inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
-                                    }
+                            //        }
+                            //        else
+                            //        {
+                            //            top1 += 23;
+                            //            top2 += 23;
+                            //            inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+                            //        }
 
 
-                                    z++;
-                                }
-                                        bodyH = bodyH.Replace("@Inyectado", inyectado); 
+                            //        z++;
+                            //    }
+                            //            bodyH = bodyH.Replace("@Inyectado", inyectado); 
 
 
 
 
 
-                                HtmlToPdf converter = new HtmlToPdf();
+                            //    HtmlToPdf converter = new HtmlToPdf();
 
-                                // set converter options
-                                converter.Options.PdfPageSize = PdfPageSize.A4;
-                                converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
-                                converter.Options.MarginLeft = 5;
-                                converter.Options.MarginRight = 5;
+                            //    // set converter options
+                            //    converter.Options.PdfPageSize = PdfPageSize.A4;
+                            //    converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
+                            //    converter.Options.MarginLeft = 5;
+                            //    converter.Options.MarginRight = 5;
 
-                                // create a new pdf document converting an html string
-                                SelectPdf.PdfDocument doc = converter.ConvertHtmlString(bodyH);
+                            //    // create a new pdf document converting an html string
+                            //    SelectPdf.PdfDocument doc = converter.ConvertHtmlString(bodyH);
 
-                                var bytes = doc.Save();
-                                doc.Close();
+                            //    var bytes = doc.Save();
+                            //    doc.Close();
 
-                                System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Entrega_Mercaderia.pdf");
-                                adjuntos.Add(att3);
+                            //    System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Entrega_Mercaderia.pdf");
+                            //    adjuntos.Add(att3);
 
-                                var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
-                                var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
-                                var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
-                                var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
-                                var ui = 1;
-                                foreach (var det in Adjuntos)
-                                {
+                            //    var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                            //    var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
+                            //    var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
+                            //    var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
+                            //    var ui = 1;
+                            //    foreach (var det in Adjuntos)
+                            //    {
                                     
-                                    {
-                                        System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(det.base64),ui.ToString() + ".png");
-                                        adjuntos.Add(att2);
-                                        ui++;
-                                    }
-                                }
+                            //        {
+                            //            System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(det.base64),ui.ToString() + ".png");
+                            //            adjuntos.Add(att2);
+                            //            ui++;
+                            //        }
+                            //    }
 
 
-                                var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail, "Entrega de Mercaderia", "Entrega de Producto", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Entrega Mercaderia</h1> <p> En el presente correo se le hace el envio de la entrega de mercaderia, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+                            //    var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail, "Entrega de Mercaderia", "Entrega de Producto", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Entrega Mercaderia</h1> <p> En el presente correo se le hace el envio de la entrega de mercaderia, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
 
-                                g.GuardarTxt("html.txt", bodyH);
+                            //    g.GuardarTxt("html.txt", bodyH);
 
-                                if (!resp)
-                                {
-                                    throw new Exception("No se ha podido enviar el correo con la entrega");
-                                }
+                            //    if (!resp)
+                            //    {
+                            //        throw new Exception("No se ha podido enviar el correo con la entrega");
+                            //    }
 
-                            }
-                            catch (Exception ex)
-                            {
-                                BitacoraErrores be = new BitacoraErrores();
+                            //}
+                            //catch (Exception ex)
+                            //{
+                            //    BitacoraErrores be = new BitacoraErrores();
 
-                                be.Descripcion = ex.Message;
-                                be.StackTrace = ex.StackTrace;
-                                be.Fecha = DateTime.Now;
+                            //    be.Descripcion = ex.Message;
+                            //    be.StackTrace = ex.StackTrace;
+                            //    be.Fecha = DateTime.Now;
 
-                                db.BitacoraErrores.Add(be);
-                                db.SaveChanges();
-                            }
+                            //    db.BitacoraErrores.Add(be);
+                            //    db.SaveChanges();
+                            //}
 
 
                         }
