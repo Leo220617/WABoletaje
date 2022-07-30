@@ -41,6 +41,8 @@ namespace WATickets.Models.Cliente
         public virtual DbSet<EncMovimiento> EncMovimiento { get; set; }
         public virtual DbSet<DetMovimiento> DetMovimiento { get; set; }
         public virtual DbSet<PadresHijosProductos> PadresHijosProductos { get; set; }
+        public virtual DbSet<CotizacionesAprobadas> CotizacionesAprobadas { get; set; }
+
 
 
 

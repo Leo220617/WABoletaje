@@ -746,8 +746,14 @@ namespace WATickets.Controllers
                                 
                                 db.SaveChanges();
                             }
-                                
 
+                            //Elimina todo lo que estaba pactado para cotizar
+                            var DetReparaciones = db.DetReparacion.Where(a => a.idEncabezado == coleccion.EncReparacion.id).ToList();
+                            foreach (var item in DetReparaciones)
+                            {
+                                db.DetReparacion.Remove(item);
+                                db.SaveChanges();
+                            }
                         }
                         else
                         {
@@ -772,6 +778,121 @@ namespace WATickets.Controllers
                 }
 
 
+                //Para generar una cotizacion BackOffice
+
+                if (Encabezado.TipoReparacion == 4)
+                {
+                    try
+                    {
+                        var Existe = true;//db.BackOffice.Where(a => a.idEncabezadoReparacion == Encabezado.id && a.TipoMovimiento == 1).FirstOrDefault() == null;
+
+                        if (Existe)
+                        {
+
+                            BackOffice backOffice = new BackOffice();
+                            backOffice.idEncabezadoReparacion = Encabezado.id;
+                            backOffice.idLlamada = Encabezado.idLlamada;
+                            backOffice.TipoMovimiento = 3;
+                            backOffice.Fecha = DateTime.Now;
+                            db.BackOffice.Add(backOffice);
+                            db.SaveChanges();
+
+                            EncMovimiento encMovimiento = new EncMovimiento();
+                            encMovimiento.CardCode = Llamada.CardCode;
+
+                            var conexion = g.DevuelveCadena(db);
+
+                            var SQL = Parametro.HtmlLlamada + "'" + Llamada.CardCode + "'";
+
+                            SqlConnection Cn = new SqlConnection(conexion);
+                            SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                            SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                            DataSet Ds = new DataSet();
+                            Cn.Open();
+                            Da.Fill(Ds, "Encabezado");
+                            encMovimiento.CardName = Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString();
+                            Cn.Close();
+                            Cn.Dispose();
+                            encMovimiento.NumLlamada = Llamada.DocEntry.Value.ToString();
+                            encMovimiento.Fecha = DateTime.Now;
+                            encMovimiento.TipoMovimiento = 3;
+                            encMovimiento.Comentarios = Encabezado.Comentarios;
+                            encMovimiento.CreadoPor = "0";
+                            encMovimiento.Subtotal = 0;
+                            encMovimiento.PorDescuento = 0;
+                            encMovimiento.Descuento = 0;
+                            encMovimiento.Impuestos = 0;
+                            encMovimiento.TotalComprobante = 0;
+                            encMovimiento.DocEntry = 0;
+
+                            db.EncMovimiento.Add(encMovimiento);
+                            db.SaveChanges();
+
+
+                             var DetReparaciones = db.DetReparacion.Where(a => a.idEncabezado == coleccion.EncReparacion.id).ToList();
+
+                            foreach(var item in DetReparaciones)
+                            {
+                                //Recorremos todas las entradas lo que sumaria la cantidad y generaria campos en detmovimientos
+                                var itemCode = item.ItemCode.Split('|')[0].ToString().Trim();
+                                var itemName = item.ItemCode.Split('|')[1].ToString().Trim();
+
+                                DetMovimiento detMovimiento = new DetMovimiento();
+                                detMovimiento.idEncabezado = encMovimiento.id;
+                                detMovimiento.NumLinea = 1;
+                                detMovimiento.ItemCode = itemCode;
+                                detMovimiento.ItemName = itemName;
+                                detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item.idProducto).FirstOrDefault().Precio;
+                                detMovimiento.Cantidad = item.Cantidad;
+                                detMovimiento.PorDescuento = 0;
+                                detMovimiento.Descuento = 0;
+                                detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
+                                detMovimiento.idError = item.idError;
+                                detMovimiento.Garantia = false;
+                                db.DetMovimiento.Add(detMovimiento);
+                                db.SaveChanges();
+                            }
+                                            
+                                var MovimientosDetalles = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).ToList();
+                                db.Entry(encMovimiento).State = EntityState.Modified;
+                                encMovimiento.Subtotal = MovimientosDetalles.Sum(a => a.Cantidad * a.PrecioUnitario);
+                                encMovimiento.Descuento = MovimientosDetalles.Sum(a => a.Descuento);
+                                encMovimiento.Impuestos = MovimientosDetalles.Sum(a => a.Impuestos);
+                                encMovimiento.TotalComprobante = MovimientosDetalles.Sum(a => a.TotalLinea);
+
+                                db.SaveChanges();
+
+                            
+                            //Elimina todo lo que estaba pactado para cotizar
+                            foreach (var item in DetReparaciones)
+                            {
+                                db.DetReparacion.Remove(item);
+                                db.SaveChanges();
+                            }
+
+                        }
+                        else
+                        {
+                            throw new Exception("Ya existe un movimiento de Oferta de Venta ");
+                        }
+                        db.Entry(Encabezado).State = EntityState.Modified;
+                        Encabezado.TipoReparacion = 0;
+                        db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        BitacoraErrores be = new BitacoraErrores();
+                        be.DocNum = Encabezado.id.ToString();
+                        be.Descripcion = ex.Message;
+                        be.StackTrace = ex.StackTrace;
+                        be.Fecha = DateTime.Now;
+
+                        db.BitacoraErrores.Add(be);
+                        db.SaveChanges();
+
+                    }
+                }
 
                 return Request.CreateResponse(HttpStatusCode.OK, coleccion);
             }

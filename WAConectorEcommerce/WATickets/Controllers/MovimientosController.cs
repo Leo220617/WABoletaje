@@ -25,6 +25,61 @@ namespace WATickets.Controllers
         G g = new G();
         ModelCliente db = new ModelCliente();
 
+        [Route("api/Movimientos/GenerarAprobacion")]
+        [HttpGet]
+        public HttpResponseMessage GetCorreo([FromUri]int id)
+        {
+            try
+            {///Alt + 125 }
+                var EncMovimiento = db.EncMovimiento.Where(a => a.id == id).FirstOrDefault();
+
+                if (EncMovimiento != null)
+                {
+                    var DetalleReparaciones = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id).ToList();
+                    var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                    var CotizacionesAnteriores = db.CotizacionesAprobadas.Where(a => a.idEncabezado == NumLlamada).ToList();
+                    if(CotizacionesAnteriores.Count() > 0)
+                    {
+                        foreach(var item in CotizacionesAnteriores)
+                        {
+                            db.CotizacionesAprobadas.Remove(item);
+                            db.SaveChanges();
+                        }
+                    }
+
+                    foreach(var item in DetalleReparaciones)
+                    {
+                        
+                        CotizacionesAprobadas coti = new CotizacionesAprobadas();
+                        coti.idEncabezado = Convert.ToInt32(EncMovimiento.NumLlamada);
+                        coti.ItemCode = item.ItemCode + " | "+ item.ItemName;
+                        coti.Cantidad = item.Cantidad;
+                        db.CotizacionesAprobadas.Add(coti);
+                        db.SaveChanges();
+                    }
+
+                }
+                else
+                {
+                    throw new Exception("No existe el encabezado");
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+
+            }
+            catch (Exception ex)
+            {
+                BitacoraErrores be = new BitacoraErrores();
+
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
 
         [Route("api/Movimientos/Reenvio")]
         [HttpGet]
