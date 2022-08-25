@@ -91,7 +91,7 @@ namespace WATickets.Controllers
 
                 if(EncMovimiento != null)
                 {
-                    if (EncMovimiento.TipoMovimiento == 1)
+                    if (EncMovimiento.TipoMovimiento == 1  || EncMovimiento.TipoMovimiento == 3)
                     {
                          
 
@@ -381,7 +381,13 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                BitacoraErrores be = new BitacoraErrores();
 
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -420,12 +426,54 @@ namespace WATickets.Controllers
 
                         ).ToList();
 
+                if(filtro.Codigo1 > 0)
+                {
+                    encMovimientos = encMovimientos.Where(a => a.TipoMovimiento == filtro.Codigo1).ToList();
+
+                }
+
+                //Si me estan filtrando por Status de la llamada
+                if (filtro.Codigo2 != 0)
+                {
+                    var Llamadas = db.LlamadasServicios.Where(a =>   a.Status != filtro.Codigo2).ToList();
+                    var ListadoReparacionesEnCero = encMovimientos.Where(a => a.NumLlamada == "0").ToList();
+
+                    foreach (var item in ListadoReparacionesEnCero)
+                    {
+                        encMovimientos.Remove(item);
+
+                    }
+
+
+                    foreach (var item in Llamadas)
+                    {
+                        var DocEntry = item.DocEntry.ToString();
+                        var EncReparacionSacar = encMovimientos.Where(a => a.NumLlamada == DocEntry).ToList();
+                        if (EncReparacionSacar != null)
+                        {
+                            foreach(var item2 in EncReparacionSacar)
+                            {
+                                encMovimientos.Remove(item2);
+
+                            }
+
+                        }
+                    }
+
+                }
+
                 return Request.CreateResponse(HttpStatusCode.OK, encMovimientos);
 
             }
             catch (Exception ex)
             {
+                BitacoraErrores be = new BitacoraErrores();
 
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -472,7 +520,13 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                BitacoraErrores be = new BitacoraErrores();
 
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -528,7 +582,7 @@ namespace WATickets.Controllers
 
                 if(encMovimiento.Generar)
                 {
-                    if(EncMovimiento.TipoMovimiento == 1 && db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).Count() > 0)
+                    if((EncMovimiento.TipoMovimiento == 1 || EncMovimiento.TipoMovimiento == 3) && db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).Count() > 0)
                     {
                         var client = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oQuotations);
                         client.DocObjectCode = BoObjectTypes.oQuotations;
@@ -544,8 +598,10 @@ namespace WATickets.Controllers
                         client.Series = Parametros.SerieOferta; //11; //11 quemado
                         client.Comments = EncMovimiento.Comentarios; //direccion
                         client.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
-
-                        client.DocumentsOwner = Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
+                        var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
+                        var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
+                        client.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico);
+                        //client.DocumentsOwner = Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
                         client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString() ;
 
                         var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).ToList();
@@ -756,8 +812,10 @@ namespace WATickets.Controllers
                             clientEntrega.Series = Parametros.SerieEntrega;//3; //3 quemado
                             clientEntrega.Comments = "Esta es la entrega de los productos por garantia"; //direccion
                             clientEntrega.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
-
-                            clientEntrega.DocumentsOwner = Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
+                            //var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
+                            //var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
+                            clientEntrega.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico);
+                            //clientEntrega.DocumentsOwner = Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
                             clientEntrega.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
 
                             var DetalleSAPEntrega = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).ToList();
@@ -1026,8 +1084,9 @@ namespace WATickets.Controllers
                         client.Series = Parametros.SerieEntrega;//3; //3 quemado
                         client.Comments = EncMovimiento.Comentarios; //direccion
                         client.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
-
-                        client.DocumentsOwner = Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
+                        var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
+                        var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
+                        client.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico); // Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
                         client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
 
                         var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).ToList();
@@ -1252,7 +1311,13 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                BitacoraErrores be = new BitacoraErrores();
 
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -1293,6 +1358,13 @@ namespace WATickets.Controllers
             catch (Exception ex)
             {
                 t.Rollback();
+                BitacoraErrores be = new BitacoraErrores();
+
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }

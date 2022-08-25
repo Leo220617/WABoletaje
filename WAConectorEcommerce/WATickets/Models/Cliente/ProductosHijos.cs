@@ -19,5 +19,7 @@ namespace WATickets.Models.Cliente
         public int Cantidad { get; set; }
         public decimal Precio { get; set; }
         public string Localizacion { get; set; }
+        public decimal Costo { get; set; }
+        public int PorMinimo { get; set; }
     }
 }

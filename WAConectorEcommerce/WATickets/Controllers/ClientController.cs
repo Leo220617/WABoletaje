@@ -44,7 +44,7 @@ namespace WATickets.Controllers
                     client.FederalTaxID = cliente.Cedula;
                     client.Currency = "##";
                     client.Phone1 = cliente.Telefono;
-
+                    client.CardType = BoCardTypes.cCustomer;
                     client.Addresses.Add();
                     client.Addresses.SetCurrentLine(0);
                     client.Addresses.AddressName = cliente.Direccion;

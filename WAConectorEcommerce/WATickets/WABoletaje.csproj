@@ -244,6 +244,7 @@
     <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\Conexion.cs" />
     <Compile Include="Controllers\ControlProductosController.cs" />
+    <Compile Include="Controllers\CotizacionesAprobadasController.cs" />
     <Compile Include="Controllers\DetReparacionController.cs" />
     <Compile Include="Controllers\DiagnosticosController.cs" />
     <Compile Include="Controllers\EncReparacionController.cs" />

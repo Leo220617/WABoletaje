@@ -69,13 +69,43 @@ namespace WATickets.Controllers
                     filtro.Codigo2--;
                     EncReparacion = EncReparacion.Where(a => a.Status == filtro.Codigo2).ToList();
                 }
+                //Si me estan filtrando por Status de la llamada
+                if(filtro.Codigo3 != 0)
+                {
+                    var Llamadas = db.LlamadasServicios.Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && a.Status != filtro.Codigo3 ).ToList();
+                    var ListadoReparacionesEnCero = EncReparacion.Where(a => a.idLlamada == 0).ToList() ;
+
+                    foreach(var item in ListadoReparacionesEnCero)
+                    {
+                        EncReparacion.Remove(item);
+
+                    }
+
+
+                    foreach (var item in Llamadas)
+                    {
+                        
+                        var EncReparacionSacar = EncReparacion.Where(a => a.idLlamada == item.DocEntry ).FirstOrDefault();
+                        if(EncReparacionSacar != null)
+                        {
+                            EncReparacion.Remove(EncReparacionSacar);
+                        }
+                    }
+
+                }
 
                 return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
 
             }
             catch (Exception ex)
             {
+                BitacoraErrores be = new BitacoraErrores();
 
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -118,7 +148,13 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                BitacoraErrores be = new BitacoraErrores();
 
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -898,7 +934,13 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                BitacoraErrores be = new BitacoraErrores();
 
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -929,7 +971,13 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                BitacoraErrores be = new BitacoraErrores();
 
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
 
             }

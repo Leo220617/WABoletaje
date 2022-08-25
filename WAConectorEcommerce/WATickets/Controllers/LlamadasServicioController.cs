@@ -212,12 +212,12 @@ namespace WATickets.Controllers
                     html Html = new html();
                     var bodyH = Html.texto;
                     bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
-                    bodyH = bodyH.Replace("@telefono", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
+                    bodyH = bodyH.Replace("@telefono",Llamada.NumeroPersonaContacto);
                     bodyH = bodyH.Replace("@celular", "      ");
-                    bodyH = bodyH.Replace("@email", Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString());
-                    EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
-                    bodyH = bodyH.Replace("@NombreContacto", Ds.Tables["Encabezado"].Rows[0]["Name"].ToString());
-                    bodyH = bodyH.Replace("@telcontacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
+                    bodyH = bodyH.Replace("@email", Llamada.EmailPersonaContacto);
+                    EmailDestino = Llamada.EmailPersonaContacto;
+                    bodyH = bodyH.Replace("@NombreContacto", Llamada.PersonaContacto);
+                    bodyH = bodyH.Replace("@telcontacto", Llamada.NumeroPersonaContacto);
 
                     Cn.Close();
                     Cn.Dispose();
@@ -346,6 +346,9 @@ namespace WATickets.Controllers
                     Llamada.FechaCreacion = DateTime.Now;
                     Llamada.Firma = !string.IsNullOrEmpty(llamada.Firma) ? llamada.Firma : "";
                     Llamada.Horas = llamada.Horas;
+                    Llamada.PersonaContacto = llamada.PersonaContacto;
+                    Llamada.EmailPersonaContacto = llamada.EmailPersonaContacto;
+                    Llamada.NumeroPersonaContacto = llamada.NumeroPersonaContacto;
                     db.LlamadasServicios.Add(Llamada);
                     db.SaveChanges();
 
@@ -655,113 +658,213 @@ namespace WATickets.Controllers
  
 
                     db.Entry(Llamada).State = EntityState.Modified;
-                    var client = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
-
-                    if(client.GetByKey(Llamada.DocEntry.Value))
+                    if (llamada.Status != Llamada.Status)
                     {
-                        if (llamada.Status != Llamada.Status)
+                        Llamada.Status = llamada.Status;
+                      
+
+                    }
+                    if (!string.IsNullOrEmpty(llamada.CardCode) && llamada.CardCode != Llamada.CardCode)
+                    {
+                        Llamada.CardCode = llamada.CardCode;
+                      
+
+                    }
+                    if (!string.IsNullOrEmpty(llamada.Asunto) && llamada.Asunto != Llamada.Asunto)
+                    {
+                        Llamada.Asunto = llamada.Asunto; 
+
+                    }
+
+                    if (Llamada.TipoCaso != llamada.TipoCaso)
+                    {
+                        Llamada.TipoCaso = llamada.TipoCaso; 
+
+                    }
+
+                    DateTime time = new DateTime();
+
+                    if (llamada.FechaSISO != time && llamada.FechaSISO != Llamada.FechaSISO)
+                    {
+                        Llamada.FechaSISO = llamada.FechaSISO; 
+
+                    }
+
+                    if (llamada.LugarReparacion != Llamada.LugarReparacion)
+                    {
+                        Llamada.LugarReparacion = llamada.LugarReparacion; 
+
+                    }
+
+                    if (llamada.SucRecibo != Llamada.SucRecibo)
+                    {
+                        var SucReb = llamada.SucRecibo.Value.ToString();
+                        Llamada.SucRecibo = llamada.SucRecibo.Value; 
+
+                    }
+
+                    if (llamada.SucRetiro != Llamada.SucRetiro)
+                    {
+                        var SucRet = llamada.SucRetiro.Value.ToString();
+                        Llamada.SucRetiro = llamada.SucRetiro; 
+
+                    }
+
+                    if (!string.IsNullOrEmpty(llamada.Comentarios) && Llamada.Comentarios != llamada.Comentarios)
+                    {
+                        Llamada.Comentarios = llamada.Comentarios; 
+
+                    }
+
+
+                    if (llamada.TratadoPor != Llamada.TratadoPor)
+                    {
+                        Llamada.TratadoPor = llamada.TratadoPor; 
+
+                    }
+
+                    if (Llamada.Garantia != llamada.Garantia)
+                    {
+                        Llamada.Garantia = llamada.Garantia;
+                       
+
+                    }
+
+                    if (Llamada.Horas != llamada.Horas)
+                    {
+                        Llamada.Horas = llamada.Horas;
+                        
+                    }
+
+                    if (Llamada.Tecnico != llamada.Tecnico)
+                    {
+                        Llamada.Tecnico = llamada.Tecnico;
+                         
+
+                        try
                         {
-                            Llamada.Status = llamada.Status;
+                            var enc = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
+                            db.Entry(enc).State = EntityState.Modified;
+
+                            enc.idTecnico = Llamada.Tecnico.Value;
+
+                            db.SaveChanges();
+
+
+                        }
+                        catch (Exception ex3)
+                        {
+
+                            BitacoraErrores be = new BitacoraErrores();
+
+                            be.Descripcion = ex3.Message;
+                            be.StackTrace = ex3.StackTrace;
+                            be.Fecha = DateTime.Now;
+
+                            db.BitacoraErrores.Add(be);
+                            db.SaveChanges();
+                        }
+
+                    }
+
+                    if(Llamada.PersonaContacto != llamada.PersonaContacto)
+                    {
+                        Llamada.PersonaContacto = llamada.PersonaContacto;
+                    }
+
+                    if (Llamada.EmailPersonaContacto != llamada.EmailPersonaContacto)
+                    {
+                        Llamada.EmailPersonaContacto = llamada.EmailPersonaContacto;
+                    }
+
+                    if (Llamada.NumeroPersonaContacto != llamada.NumeroPersonaContacto)
+                    {
+                        Llamada.NumeroPersonaContacto = llamada.NumeroPersonaContacto;
+                    }
+                    Llamada.ProcesadaSAP = false;
+                    db.SaveChanges();
+
+                    try
+                    {
+                        var client = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
+
+                        if (client.GetByKey(Llamada.DocEntry.Value))
+                        {
+
                             client.Status = Llamada.Status.Value;
 
-                        }
-                        if (!string.IsNullOrEmpty(llamada.CardCode) && llamada.CardCode != Llamada.CardCode)
-                        {
-                            Llamada.CardCode = llamada.CardCode;
-                            client.CustomerCode = Llamada.CardCode;
+                            if (!string.IsNullOrEmpty(llamada.CardCode))
+                            {
 
-                        }
+                                client.CustomerCode = Llamada.CardCode;
+
+                            }
 
 
-                        // Llamada.SerieFabricante = llamada.SerieFabricante;
-                        // Llamada.ItemCode = llamada.ItemCode;
 
-                        if (!string.IsNullOrEmpty(llamada.Asunto) && llamada.Asunto != Llamada.Asunto)
-                        {
-                            Llamada.Asunto = llamada.Asunto;
-                            client.Subject = Llamada.Asunto;
 
-                        }
+                            if (!string.IsNullOrEmpty(llamada.Asunto))
+                            {
+                                client.Subject = Llamada.Asunto;
 
-                        if (Llamada.TipoCaso != llamada.TipoCaso)
-                        {
-                            Llamada.TipoCaso = llamada.TipoCaso;
+                            }
+
+
                             client.UserFields.Fields.Item("U_TPCASO").Value = Llamada.TipoCaso.Value.ToString();
 
-                        }
 
-                        DateTime time = new DateTime();
 
-                        if (llamada.FechaSISO != time && llamada.FechaSISO != Llamada.FechaSISO)
-                        {
-                            Llamada.FechaSISO = llamada.FechaSISO;
-                            client.UserFields.Fields.Item("U_SISO").Value = Llamada.FechaSISO.Value;
+                            DateTime time2 = new DateTime();
 
-                        }
+                            if (llamada.FechaSISO != time2)
+                            {
 
-                        if (llamada.LugarReparacion != Llamada.LugarReparacion)
-                        {
-                            Llamada.LugarReparacion = llamada.LugarReparacion;
+                                client.UserFields.Fields.Item("U_SISO").Value = Llamada.FechaSISO.Value;
+
+                            }
+
+
                             client.UserFields.Fields.Item("U_WATTS").Value = Llamada.LugarReparacion.Value.ToString();
 
-                        }
 
-                        if (llamada.SucRecibo != Llamada.SucRecibo)
-                        {
-                            var SucReb = llamada.SucRecibo.Value.ToString();
-                            Llamada.SucRecibo = llamada.SucRecibo.Value;
-                            client.UserFields.Fields.Item("U_SRECIB").Value = db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault() == null ? "": db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault().Nombre;
 
-                        }
+                            client.UserFields.Fields.Item("U_SRECIB").Value = db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault().Nombre;
 
-                        if (llamada.SucRetiro != Llamada.SucRetiro)
-                        {
-                            var SucRet = llamada.SucRetiro.Value.ToString();
-                            Llamada.SucRetiro = llamada.SucRetiro;
+
                             client.UserFields.Fields.Item("U_SENTRE").Value = db.Sucursales.Where(a => a.id == Llamada.SucRetiro).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.id == Llamada.SucRetiro).FirstOrDefault().Nombre;
 
-                        }
 
-                        if (!string.IsNullOrEmpty(llamada.Comentarios) && Llamada.Comentarios != llamada.Comentarios)
-                        {
-                            Llamada.Comentarios = llamada.Comentarios;
-                            client.Description = Llamada.Comentarios;
+                            if (!string.IsNullOrEmpty(llamada.Comentarios))
+                            {
 
-                        }
+                                client.Description = Llamada.Comentarios;
+
+                            }
 
 
-                        if (llamada.TratadoPor != Llamada.TratadoPor)
-                        {
-                            Llamada.TratadoPor = llamada.TratadoPor;
+
                             client.AssigneeCode = Llamada.TratadoPor.Value;
 
-                        }
 
-                        if (Llamada.Garantia != llamada.Garantia)
-                        {
-                            Llamada.Garantia = llamada.Garantia;
-                            client.CallType = Llamada.Garantia.Value;
 
-                        }
 
-                        if(Llamada.Horas != llamada.Horas)
-                        {
-                            Llamada.Horas = llamada.Horas;
+                            //client.CallType = Llamada.Garantia.Value;
+
+
+
                             client.UserFields.Fields.Item("U_CONTHRS").Value = Llamada.Horas.ToString();
-                        }
 
-                        if (Llamada.Tecnico != llamada.Tecnico)
-                        {
-                            Llamada.Tecnico = llamada.Tecnico;
+
+
                             client.TechnicianCode = Llamada.Tecnico.Value;
 
                             try
                             {
                                 var enc = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
                                 db.Entry(enc).State = EntityState.Modified;
-                                
+
                                 enc.idTecnico = Llamada.Tecnico.Value;
-                               
+
                                 db.SaveChanges();
 
 
@@ -779,43 +882,56 @@ namespace WATickets.Controllers
                                 db.SaveChanges();
                             }
 
+
+                            Llamada.ProcesadaSAP = false;
+
+                            var respuesta = client.Update();
+
+                            if (respuesta == 0)
+                            {
+
+                                db.SaveChanges();
+                                db.Entry(Llamada).State = EntityState.Modified;
+
+                                Llamada.ProcesadaSAP = true;
+
+                                db.SaveChanges();
+
+
+                                Conexion.Desconectar();
+
+
+                            }
+                            else
+                            {
+                                BitacoraErrores be = new BitacoraErrores();
+
+                                be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                be.StackTrace = "Llamada de Servicio";
+                                be.Fecha = DateTime.Now;
+
+                                db.BitacoraErrores.Add(be);
+                                db.SaveChanges();
+                                Conexion.Desconectar();
+                            }
+
+
+
                         }
-
-                        Llamada.ProcesadaSAP = false;
-
-                        var respuesta = client.Update();
-
-                        if (respuesta == 0)
-                        {
-
-                            db.SaveChanges();
-                            db.Entry(Llamada).State = EntityState.Modified;
-                            
-                            Llamada.ProcesadaSAP = true;
-
-                            db.SaveChanges();
-
-
-                            Conexion.Desconectar();
-
-                 
-                        }
-                        else
-                        {
-                            BitacoraErrores be = new BitacoraErrores();
-
-                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
-                            be.StackTrace = "Llamada de Servicio";
-                            be.Fecha = DateTime.Now;
-
-                            db.BitacoraErrores.Add(be);
-                            db.SaveChanges();
-                            Conexion.Desconectar();
-                        }
-
-
-                       
                     }
+                    catch (Exception ex)
+                    {
+                        BitacoraErrores be = new BitacoraErrores();
+
+                        be.Descripcion = ex.Message;
+                        be.StackTrace = ex.StackTrace;
+                        be.Fecha = DateTime.Now;
+
+                        db.BitacoraErrores.Add(be);
+                        db.SaveChanges();
+
+                    }
+                  
 
                    
 
@@ -830,7 +946,14 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                BitacoraErrores be = new BitacoraErrores();
 
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
 
             }
