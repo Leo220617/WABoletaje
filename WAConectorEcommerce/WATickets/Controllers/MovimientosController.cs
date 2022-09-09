@@ -147,8 +147,10 @@ namespace WATickets.Controllers
                                 var top1 = 290;
 
                                 var diagnosticos = "";
-                            var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == id).ToList();
-                                foreach (var item in DetalleSAP)
+                            var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == id && a.Garantia == false).ToList();
+                             
+                             
+                            foreach (var item in DetalleSAP)
                                 {
                                     if (z == 0)
                                     {
@@ -288,31 +290,44 @@ namespace WATickets.Controllers
                                 var top2 = 453;
 
                             var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == id).ToList();
+                            var EncMovimientoGarantia = db.EncMovimiento.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.TipoMovimiento == 2 && a.id != EncMovimiento.id).FirstOrDefault();
+                            if(EncMovimientoGarantia != null)
+                            {
+                                DetalleSAP = DetalleSAP.Where(a => a.Garantia == false).ToList();
+                            }
+                            var diagnosticos = "";
 
                             foreach (var item in DetalleSAP)
                                 {
                                     if (z == 0)
                                     {
                                         inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+                                        diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
-                                    }
-                                    else
+                                }
+                                else
                                     {
                                         top1 += 23;
                                         top2 += 23;
                                         inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
-                                    }
+                                    diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
-
-                                    z++;
                                 }
+
+
+                                z++;
+                                }
+                            diagnosticos += EncMovimiento.Comentarios + "<br/>";
                                 bodyH = bodyH.Replace("@Inyectado", inyectado);
 
+                            bodyH = bodyH.Replace("@Diagnosticos", diagnosticos);
+
+                            
 
 
 
 
-                                HtmlToPdf converter = new HtmlToPdf();
+                            HtmlToPdf converter = new HtmlToPdf();
 
                                 // set converter options
                                 converter.Options.PdfPageSize = PdfPageSize.A4;
@@ -571,6 +586,24 @@ namespace WATickets.Controllers
                             Det.Garantia = item.Garantia;
                             db.SaveChanges();
                         }
+                        else
+                        {
+                            Det = new DetMovimiento();
+                            Det.idEncabezado = EncMovimiento.id;
+                            Det.idError = 0;
+                            Det.NumLinea = item.NumLinea;
+                            Det.ItemCode = item.ItemCode;
+                            Det.ItemName = item.ItemName;
+                            Det.PrecioUnitario = item.PrecioUnitario;
+                            Det.Cantidad = item.Cantidad;
+                            Det.PorDescuento = item.PorDescuento;
+                            Det.Descuento = item.Descuento;
+                            Det.Impuestos = item.Impuestos;
+                            Det.TotalLinea = item.TotalLinea;
+                            Det.Garantia = item.Garantia;
+                            db.DetMovimiento.Add(Det);
+                            db.SaveChanges();
+                        }
                         
                     }
                 }
@@ -600,8 +633,16 @@ namespace WATickets.Controllers
                         client.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
                         var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
                         var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
+                        var Tec = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString(); 
+                        var Tecnico = db.Tecnicos.Where(a => a.idSAP == Tec).FirstOrDefault();
+
                         client.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico);
-                        //client.DocumentsOwner = Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
+
+                        if(Tecnico.Letra > 0)
+                        {
+                            client.SalesPersonCode = Tecnico.Letra;
+                        }
+                         
                         client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString() ;
 
                         var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).ToList();
@@ -643,142 +684,7 @@ namespace WATickets.Controllers
                             Conexion.Desconectar();
 
 
-                            ////Enviar Correo
-                            ///
-                            //try
-                            //{
-                            //    var EmailDestino = "";
-                            //    Parametros parametros = db.Parametros.FirstOrDefault();
-                            //    var CorreoEnvio = db.CorreoEnvio.FirstOrDefault();
-                            //    var conexion = g.DevuelveCadena(db);
-
-                            //    var SQL = parametros.HtmlLlamada + "'" + EncMovimiento.CardCode + "'";
-
-                            //    SqlConnection Cn = new SqlConnection(conexion);
-                            //    SqlCommand Cmd = new SqlCommand(SQL, Cn);
-                            //    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
-                            //    DataSet Ds = new DataSet();
-                            //    Cn.Open();
-                            //    Da.Fill(Ds, "Encabezado");
-
-                            //    List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
-                            //    html Html = new html();
-                            //    var bodyH = Html.textoOferta;
-                            //    bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString()); 
-                            //    bodyH = bodyH.Replace("@NombreCliente2", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
-                            //    bodyH = bodyH.Replace("@Email", Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString());
-
-                                
-                            //     bodyH = bodyH.Replace("@TelefonoCliente", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
-                                
-                            //    bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
                              
-
-
-                            //    bodyH = bodyH.Replace("@Fecha", EncMovimiento.Fecha.ToString("dd/MM/yyyy"));
-                            //    EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
-
-                            //    bodyH = bodyH.Replace("@PorDesc", EncMovimiento.PorDescuento.ToString());
-
-                            //    bodyH = bodyH.Replace("@Subtotal", EncMovimiento.Subtotal.ToString());
-                            //    bodyH = bodyH.Replace("@Descuento", EncMovimiento.Descuento.ToString());
-                            //    bodyH = bodyH.Replace("@Impuestos", EncMovimiento.Impuestos.ToString());
-                            //    bodyH = bodyH.Replace("@Total", EncMovimiento.TotalComprobante.ToString());
-
-
-
-                            //    Cn.Close();
-                            //    Cn.Dispose();
-
-                            //    var inyectado = "";
-                            //    var z = 0;
-                            //    var top1 = 290;
-
-                            //    var diagnosticos = "";
-
-                            //    foreach (var item in DetalleSAP)
-                            //    {
-                            //        if (z == 0)
-                            //        {
-                                        
-                            //            inyectado = Html.InyectadoOferta.Replace("@NumLinea", (z+1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
-                            //            diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
-                            //        }
-                            //        else
-                            //        {
-                            //            top1 += 20;
-                                        
-                            //            inyectado += Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
-                            //            diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
-
-                            //        }
-
-
-                            //        z++;
-                            //    }
-
-                            //    diagnosticos += EncMovimiento.Comentarios + "<br/>";
-                            //    bodyH = bodyH.Replace("@INYECTADO", inyectado);
-
-
-                            //    bodyH = bodyH.Replace("@Diagnosticos", diagnosticos);
-
-
-
-                            //    HtmlToPdf converter = new HtmlToPdf();
-
-                            //    // set converter options
-                            //    converter.Options.PdfPageSize = PdfPageSize.A4;
-                            //    converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
-                            //    converter.Options.MarginLeft = 5;
-                            //    converter.Options.MarginRight = 5;
-
-                            //    // create a new pdf document converting an html string
-                            //    SelectPdf.PdfDocument doc = converter.ConvertHtmlString(bodyH);
-
-                            //    var bytes = doc.Save();
-                            //    doc.Close();
-
-                            //    System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Oferta_Venta.pdf");
-                            //    adjuntos.Add(att3);
-
-                            //    var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
-                            //    var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
-                            //    var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
-                            //    var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
-                            //    var ui = 1;
-                            //    foreach (var det in Adjuntos)
-                            //    {
-
-                            //        {
-                            //            System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(det.base64), ui.ToString() + ".png");
-                            //            adjuntos.Add(att2);
-                            //            ui++;
-                            //        }
-                            //    }
-
-
-                            //    var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail, "Oferta de Venta", "Oferta de Venta", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Oferta de Venta</h1> <p> En el presente correo se le hace el envio de la ofeta de venta, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
-
-                            //    g.GuardarTxt("html.txt", bodyH);
-
-                            //    if (!resp)
-                            //    {
-                            //        throw new Exception("No se ha podido enviar el correo con la oferta de venta");
-                            //    }
-
-                            //}
-                            //catch (Exception ex)
-                            //{
-                            //    BitacoraErrores be = new BitacoraErrores();
-
-                            //    be.Descripcion = ex.Message;
-                            //    be.StackTrace = ex.StackTrace;
-                            //    be.Fecha = DateTime.Now;
-
-                            //    db.BitacoraErrores.Add(be);
-                            //    db.SaveChanges();
-                            //}
 
                         }
                         else
@@ -794,278 +700,7 @@ namespace WATickets.Controllers
                             Conexion.Desconectar();
                         }
 
-                        //Pregunto si existe algun producto con garantia, para generar entonces una entrega
-                        if(db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).Count() > 0)
-
-                        {
-                            var clientEntrega = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
-                            clientEntrega.DocObjectCode = BoObjectTypes.oDeliveryNotes;
-                            clientEntrega.CardCode = EncMovimiento.CardCode;
-                            clientEntrega.DocCurrency = EncMovimiento.Moneda; //"COL";
-                            clientEntrega.DocDate = EncMovimiento.Fecha; //listo
-                            clientEntrega.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
-                            clientEntrega.DocNum = 0; //automatico
-                            clientEntrega.DocType = BoDocumentTypes.dDocument_Items;
-                            clientEntrega.HandWritten = BoYesNoEnum.tNO;
-                            clientEntrega.NumAtCard = EncMovimiento.NumLlamada; //orderid               
-                            clientEntrega.ReserveInvoice = BoYesNoEnum.tNO;
-                            clientEntrega.Series = Parametros.SerieEntrega;//3; //3 quemado
-                            clientEntrega.Comments = "Esta es la entrega de los productos por garantia"; //direccion
-                            clientEntrega.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
-                            //var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
-                            //var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
-                            clientEntrega.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico);
-                            //clientEntrega.DocumentsOwner = Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
-                            clientEntrega.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
-
-                            var DetalleSAPEntrega = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).ToList();
-                            var iE = 0;
-                            foreach (var item in DetalleSAPEntrega)
-                            {
-                                clientEntrega.Lines.SetCurrentLine(iE);
-                                clientEntrega.Lines.CostingCode = "";
-                                clientEntrega.Lines.CostingCode2 = "";
-                                clientEntrega.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
-                                clientEntrega.Lines.CostingCode4 = "";
-                                clientEntrega.Lines.CostingCode5 = "";
-                                clientEntrega.Lines.Currency = EncMovimiento.Moneda; //"COL";
-                                clientEntrega.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
-                                clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
-                                clientEntrega.Lines.ItemCode = item.ItemCode;
-                                clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
-                                clientEntrega.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                                clientEntrega.Lines.TaxCode = Parametros.TaxCode;// "IVA-13";
-                                clientEntrega.Lines.TaxOnly = BoYesNoEnum.tNO;
-                                clientEntrega.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
-                                clientEntrega.Lines.Add();
-
-
-                                iE++;
-                            }
-
-                            var respuestaE = clientEntrega.Add();
-
-                            if (respuestaE == 0)
-                            {
-
-                                var EncMovimientoEntrega = EncMovimiento;
-                                EncMovimientoEntrega.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
-                                EncMovimientoEntrega.TipoMovimiento = 2;
-                                EncMovimientoEntrega.Descuento = 0;
-                                EncMovimientoEntrega.Impuestos = 0;
-                                EncMovimientoEntrega.Subtotal = 0;
-                                EncMovimientoEntrega.PorDescuento = 0;
-                                EncMovimientoEntrega.TotalComprobante = 0;
-                                EncMovimientoEntrega.Comentarios = "Esta es la entrega de los productos por garantia";
-                                db.EncMovimiento.Add(EncMovimientoEntrega);
-                                db.SaveChanges();
-
-                                foreach(var item in DetalleSAPEntrega)
-                                {
-                                    item.idEncabezado = EncMovimientoEntrega.id;
-
-                                    db.DetMovimiento.Add(item);
-                                    db.SaveChanges();
-
-
-                                    db.Entry(EncMovimientoEntrega).State = EntityState.Modified;
-
-                                    EncMovimientoEntrega.Descuento += item.Descuento;
-                                    EncMovimientoEntrega.Impuestos += item.Impuestos;
-                                    EncMovimientoEntrega.Subtotal += item.TotalLinea - item.Impuestos;
-                                    EncMovimientoEntrega.PorDescuento += item.PorDescuento;
-                                    EncMovimientoEntrega.TotalComprobante += item.TotalLinea;
-                               
-                                    db.SaveChanges();
-                                }
-
-                              
-
-
-                                var idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
-                                var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
-                                if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
-                                {
-                                    if (client2.Expenses.Count > 0)
-                                    {
-                                        client2.Expenses.Add();
-                                    }
-                                    client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Delivery;
-                                    client2.Expenses.DocumentNumber = idEntry;
-                                    client2.Expenses.DocEntry = idEntry;
-
-                                    if (client2.Expenses.Count == 0)
-                                    {
-                                        client2.Expenses.Add();
-                                    }
-                                    client2.Expenses.Add();
-                                    var respuesta2 = client2.Update();
-                                    if (respuesta2 == 0)
-                                    {
-                                        Conexion.Desconectar();
-                                    }
-                                    else
-                                    {
-                                        BitacoraErrores be = new BitacoraErrores();
-
-                                        be.Descripcion = Conexion.Company.GetLastErrorDescription();
-                                        be.StackTrace = "Llamada de Servicio - Actualizar";
-                                        be.Fecha = DateTime.Now;
-
-                                        db.BitacoraErrores.Add(be);
-                                        db.SaveChanges();
-                                        Conexion.Desconectar();
-                                        throw new Exception(be.Descripcion);
-
-                                    }
-                                }
-
-                                Conexion.Desconectar();
-
-
-
-                                ////Enviar Correo
-                                ///
-                                try
-                                {
-                                    var EmailDestino = "";
-                                    Parametros parametros = db.Parametros.FirstOrDefault();
-                                    var CorreoEnvio = db.CorreoEnvio.FirstOrDefault();
-                                    var conexion = g.DevuelveCadena(db);
-
-                                    var SQL = parametros.HtmlLlamada + "'" + EncMovimiento.CardCode + "'";
-
-                                    SqlConnection Cn = new SqlConnection(conexion);
-                                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
-                                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
-                                    DataSet Ds = new DataSet();
-                                    Cn.Open();
-                                    Da.Fill(Ds, "Encabezado");
-
-                                    List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
-                                    html Html = new html();
-                                    var bodyH = Html.textoEntrega;
-                                    bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
-                                    bodyH = bodyH.Replace("@Telefono", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
-                                    bodyH = bodyH.Replace("@Celular", "      ");
-                                    bodyH = bodyH.Replace("@DocEntry", EncMovimientoEntrega.DocEntry.ToString());
-                                    bodyH = bodyH.Replace("@NumBoleta", EncMovimientoEntrega.NumLlamada);
-
-
-                                    bodyH = bodyH.Replace("@Fecha", EncMovimiento.Fecha.ToString("dd/MM/yyyy"));
-                                    EmailDestino = db.CorreoEnvio.FirstOrDefault().RecepcionEmail;// Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
-
-                                    bodyH = bodyH.Replace("@NumContacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
-
-                                    bodyH = bodyH.Replace("@SubTotal", EncMovimientoEntrega.Subtotal.ToString());
-                                    bodyH = bodyH.Replace("@Descuento", EncMovimientoEntrega.Descuento.ToString());
-                                    bodyH = bodyH.Replace("@Impuestos", EncMovimientoEntrega.Impuestos.ToString());
-                                    bodyH = bodyH.Replace("@TotalEntrega", EncMovimientoEntrega.TotalComprobante.ToString());
-
-
-
-                                    Cn.Close();
-                                    Cn.Dispose();
-
-                                    var inyectado = "";
-                                    var z = 0;
-                                    var top1 = 454;
-                                    var top2 = 453;
-
-
-                                    foreach (var item in DetalleSAPEntrega)
-                                    {
-                                        if (z == 0)
-                                        {
-                                            inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
-
-                                        }
-                                        else
-                                        {
-                                            top1 += 23;
-                                            top2 += 23;
-                                            inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
-                                        }
-
-
-                                        z++;
-                                    }
-                                    bodyH = bodyH.Replace("@Inyectado", inyectado);
-
-
-
-
-
-                                    HtmlToPdf converter = new HtmlToPdf();
-
-                                    // set converter options
-                                    converter.Options.PdfPageSize = PdfPageSize.A4;
-                                    converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
-                                    converter.Options.MarginLeft = 5;
-                                    converter.Options.MarginRight = 5;
-
-                                    // create a new pdf document converting an html string
-                                    SelectPdf.PdfDocument doc = converter.ConvertHtmlString(bodyH);
-
-                                    var bytes = doc.Save();
-                                    doc.Close();
-
-                                    System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Entrega_Mercaderia.pdf");
-                                    adjuntos.Add(att3);
-
-                                    var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
-                                    var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
-                                    var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
-                                    var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
-                                    var ui = 1;
-                                    foreach (var det in Adjuntos)
-                                    {
-
-                                        {
-                                            System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(det.base64), ui.ToString() + ".png");
-                                            adjuntos.Add(att2);
-                                            ui++;
-                                        }
-                                    }
-
-
-                                    var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail, "Entrega de Mercaderia", "Entrega de Producto", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Entrega Mercaderia</h1> <p> En el presente correo se le hace el envio de la entrega de mercaderia, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
-
-                                    g.GuardarTxt("html.txt", bodyH);
-
-                                    if (!resp)
-                                    {
-                                        throw new Exception("No se ha podido enviar el correo con la entrega");
-                                    }
-
-                                }
-                                catch (Exception ex)
-                                {
-                                    BitacoraErrores be = new BitacoraErrores();
-
-                                    be.Descripcion = ex.Message;
-                                    be.StackTrace = ex.StackTrace;
-                                    be.Fecha = DateTime.Now;
-
-                                    db.BitacoraErrores.Add(be);
-                                    db.SaveChanges();
-                                }
-
-
-                            }
-                            else
-                            {
-                                BitacoraErrores be = new BitacoraErrores();
-
-                                be.Descripcion = Conexion.Company.GetLastErrorDescription();
-                                be.StackTrace = "Movimientos";
-                                be.Fecha = DateTime.Now;
-
-                                db.BitacoraErrores.Add(be);
-                                db.SaveChanges();
-                                Conexion.Desconectar();
-                            }
-                        }
+                        
 
                     }
                     else
@@ -1086,7 +721,14 @@ namespace WATickets.Controllers
                         client.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
                         var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
                         var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
+                        var Tec = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
+                        var Tecnico = db.Tecnicos.Where(a => a.idSAP == Tec).FirstOrDefault();
+
                         client.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico); // Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
+                        if (Tecnico.Letra > 0)
+                        {
+                            client.SalesPersonCode = Tecnico.Letra;
+                        }
                         client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
 
                         var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).ToList();
@@ -1161,134 +803,7 @@ namespace WATickets.Controllers
 
                             Conexion.Desconectar();
 
-
-
-                            ////Enviar Correo
-                            ///
-                            //try
-                            //{
-                            //    var EmailDestino = "";
-                            //    Parametros parametros = db.Parametros.FirstOrDefault();
-                            //    var CorreoEnvio = db.CorreoEnvio.FirstOrDefault();
-                            //    var conexion = g.DevuelveCadena(db);
-
-                            //    var SQL = parametros.HtmlLlamada + "'" + EncMovimiento.CardCode + "'";
-
-                            //    SqlConnection Cn = new SqlConnection(conexion);
-                            //    SqlCommand Cmd = new SqlCommand(SQL, Cn);
-                            //    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
-                            //    DataSet Ds = new DataSet();
-                            //    Cn.Open();
-                            //    Da.Fill(Ds, "Encabezado");
-
-                            //    List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
-                            //    html Html = new html();
-                            //    var bodyH = Html.textoEntrega;
-                            //    bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
-                            //    bodyH = bodyH.Replace("@Telefono", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
-                            //    bodyH = bodyH.Replace("@Celular", "      ");
-                            //    bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
-                            //    bodyH = bodyH.Replace("@NumBoleta", EncMovimiento.NumLlamada);
-
-                                
-                            //    bodyH = bodyH.Replace("@Fecha", EncMovimiento.Fecha.ToString("dd/MM/yyyy"));
-                            //    EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
-                               
-                            //    bodyH = bodyH.Replace("@NumContacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
-
-                            //    bodyH = bodyH.Replace("@SubTotal", EncMovimiento.Subtotal.ToString());
-                            //    bodyH = bodyH.Replace("@Descuento", EncMovimiento.Descuento.ToString());
-                            //    bodyH = bodyH.Replace("@Impuestos", EncMovimiento.Impuestos.ToString());
-                            //    bodyH = bodyH.Replace("@TotalEntrega", EncMovimiento.TotalComprobante.ToString());
-
-
-
-                            //    Cn.Close();
-                            //    Cn.Dispose();
-
-                            //        var inyectado = "";
-                            //    var z = 0;
-                            //    var top1 = 454;
-                            //    var top2 = 453;
-
-
-                            //    foreach (var item in DetalleSAP)
-                            //    {
-                            //        if (z == 0)
-                            //        {
-                            //             inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
-                                         
-                            //        }
-                            //        else
-                            //        {
-                            //            top1 += 23;
-                            //            top2 += 23;
-                            //            inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
-                            //        }
-
-
-                            //        z++;
-                            //    }
-                            //            bodyH = bodyH.Replace("@Inyectado", inyectado); 
-
-
-
-
-
-                            //    HtmlToPdf converter = new HtmlToPdf();
-
-                            //    // set converter options
-                            //    converter.Options.PdfPageSize = PdfPageSize.A4;
-                            //    converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
-                            //    converter.Options.MarginLeft = 5;
-                            //    converter.Options.MarginRight = 5;
-
-                            //    // create a new pdf document converting an html string
-                            //    SelectPdf.PdfDocument doc = converter.ConvertHtmlString(bodyH);
-
-                            //    var bytes = doc.Save();
-                            //    doc.Close();
-
-                            //    System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Entrega_Mercaderia.pdf");
-                            //    adjuntos.Add(att3);
-
-                            //    var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
-                            //    var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
-                            //    var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
-                            //    var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
-                            //    var ui = 1;
-                            //    foreach (var det in Adjuntos)
-                            //    {
-                                    
-                            //        {
-                            //            System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(det.base64),ui.ToString() + ".png");
-                            //            adjuntos.Add(att2);
-                            //            ui++;
-                            //        }
-                            //    }
-
-
-                            //    var resp = G.SendV2(EmailDestino, "larce@dydconsultorescr.com", "", CorreoEnvio.RecepcionEmail, "Entrega de Mercaderia", "Entrega de Producto", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Entrega Mercaderia</h1> <p> En el presente correo se le hace el envio de la entrega de mercaderia, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
-
-                            //    g.GuardarTxt("html.txt", bodyH);
-
-                            //    if (!resp)
-                            //    {
-                            //        throw new Exception("No se ha podido enviar el correo con la entrega");
-                            //    }
-
-                            //}
-                            //catch (Exception ex)
-                            //{
-                            //    BitacoraErrores be = new BitacoraErrores();
-
-                            //    be.Descripcion = ex.Message;
-                            //    be.StackTrace = ex.StackTrace;
-                            //    be.Fecha = DateTime.Now;
-
-                            //    db.BitacoraErrores.Add(be);
-                            //    db.SaveChanges();
-                            //}
+ 
 
 
                         }
@@ -1304,6 +819,160 @@ namespace WATickets.Controllers
                             db.SaveChanges();
                             Conexion.Desconectar();
                         }
+
+                        //Pregunto si existe algun producto con garantia, para generar entonces una entrega
+                        if (db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).Count() > 0)
+                        {
+                            var clientEntrega = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
+                            clientEntrega.DocObjectCode = BoObjectTypes.oDeliveryNotes;
+                            clientEntrega.CardCode = EncMovimiento.CardCode;
+                            clientEntrega.DocCurrency = EncMovimiento.Moneda; //"COL";
+                            clientEntrega.DocDate = EncMovimiento.Fecha; //listo
+                            clientEntrega.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
+                            clientEntrega.DocNum = 0; //automatico
+                            clientEntrega.DocType = BoDocumentTypes.dDocument_Items;
+                            clientEntrega.HandWritten = BoYesNoEnum.tNO;
+                            clientEntrega.NumAtCard = EncMovimiento.NumLlamada; //orderid               
+                            clientEntrega.ReserveInvoice = BoYesNoEnum.tNO;
+                            clientEntrega.Series = Parametros.SerieEntrega;//3; //3 quemado
+                            clientEntrega.Comments = "Esta es la entrega de los productos por garantia"; //direccion
+                            clientEntrega.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
+                                                                                                          //var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
+                                                                                                          //var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
+                            var Tec1 = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
+                            var Tecnico1 = db.Tecnicos.Where(a => a.idSAP == Tec1).FirstOrDefault();
+                            clientEntrega.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico);
+                            if (Tecnico1.Letra > 0)
+                            {
+                                clientEntrega.SalesPersonCode = Tecnico1.Letra;
+                            }
+                            
+                            clientEntrega.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
+
+                            var DetalleSAPEntrega = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).ToList();
+                            var iE = 0;
+                            foreach (var item in DetalleSAPEntrega)
+                            {
+                                clientEntrega.Lines.SetCurrentLine(iE);
+                                clientEntrega.Lines.CostingCode = "";
+                                clientEntrega.Lines.CostingCode2 = "";
+                                clientEntrega.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
+                                clientEntrega.Lines.CostingCode4 = "";
+                                clientEntrega.Lines.CostingCode5 = "";
+                                clientEntrega.Lines.Currency = EncMovimiento.Moneda; //"COL";
+                                clientEntrega.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
+                                clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                                clientEntrega.Lines.ItemCode = item.ItemCode;
+                                clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                                clientEntrega.Lines.Quantity = Convert.ToDouble(item.Cantidad);
+                                clientEntrega.Lines.TaxCode = Parametros.TaxCode;// "IVA-13";
+                                clientEntrega.Lines.TaxOnly = BoYesNoEnum.tNO;
+                                clientEntrega.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
+                                clientEntrega.Lines.Add();
+
+
+                                iE++;
+                            }
+
+                            var respuestaE = clientEntrega.Add();
+
+                            if (respuestaE == 0)
+                            {
+
+                                var EncMovimientoEntrega = EncMovimiento;
+                                EncMovimientoEntrega.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                EncMovimientoEntrega.TipoMovimiento = 2;
+                                EncMovimientoEntrega.Descuento = 0;
+                                EncMovimientoEntrega.Impuestos = 0;
+                                EncMovimientoEntrega.Subtotal = 0;
+                                EncMovimientoEntrega.PorDescuento = 0;
+                                EncMovimientoEntrega.TotalComprobante = 0;
+                                EncMovimientoEntrega.Comentarios = "Esta es la entrega de los productos por garantia";
+                                db.EncMovimiento.Add(EncMovimientoEntrega);
+                                db.SaveChanges();
+
+                                foreach (var item in DetalleSAPEntrega)
+                                {
+                                    item.idEncabezado = EncMovimientoEntrega.id;
+
+                                    db.DetMovimiento.Add(item);
+                                    db.SaveChanges();
+
+
+                                    db.Entry(EncMovimientoEntrega).State = EntityState.Modified;
+
+                                    EncMovimientoEntrega.Descuento += item.Descuento;
+                                    EncMovimientoEntrega.Impuestos += item.Impuestos;
+                                    EncMovimientoEntrega.Subtotal += item.TotalLinea - item.Impuestos;
+                                    EncMovimientoEntrega.PorDescuento += item.PorDescuento;
+                                    EncMovimientoEntrega.TotalComprobante += item.TotalLinea;
+
+                                    db.SaveChanges();
+                                }
+
+
+
+
+                                var idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
+                                if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
+                                {
+                                    if (client2.Expenses.Count > 0)
+                                    {
+                                        client2.Expenses.Add();
+                                    }
+                                    client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Delivery;
+                                    client2.Expenses.DocumentNumber = idEntry;
+                                    client2.Expenses.DocEntry = idEntry;
+
+                                    if (client2.Expenses.Count == 0)
+                                    {
+                                        client2.Expenses.Add();
+                                    }
+                                    client2.Expenses.Add();
+                                    var respuesta2 = client2.Update();
+                                    if (respuesta2 == 0)
+                                    {
+                                        Conexion.Desconectar();
+                                    }
+                                    else
+                                    {
+                                        BitacoraErrores be = new BitacoraErrores();
+
+                                        be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                        be.StackTrace = "Llamada de Servicio - Actualizar";
+                                        be.Fecha = DateTime.Now;
+
+                                        db.BitacoraErrores.Add(be);
+                                        db.SaveChanges();
+                                        Conexion.Desconectar();
+                                        throw new Exception(be.Descripcion);
+
+                                    }
+                                }
+
+                                Conexion.Desconectar();
+
+
+
+                               
+
+
+                            }
+                            else
+                            {
+                                BitacoraErrores be = new BitacoraErrores();
+
+                                be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                be.StackTrace = "Movimientos";
+                                be.Fecha = DateTime.Now;
+
+                                db.BitacoraErrores.Add(be);
+                                db.SaveChanges();
+                                Conexion.Desconectar();
+                            }
+                        }
+
                     }
                 }
 

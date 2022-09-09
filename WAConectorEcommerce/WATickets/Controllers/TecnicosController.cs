@@ -82,7 +82,7 @@ namespace WATickets.Controllers
                     Tecnicos = new Tecnicos();
                     Tecnicos.idSAP = tecnicos.idSAP;
                     Tecnicos.Nombre = tecnicos.Nombre;
-
+                    Tecnicos.Letra = tecnicos.Letra;
                     db.Tecnicos.Add(Tecnicos);
                     db.SaveChanges();
 
@@ -117,7 +117,7 @@ namespace WATickets.Controllers
                     db.Entry(Tecnicos).State = EntityState.Modified;
                     Tecnicos.idSAP = tecnicos.idSAP;
                     Tecnicos.Nombre = tecnicos.Nombre;
-
+                    Tecnicos.Letra = tecnicos.Letra;
                     db.SaveChanges();
 
                 }
