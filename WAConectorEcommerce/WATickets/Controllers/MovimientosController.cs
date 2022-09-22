@@ -132,10 +132,10 @@ namespace WATickets.Controllers
 
                                 bodyH = bodyH.Replace("@PorDesc", EncMovimiento.PorDescuento.ToString());
 
-                                bodyH = bodyH.Replace("@Subtotal", EncMovimiento.Subtotal.ToString());
-                                bodyH = bodyH.Replace("@Descuento", EncMovimiento.Descuento.ToString());
-                                bodyH = bodyH.Replace("@Impuestos", EncMovimiento.Impuestos.ToString());
-                                bodyH = bodyH.Replace("@Total", EncMovimiento.TotalComprobante.ToString());
+                                bodyH = bodyH.Replace("@Subtotal", Math.Round(EncMovimiento.Subtotal,2).ToString());
+                                bodyH = bodyH.Replace("@Descuento", Math.Round(EncMovimiento.Descuento, 2).ToString());
+                                bodyH = bodyH.Replace("@Impuestos", Math.Round(EncMovimiento.Impuestos, 2).ToString());
+                                bodyH = bodyH.Replace("@Total", Math.Round(EncMovimiento.TotalComprobante, 2).ToString());
 
 
 
@@ -155,14 +155,14 @@ namespace WATickets.Controllers
                                     if (z == 0)
                                     {
 
-                                        inyectado = Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
+                                        inyectado = Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Math.Round(item.TotalLinea, 2).ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
                                         diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
                                     }
                                     else
                                     {
                                         top1 += 20;
 
-                                        inyectado += Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
+                                        inyectado += Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Math.Round(item.TotalLinea, 2).ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
                                         diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                     }
@@ -274,10 +274,10 @@ namespace WATickets.Controllers
 
                                 bodyH = bodyH.Replace("@NumContacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
 
-                                bodyH = bodyH.Replace("@SubTotal", EncMovimiento.Subtotal.ToString());
-                                bodyH = bodyH.Replace("@Descuento", EncMovimiento.Descuento.ToString());
-                                bodyH = bodyH.Replace("@Impuestos", EncMovimiento.Impuestos.ToString());
-                                bodyH = bodyH.Replace("@TotalEntrega", EncMovimiento.TotalComprobante.ToString());
+                                bodyH = bodyH.Replace("@SubTotal", Math.Round(EncMovimiento.Subtotal, 2).ToString());
+                                bodyH = bodyH.Replace("@Descuento", Math.Round(EncMovimiento.Descuento, 2).ToString());
+                                bodyH = bodyH.Replace("@Impuestos", Math.Round(EncMovimiento.Impuestos, 2).ToString());
+                                bodyH = bodyH.Replace("@TotalEntrega", Math.Round(EncMovimiento.TotalComprobante, 2).ToString());
 
 
 
@@ -301,7 +301,7 @@ namespace WATickets.Controllers
                                 {
                                     if (z == 0)
                                     {
-                                        inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+                                        inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Math.Round(item.TotalLinea, 2).ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
                                         diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                 }
@@ -309,7 +309,7 @@ namespace WATickets.Controllers
                                     {
                                         top1 += 23;
                                         top2 += 23;
-                                        inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", item.Cantidad.ToString()).Replace("@PrecioUnitario", item.PrecioUnitario.ToString()).Replace("@TotalLinea", item.TotalLinea.ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+                                        inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Math.Round(item.TotalLinea, 2).ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                 }

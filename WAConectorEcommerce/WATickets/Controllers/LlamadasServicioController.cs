@@ -243,7 +243,7 @@ namespace WATickets.Controllers
                     bodyH = bodyH.Replace("@DiagnosticosDelCliente", Llamada.Asunto);
                     bodyH = bodyH.Replace("@Observaciones", Llamada.Comentarios);
                     bodyH = bodyH.Replace("@NumBoleta", Llamada.DocEntry.ToString());
-                    bodyH = bodyH.Replace("@Imagen", "<img src="+Llamada.Firma+" width='100' style='margin-left: -50%;' />");
+                    bodyH = bodyH.Replace("@Imagen", "<img src="+Llamada.Firma+" width='100'   />");
 
 
                     Cn.Close();

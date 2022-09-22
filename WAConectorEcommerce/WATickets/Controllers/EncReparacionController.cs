@@ -543,64 +543,72 @@ namespace WATickets.Controllers
                 {
                     try
                     {
-                        BitacoraMovimientos bts = new BitacoraMovimientos();
-                        bts.idLlamada = Encabezado.idLlamada;
-                        bts.idEncabezado = Encabezado.id;
-                        bts.DocEntry = 0;
-                        bts.Fecha = DateTime.Now;
-                        bts.TipoMovimiento = Encabezado.TipoReparacion;
-
-                        if (Encabezado.TipoReparacion == 1)
+                        if(coleccion.DetReparacion.Count() > 0)
                         {
-                            Encabezado.BodegaOrigen = Parametro.BodegaInicial;
-                            Encabezado.BodegaFinal = Parametro.BodegaFinal;
-                            bts.BodegaInicial = Encabezado.BodegaOrigen;
-                            bts.BodegaFinal = Encabezado.BodegaFinal;
-                        }
-                        else if (Encabezado.TipoReparacion == 2)
-                        {
-                            Encabezado.BodegaOrigen = Parametro.BodegaFinal;
-                            Encabezado.BodegaFinal = Parametro.BodegaInicial;
-                            bts.BodegaInicial = Encabezado.BodegaOrigen;
-                            bts.BodegaFinal = Encabezado.BodegaFinal;
-                        }
+                            BitacoraMovimientos bts = new BitacoraMovimientos();
+                            bts.idLlamada = Encabezado.idLlamada;
+                            bts.idEncabezado = Encabezado.id;
+                            bts.DocEntry = 0;
+                            bts.Fecha = DateTime.Now;
+                            bts.TipoMovimiento = Encabezado.TipoReparacion;
 
-                        bts.idTecnico = Encabezado.idTecnico;
-                        bts.Status = "0";
-                        bts.ProcesadaSAP = false;
-                        db.BitacoraMovimientos.Add(bts);
-                        db.SaveChanges();
+                            if (Encabezado.TipoReparacion == 1)
+                            {
+                                Encabezado.BodegaOrigen = Parametro.BodegaInicial;
+                                Encabezado.BodegaFinal = Parametro.BodegaFinal;
+                                bts.BodegaInicial = Encabezado.BodegaOrigen;
+                                bts.BodegaFinal = Encabezado.BodegaFinal;
+                            }
+                            else if (Encabezado.TipoReparacion == 2)
+                            {
+                                Encabezado.BodegaOrigen = Parametro.BodegaFinal;
+                                Encabezado.BodegaFinal = Parametro.BodegaInicial;
+                                bts.BodegaInicial = Encabezado.BodegaOrigen;
+                                bts.BodegaFinal = Encabezado.BodegaFinal;
+                            }
 
-                        foreach (var item in coleccion.DetReparacion)
-                        {
-                           
-
-                            DetBitacoraMovimientos dbt = new DetBitacoraMovimientos();
-                            dbt.idEncabezado = bts.id;
-                            dbt.idProducto = item.idProducto;
-                            dbt.Cantidad = item.Cantidad;
-                            dbt.ItemCode = item.ItemCode;
-                            dbt.idError = item.idError;
-                            db.DetBitacoraMovimientos.Add(dbt);
+                            bts.idTecnico = Encabezado.idTecnico;
+                            bts.Status = "0";
+                            bts.ProcesadaSAP = false;
+                            db.BitacoraMovimientos.Add(bts);
                             db.SaveChanges();
 
-                           
-                        }
+                            foreach (var item in coleccion.DetReparacion)
+                            {
 
 
-                        db.Entry(Encabezado).State = EntityState.Modified;
-                        Encabezado.TipoReparacion = 0;
-                        Encabezado.BodegaOrigen = "0";
-                        Encabezado.BodegaFinal = "0";
-                        db.SaveChanges();
+                                DetBitacoraMovimientos dbt = new DetBitacoraMovimientos();
+                                dbt.idEncabezado = bts.id;
+                                dbt.idProducto = item.idProducto;
+                                dbt.Cantidad = item.Cantidad;
+                                dbt.ItemCode = item.ItemCode;
+                                dbt.idError = item.idError;
+                                db.DetBitacoraMovimientos.Add(dbt);
+                                db.SaveChanges();
 
-                        var DetallesRemover = db.DetReparacion.Where(a => a.idEncabezado == coleccion.EncReparacion.id).ToList();
 
-                        foreach (var item in DetallesRemover)
-                        {
-                            db.DetReparacion.Remove(item);
+                            }
+
+
+                            db.Entry(Encabezado).State = EntityState.Modified;
+                            Encabezado.TipoReparacion = 0;
+                            Encabezado.BodegaOrigen = "0";
+                            Encabezado.BodegaFinal = "0";
                             db.SaveChanges();
+
+                            var DetallesRemover = db.DetReparacion.Where(a => a.idEncabezado == coleccion.EncReparacion.id).ToList();
+
+                            foreach (var item in DetallesRemover)
+                            {
+                                db.DetReparacion.Remove(item);
+                                db.SaveChanges();
+                            }
                         }
+                        else
+                        {
+                            throw new Exception("No se puede generar un movimiento con ningun repuesto");
+                        }
+                       
 
                     }
                     catch (Exception ex)
