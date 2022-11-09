@@ -207,7 +207,7 @@ namespace WATickets.Controllers
                       //  client.Lines.SetCurrentLine(i);
                         client.Lines.ItemCode = item.ItemCode.Split('|')[0].Trim();
                          
-                        client.Lines.Quantity = item.Cantidad;
+                        client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
 
                         
 
