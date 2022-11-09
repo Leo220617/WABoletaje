@@ -177,7 +177,7 @@ namespace WATickets.Controllers
                             foreach (var item in Det)
                             {
                                 client.Lines.ItemCode = item.ItemCode.Split('|')[0].Trim();
-                                client.Lines.Quantity = item.Cantidad;
+                                client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
                                 client.Lines.Add();
                                 i++;
                             }

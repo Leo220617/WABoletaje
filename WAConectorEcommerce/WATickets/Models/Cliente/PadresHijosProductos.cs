@@ -19,6 +19,6 @@ namespace WATickets.Models.Cliente
         [Column(Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int idProductoHijo { get; set; }
-        public int Cantidad { get; set; }
+        public decimal Cantidad { get; set; }
     }
 }
