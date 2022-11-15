@@ -172,6 +172,8 @@ namespace WATickets.Controllers
                             productos.Localizacion = item["localizacion"].ToString();
                             productos.Costo = Convert.ToDecimal(item["Costo"].ToString());
                             productos.PorMinimo = Convert.ToInt32(item["PorMinimo"].ToString());
+                            productos.Rate = Convert.ToDecimal(item["Rate"].ToString());
+
                             db.ProductosHijos.Add(productos);
                             db.SaveChanges();
                         }
@@ -203,6 +205,8 @@ namespace WATickets.Controllers
 
                             Prod.Costo = Convert.ToDecimal(item["Costo"].ToString());
                             Prod.PorMinimo = Convert.ToInt32(item["PorMinimo"].ToString());
+                            Prod.Rate = Convert.ToDecimal(item["Rate"].ToString());
+
                             db.SaveChanges();
                         }
                         catch (Exception ex1)
