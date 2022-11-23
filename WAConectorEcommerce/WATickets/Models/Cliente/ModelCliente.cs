@@ -44,6 +44,8 @@ namespace WATickets.Models.Cliente
         public virtual DbSet<CotizacionesAprobadas> CotizacionesAprobadas { get; set; }
 
         public virtual DbSet<Impuestos> Impuestos { get; set; }
+        public virtual DbSet<Asuntos> Asuntos { get; set; }
+
 
 
 
