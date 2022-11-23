@@ -607,6 +607,27 @@ namespace WATickets.Controllers
                             Det.idImpuesto = item.idImpuesto;
                             db.DetMovimiento.Add(Det);
                             db.SaveChanges();
+                            if (!item.ItemName.ToUpper().Contains("mano de obra".ToUpper()))
+                            {
+                                var Prod = db.ProductosHijos.Where(a => a.codSAP == item.ItemCode).FirstOrDefault();
+                                if (Prod != null)
+                                {
+                                    var idLLamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                                    var llamada = db.LlamadasServicios.Where(a => a.DocEntry == idLLamada).FirstOrDefault();
+                                    var ProdPadre = db.ProductosPadres.Where(a => a.codSAP == llamada.ItemCode).FirstOrDefault();
+                                    var ExisteEnPadre = db.PadresHijosProductos.Where(a => a.idProductoPadre == ProdPadre.id && a.idProductoHijo == Prod.id).FirstOrDefault();
+
+                                    if (ExisteEnPadre == null)
+                                    {
+                                        ExisteEnPadre = new PadresHijosProductos();
+                                        ExisteEnPadre.idProductoHijo = Prod.id;
+                                        ExisteEnPadre.idProductoPadre = ProdPadre.id;
+                                        ExisteEnPadre.Cantidad = item.Cantidad;
+                                        db.PadresHijosProductos.Add(ExisteEnPadre);
+                                        db.SaveChanges();
+                                    }
+                                }
+                            }
                         }
 
                     }
