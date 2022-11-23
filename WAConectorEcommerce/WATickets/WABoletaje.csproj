@@ -235,6 +235,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\AsuntosController.cs" />
     <Compile Include="Controllers\BackOfficeController.cs" />
     <Compile Include="Controllers\BitacoraController.cs" />
     <Compile Include="Controllers\BitacoraMovimientosController.cs" />
@@ -252,6 +253,7 @@
     <Compile Include="Controllers\G.cs" />
     <Compile Include="Controllers\GarantiasController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ImpuestosController.cs" />
     <Compile Include="Controllers\LlamadasServicioController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MovimientosController.cs" />
@@ -275,6 +277,7 @@
     <Compile Include="Models\BoletaViewModel.cs" />
     <Compile Include="Models\ClientesViewModel.cs" />
     <Compile Include="Models\Cliente\Adjuntos.cs" />
+    <Compile Include="Models\Cliente\Asuntos.cs" />
     <Compile Include="Models\Cliente\BackOffice.cs" />
     <Compile Include="Models\Cliente\BitacoraErrores.cs" />
     <Compile Include="Models\Cliente\BitacoraMovimientos.cs" />
@@ -290,6 +293,7 @@
     <Compile Include="Models\Cliente\EncReparacion.cs" />
     <Compile Include="Models\Cliente\Errores.cs" />
     <Compile Include="Models\Cliente\Garantias.cs" />
+    <Compile Include="Models\Cliente\Impuestos.cs" />
     <Compile Include="Models\Cliente\LlamadasServicios.cs" />
     <Compile Include="Models\Cliente\Login.cs" />
     <Compile Include="Models\Cliente\ModelCliente.cs" />
