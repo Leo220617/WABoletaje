@@ -586,6 +586,7 @@ namespace WATickets.Controllers
                             Det.Impuestos = item.Impuestos;
                             Det.TotalLinea = item.TotalLinea;
                             Det.Garantia = item.Garantia;
+                            Det.idImpuesto = item.idImpuesto;
                             db.SaveChanges();
                         }
                         else
@@ -603,6 +604,7 @@ namespace WATickets.Controllers
                             Det.Impuestos = item.Impuestos;
                             Det.TotalLinea = item.TotalLinea;
                             Det.Garantia = item.Garantia;
+                            Det.idImpuesto = item.idImpuesto;
                             db.DetMovimiento.Add(Det);
                             db.SaveChanges();
                         }
@@ -663,7 +665,8 @@ namespace WATickets.Controllers
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = Parametros.TaxCode;//"IVA-13";
+                            client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;//"IVA-13";
+
                             client.Lines.TaxOnly = BoYesNoEnum.tNO;
                             client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
                             client.Lines.Add();
@@ -749,7 +752,8 @@ namespace WATickets.Controllers
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = Parametros.TaxCode;// "IVA-13";
+                            client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+
                             client.Lines.TaxOnly = BoYesNoEnum.tNO;
                             client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
                             client.Lines.Add();
@@ -867,7 +871,8 @@ namespace WATickets.Controllers
                                 clientEntrega.Lines.ItemCode = item.ItemCode;
                                 clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                                 clientEntrega.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                                clientEntrega.Lines.TaxCode = Parametros.TaxCode;// "IVA-13";
+                                clientEntrega.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+
                                 clientEntrega.Lines.TaxOnly = BoYesNoEnum.tNO;
                                 clientEntrega.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
                                 clientEntrega.Lines.Add();
