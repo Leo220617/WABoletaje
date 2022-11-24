@@ -364,6 +364,7 @@ namespace WATickets.Controllers
                             encMovimiento.Descuento = 0;
                             encMovimiento.Impuestos = 0;
                             encMovimiento.TotalComprobante = 0;
+                            encMovimiento.Moneda = "COL";
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 
@@ -673,7 +674,7 @@ namespace WATickets.Controllers
                             encMovimiento.Impuestos = 0;
                             encMovimiento.TotalComprobante = 0;
                             encMovimiento.DocEntry = 0;
-
+                            encMovimiento.Moneda = "COL";
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 
@@ -868,6 +869,7 @@ namespace WATickets.Controllers
                             encMovimiento.Impuestos = 0;
                             encMovimiento.TotalComprobante = 0;
                             encMovimiento.DocEntry = 0;
+                            encMovimiento.Moneda = "COL";
 
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
