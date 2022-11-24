@@ -572,6 +572,14 @@ namespace WATickets.Controllers
                     EncMovimiento.Moneda = encMovimiento.Moneda;
                     db.SaveChanges();
 
+                    /// Probar funcionabilidad
+                    /// 
+                    var Detalles = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id).ToList();
+                    foreach (var item in Detalles)
+                    {
+                        db.DetMovimiento.Remove(item);
+                        db.SaveChanges();
+                    }
 
                     foreach (var item in encMovimiento.Detalle)
                     {
