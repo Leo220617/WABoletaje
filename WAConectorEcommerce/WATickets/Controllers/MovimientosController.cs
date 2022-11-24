@@ -435,6 +435,8 @@ namespace WATickets.Controllers
                         a.Descuento,
                         a.Impuestos,
                         a.TotalComprobante,
+                        a.Moneda,
+
                         Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
 
                     }
@@ -519,6 +521,7 @@ namespace WATickets.Controllers
                     a.Descuento,
                     a.Impuestos,
                     a.TotalComprobante,
+                    a.Moneda,
                     Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
 
                 }
