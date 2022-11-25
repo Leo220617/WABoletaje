@@ -278,6 +278,7 @@ namespace WATickets.Controllers
                             bodyH = bodyH.Replace("@Descuento", Math.Round(EncMovimiento.Descuento, 2).ToString());
                             bodyH = bodyH.Replace("@Impuestos", Math.Round(EncMovimiento.Impuestos, 2).ToString());
                             bodyH = bodyH.Replace("@TotalEntrega", Math.Round(EncMovimiento.TotalComprobante, 2).ToString());
+                            bodyH = bodyH.Replace("@PorDesc", EncMovimiento.PorDescuento.ToString());
 
 
 
