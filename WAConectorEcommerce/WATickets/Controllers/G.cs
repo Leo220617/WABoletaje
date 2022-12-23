@@ -53,7 +53,25 @@ namespace WATickets.Controllers
                 return "";
             }
         }
+        public string TruncarString(string v, int tamaño)
+        {
+            try
+            {
+                if(v.Length > tamaño)
+                {
+                    return v.Substring(0, tamaño);
+                }
+                else
+                {
+                    return v;
+                }
+            }
+            catch (Exception)
+            {
 
+                return v;
+            }
+        }
         public string DevuelveCadena(ModelCliente db)
         {
             try

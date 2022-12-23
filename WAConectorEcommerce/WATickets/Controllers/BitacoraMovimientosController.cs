@@ -19,6 +19,7 @@ namespace WATickets.Controllers
     public class BitacoraMovimientosController: ApiController
     {
         ModelCliente db = new ModelCliente();
+        G G = new G();
         //Este api es el encargado de llevar el control de los movimientos en cuanto a traslados
         public async Task<HttpResponseMessage> Get([FromUri] Filtros filtro)
         {
@@ -166,7 +167,7 @@ namespace WATickets.Controllers
                             }
 
                             client.CardCode = Llamada.CardCode;
-                            client.Comments = Encabezado.Comentarios;
+                            client.Comments = this.G.TruncarString(Encabezado.Comentarios,200);
                             client.UserFields.Fields.Item("U_TiendaDest").Value = BT.TipoMovimiento == 1 ? BT.BodegaInicial : BT.BodegaFinal;
                             client.UserFields.Fields.Item("U_DYD_Boleta").Value = db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault() == null ? Encabezado.idLlamada.ToString() : db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault().DocEntry.ToString();
 

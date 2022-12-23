@@ -662,7 +662,7 @@ namespace WATickets.Controllers
                         client.NumAtCard = EncMovimiento.NumLlamada; //orderid               
                         client.ReserveInvoice = BoYesNoEnum.tNO;
                         client.Series = Parametros.SerieOferta; //11; //11 quemado
-                        client.Comments = EncMovimiento.Comentarios; //direccion
+                        client.Comments = g.TruncarString( EncMovimiento.Comentarios,200); //direccion
                         client.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
                         var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
                         var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
@@ -751,7 +751,7 @@ namespace WATickets.Controllers
                         client.NumAtCard = EncMovimiento.NumLlamada; //orderid               
                         client.ReserveInvoice = BoYesNoEnum.tNO;
                         client.Series = Parametros.SerieEntrega;//3; //3 quemado
-                        client.Comments = EncMovimiento.Comentarios; //direccion
+                        client.Comments = g.TruncarString(EncMovimiento.Comentarios, 200);   //direccion
                         client.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
                         var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
                         var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
