@@ -213,7 +213,7 @@ namespace WATickets.Controllers
 
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = ex1.Message;
+                            be.Descripcion = ex1.Message + " " + itemcode;
                             be.StackTrace = ex1.StackTrace;
                             be.Fecha = DateTime.Now;
 
