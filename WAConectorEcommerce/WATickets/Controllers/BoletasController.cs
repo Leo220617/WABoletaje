@@ -18,7 +18,7 @@ using WATickets.Models.Cliente;
 namespace WATickets.Controllers
 {
     [Authorize]
-    public class BoletasController: ApiController
+    public class BoletasController : ApiController
     {
         ModelCliente db = new ModelCliente();
         G G = new G();
@@ -31,15 +31,15 @@ namespace WATickets.Controllers
             {
 
                 var Parametros = db.Parametros.FirstOrDefault();
-              
 
-                    try
-                    {
-                        //CompanyService companyService = Conexion.Company.GetCompanyService();
 
-                        var client = (CustomerEquipmentCards)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oCustomerEquipmentCards);
+                try
+                {
+                    //CompanyService companyService = Conexion.Company.GetCompanyService();
+
+                    var client = (CustomerEquipmentCards)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oCustomerEquipmentCards);
                     // var clientw  = (SAPbobsCOM.DepositsService)companyService.GetBusinessService(ServiceTypes.DepositsService);
-                    if(!string.IsNullOrEmpty(boleta.NoSerie))
+                    if (!string.IsNullOrEmpty(boleta.NoSerie))
                     {
                         client.InternalSerialNum = boleta.NoSerie;
 
@@ -48,48 +48,50 @@ namespace WATickets.Controllers
                     client.ItemCode = boleta.ItemCode;
                     client.CustomerCode = boleta.CardCode;
 
-                       
 
 
 
-                        var respuesta = client.Add();
 
-                        if (respuesta == 0)
-                        {
-                            Conexion.Desconectar();
-                        }
-                        else
-                        {
-                            BitacoraErrores be = new BitacoraErrores();
-                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
-                            be.StackTrace = "Tarjeta de Equipo";
-                            be.Fecha = DateTime.Now;
-                            db.BitacoraErrores.Add(be);
-                            db.SaveChanges();
-                            Conexion.Desconectar();
-                        }
+                    var respuesta = client.Add();
 
-
-
-                    }
-                    catch (Exception ex1)
+                    if (respuesta == 0)
                     {
-
                         Conexion.Desconectar();
+                    }
+                    else
+                    {
                         BitacoraErrores be = new BitacoraErrores();
-
-                        be.Descripcion = ex1.Message;
-                        be.StackTrace = ex1.StackTrace;
+                        be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                        be.StackTrace = "Tarjeta de Equipo";
                         be.Fecha = DateTime.Now;
-
                         db.BitacoraErrores.Add(be);
                         db.SaveChanges();
+                        Conexion.Desconectar();
                     }
 
-           
-                 
 
-                return Request.CreateResponse(HttpStatusCode.OK, boleta);
+                    return Request.CreateResponse(HttpStatusCode.OK, boleta);
+
+                }
+                catch (Exception ex1)
+                {
+
+                    Conexion.Desconectar();
+                    BitacoraErrores be = new BitacoraErrores();
+
+                    be.Descripcion = ex1.Message;
+                    be.StackTrace = ex1.StackTrace;
+                    be.Fecha = DateTime.Now;
+
+                    db.BitacoraErrores.Add(be);
+                    db.SaveChanges();
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, ex1.Message);
+
+                }
+
+
+
+
             }
             catch (Exception ex)
             {
@@ -101,7 +103,7 @@ namespace WATickets.Controllers
 
                 db.BitacoraErrores.Add(bit);
                 db.SaveChanges();
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
