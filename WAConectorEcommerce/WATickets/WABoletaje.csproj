@@ -65,7 +65,7 @@
     <Reference Include="Interop.SAPbobsCOM, Version=10.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>..\..\..\Interop.SAPbobsCOM.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\DYD\Interop.SAPbobsCOM.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.3\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -243,6 +243,7 @@
     <Compile Include="Controllers\BoletasController.cs" />
     <Compile Include="Controllers\ClientController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
+    <Compile Include="Controllers\ClientesProductosController.cs" />
     <Compile Include="Controllers\Conexion.cs" />
     <Compile Include="Controllers\ControlProductosController.cs" />
     <Compile Include="Controllers\CotizacionesAprobadasController.cs" />
@@ -257,6 +258,7 @@
     <Compile Include="Controllers\LlamadasServicioController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MovimientosController.cs" />
+    <Compile Include="Controllers\OrdenVentaController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\ProductosHijosController.cs" />
     <Compile Include="Controllers\ProductosPadresController.cs" />
@@ -286,9 +288,11 @@
     <Compile Include="Models\Cliente\CotizacionesAprobadas.cs" />
     <Compile Include="Models\Cliente\DetBitacoraMovimientos.cs" />
     <Compile Include="Models\Cliente\DetMovimiento.cs" />
+    <Compile Include="Models\Cliente\DetOrden.cs" />
     <Compile Include="Models\Cliente\DetReparacion.cs" />
     <Compile Include="Models\Cliente\Diagnosticos.cs" />
     <Compile Include="Models\Cliente\EncMovimiento.cs" />
+    <Compile Include="Models\Cliente\EncOrden.cs" />
     <Compile Include="Models\Cliente\EncReparacion.cs" />
     <Compile Include="Models\Cliente\Errores.cs" />
     <Compile Include="Models\Cliente\Garantias.cs" />
@@ -315,6 +319,7 @@
     <Compile Include="Models\html.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LlamadasServicioViewModel.cs" />
+    <Compile Include="Models\OrdenVenta.cs" />
     <Compile Include="Models\ProductosBoleta.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />

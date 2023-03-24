@@ -103,6 +103,7 @@ namespace WATickets.Controllers
                     de.Email = Usuario.Email;
                     de.CodigoVendedor = Usuario.CardCode;
                     de.token = token;
+                    de.Bodega = Usuario.Bodega;
                     de.Seguridad = SeguridadModulos;
 
                     return Request.CreateResponse(HttpStatusCode.OK, de);
@@ -136,6 +137,7 @@ namespace WATickets.Controllers
                 Usuario.idRol = usuario.idRol;
                 Usuario.Clave = BCrypt.Net.BCrypt.HashPassword(usuario.Clave);
                 Usuario.CardCode = usuario.CardCode;
+                Usuario.Bodega = usuario.Bodega;
                 db.Login.Add(Usuario);
                 db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.OK);
@@ -192,7 +194,10 @@ namespace WATickets.Controllers
                 {
                     Usuario.CardCode = usuario.CardCode;
                 }
-                   
+                if (!string.IsNullOrEmpty(usuario.Bodega))
+                {
+                    Usuario.Bodega = usuario.Bodega;
+                }
 
                 db.SaveChanges();
 
@@ -284,6 +289,7 @@ namespace WATickets.Controllers
         public string Clave { get; set; }
         public string CodigoVendedor { get; set; }
         public string token { get; set; }
+        public string Bodega { get; set; }
         public List<SeguridadRolesModulos> Seguridad { get; set; }
     }
 }

@@ -26,5 +26,7 @@ namespace WATickets.Models.Cliente
 
         [StringLength(10)]
         public string CardCode { get; set; }
+
+        public string Bodega { get; set; }
     }
 }
