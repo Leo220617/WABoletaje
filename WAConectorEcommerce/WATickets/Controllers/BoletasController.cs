@@ -31,6 +31,24 @@ namespace WATickets.Controllers
             {
 
                 var Parametros = db.Parametros.FirstOrDefault();
+                var conexion = G.DevuelveCadena(db); //aqui extraemos la informacion de la tabla de sap para hacerle un query a sap
+
+                var SQL = Parametros.SQLProductos + " where itemCode = '" + boleta.ItemCode + "' and manufSN = '" + boleta.NoSerieFabricante + "' and internalSN = '" + boleta.NoSerie + "'"; //Preparo el query
+
+                SqlConnection Cn = new SqlConnection(conexion);
+                SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                DataSet Ds = new DataSet();
+                Cn.Open(); //se abre la conexion
+                Da.Fill(Ds, "Productos");
+
+                if (Ds.Tables["Productos"].Rows.Count > 0)
+                {
+                    throw new Exception("El producto " + boleta.ItemCode + " ya contiene la serie indicada (" + boleta.NoSerie + ")");
+                }
+
+                Cn.Close();
+                Cn.Dispose();
 
 
                 try
@@ -88,6 +106,9 @@ namespace WATickets.Controllers
                     return Request.CreateResponse(HttpStatusCode.InternalServerError, ex1.Message);
 
                 }
+
+
+
 
 
 

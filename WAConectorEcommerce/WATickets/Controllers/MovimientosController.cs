@@ -130,7 +130,8 @@ namespace WATickets.Controllers
                                 bodyH = bodyH.Replace("@Fecha", EncMovimiento.Fecha.ToString("dd/MM/yyyy"));
                                 EmailDestino = Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString();
 
-                                bodyH = bodyH.Replace("@PorDesc", EncMovimiento.PorDescuento.ToString());
+                                bodyH = bodyH.Replace("@PorDesc", Math.Round(EncMovimiento.PorDescuento, 2).ToString());
+
 
                             bodyH = bodyH.Replace("@Subtotal", Math.Round(EncMovimiento.Subtotal, 2).ToString());
                             bodyH = bodyH.Replace("@Descuento", Math.Round(EncMovimiento.Descuento, 2).ToString());
@@ -263,7 +264,7 @@ namespace WATickets.Controllers
                                 html Html = new html();
                                 var bodyH = Html.textoEntrega;
                                 bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
-                                bodyH = bodyH.Replace("@Telefono", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
+                                bodyH = bodyH.Replace("@TelefonoCliente", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
                                 bodyH = bodyH.Replace("@Celular", "      ");
                                 bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
                                 bodyH = bodyH.Replace("@NumBoleta", EncMovimiento.NumLlamada);
@@ -278,7 +279,7 @@ namespace WATickets.Controllers
                             bodyH = bodyH.Replace("@Descuento", Math.Round(EncMovimiento.Descuento, 2).ToString());
                             bodyH = bodyH.Replace("@Impuestos", Math.Round(EncMovimiento.Impuestos, 2).ToString());
                             bodyH = bodyH.Replace("@TotalEntrega", Math.Round(EncMovimiento.TotalComprobante, 2).ToString());
-                            bodyH = bodyH.Replace("@PorDesc", EncMovimiento.PorDescuento.ToString());
+                            bodyH = bodyH.Replace("@PorDesc", Math.Round(EncMovimiento.PorDescuento, 2).ToString());
 
 
 
