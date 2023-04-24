@@ -410,6 +410,8 @@ namespace WATickets.Controllers
                         client.ItemCode = Llamada.ItemCode;
                         client.UserFields.Fields.Item("U_TPCASO").Value = Llamada.TipoCaso.Value.ToString();
 
+
+                      
                         if (Llamada.FechaSISO != null)
                         {
                             client.UserFields.Fields.Item("U_SISO").Value = Llamada.FechaSISO.Value;
@@ -846,7 +848,11 @@ namespace WATickets.Controllers
 
                             client.AssigneeCode = Llamada.TratadoPor.Value;
 
-
+                            var Status = db.Status.Where(a => a.Nombre.ToLower().Contains("cerrado")).FirstOrDefault() == null ? "0" : db.Status.Where(a => a.Nombre.ToLower().Contains("cerrado")).FirstOrDefault().idSAP;
+                            if (Convert.ToInt32(Status) == Llamada.Status)
+                            {
+                                client.Resolution = Llamada.Comentarios;
+                            }
 
 
                             //client.CallType = Llamada.Garantia.Value;
