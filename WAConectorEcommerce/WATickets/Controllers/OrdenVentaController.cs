@@ -31,6 +31,7 @@ namespace WATickets.Controllers
                 var Orden = db.EncOrden.Select(a => new {
 
                     a.id,
+                    a.BaseEntry,
                     a.DocEntry,
                     a.DocNum,
                     a.CardCode,
@@ -82,6 +83,8 @@ namespace WATickets.Controllers
                 {
 
                     a.id,
+                    a.BaseEntry,
+
                     a.DocEntry,
                     a.DocNum,
                     a.CardCode, 
@@ -133,6 +136,7 @@ namespace WATickets.Controllers
                 if (EncOrden == null)
                 {
                     EncOrden = new EncOrden();
+                    EncOrden.BaseEntry = orden.BaseEntry;
                     EncOrden.CardCode = orden.CardCode;
                     EncOrden.Moneda = orden.Moneda;
                     EncOrden.Fecha = orden.Fecha;
@@ -162,6 +166,8 @@ namespace WATickets.Controllers
                         DetOrden.TaxOnly = item.TaxOnly;
                         DetOrden.PrecioUnitario = item.PrecioUnitario;
                         DetOrden.Total = item.Total;
+                        var Imp = Decimal.Parse(item.Impuesto);
+                        DetOrden.TaxCode = db.Impuestos.Where(a => a.Tarifa == Imp).FirstOrDefault() == null ? "IVA-13" : db.Impuestos.Where(a => a.Tarifa == Imp).FirstOrDefault().CodSAP;
                         db.DetOrden.Add(DetOrden);
                         db.SaveChanges();
 
@@ -175,10 +181,8 @@ namespace WATickets.Controllers
                         client.DocObjectCode = BoObjectTypes.oOrders;
                         client.CardCode = EncOrden.CardCode;
                         client.DocCurrency = EncOrden.Moneda;
-                        client.DocDate = EncOrden.FechaVencimiento;
-                        client.DocDueDate = EncOrden.FechaEntrega;
-                        client.TaxDate = EncOrden.Fecha;
-
+                        client.DocDate = EncOrden.Fecha;
+                        client.DocDueDate = EncOrden.FechaVencimiento;
                         client.DocNum = 0;
                         if (EncOrden.TipoDocumento == "I")
                         {
@@ -198,18 +202,22 @@ namespace WATickets.Controllers
                         client.SalesPersonCode = EncOrden.CodVendedor;
 
 
+                        var Detalle = db.DetOrden.Where(a => a.idEncabezado == EncOrden.id).ToList();
+
                         int z = 0;
-                        foreach (var item in orden.Detalle)
+                        foreach (var item in Detalle)
                         {
                             client.Lines.SetCurrentLine(z);
-
+                            client.Lines.CostingCode = "";
+                            client.Lines.CostingCode2 = "";
+                            client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
+                            client.Lines.CostingCode4 = "";
+                            client.Lines.CostingCode5 = "";
                             client.Lines.Currency = EncOrden.Moneda;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorcentajeDescuento);
-                            int id = int.Parse(item.ItemCode);
-                            //var prod = db.Inventario.Where(a => a.id == id).FirstOrDefault();
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = item.Impuesto;
+                            client.Lines.TaxCode = item.TaxCode;
                             client.Lines.TaxOnly = item.TaxOnly == true ? BoYesNoEnum.tYES : BoYesNoEnum.tNO;
 
 
@@ -318,12 +326,16 @@ namespace WATickets.Controllers
                         foreach (var item in Detalle)
                         {
                             client.Lines.SetCurrentLine(z);
-
+                            client.Lines.CostingCode = "";
+                            client.Lines.CostingCode2 = "";
+                            client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
+                            client.Lines.CostingCode4 = "";
+                            client.Lines.CostingCode5 = "";
                             client.Lines.Currency = EncOrden.Moneda;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorcentajeDescuento);
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = item.Impuesto;
+                            client.Lines.TaxCode = item.TaxCode;
                             client.Lines.TaxOnly = item.TaxOnly == true ? BoYesNoEnum.tYES : BoYesNoEnum.tNO;
 
 

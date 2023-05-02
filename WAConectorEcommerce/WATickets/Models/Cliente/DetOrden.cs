@@ -21,5 +21,6 @@ namespace WATickets.Models.Cliente
         public bool TaxOnly { get; set; }
         public decimal PrecioUnitario { get; set; }
         public decimal Total { get; set; }
+        public string TaxCode { get; set; }
     }
 }

@@ -48,16 +48,10 @@ namespace WATickets.Models.Cliente
         public virtual DbSet<DetOrden> DetOrden { get; set; }
 
 
+        public virtual DbSet<EncOferta> EncOferta { get; set; }
+        public virtual DbSet<DetOferta> DetOferta { get; set; }
 
-
-
-
-
-
-
-
-
-
+         
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BitacoraErrores>()

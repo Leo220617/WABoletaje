@@ -258,6 +258,7 @@
     <Compile Include="Controllers\LlamadasServicioController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MovimientosController.cs" />
+    <Compile Include="Controllers\OfertaVentaController.cs" />
     <Compile Include="Controllers\OrdenVentaController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\ProductosHijosController.cs" />
@@ -288,10 +289,12 @@
     <Compile Include="Models\Cliente\CotizacionesAprobadas.cs" />
     <Compile Include="Models\Cliente\DetBitacoraMovimientos.cs" />
     <Compile Include="Models\Cliente\DetMovimiento.cs" />
+    <Compile Include="Models\Cliente\DetOferta.cs" />
     <Compile Include="Models\Cliente\DetOrden.cs" />
     <Compile Include="Models\Cliente\DetReparacion.cs" />
     <Compile Include="Models\Cliente\Diagnosticos.cs" />
     <Compile Include="Models\Cliente\EncMovimiento.cs" />
+    <Compile Include="Models\Cliente\EncOferta.cs" />
     <Compile Include="Models\Cliente\EncOrden.cs" />
     <Compile Include="Models\Cliente\EncReparacion.cs" />
     <Compile Include="Models\Cliente\Errores.cs" />
@@ -319,6 +322,7 @@
     <Compile Include="Models\html.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LlamadasServicioViewModel.cs" />
+    <Compile Include="Models\OfertaVenta.cs" />
     <Compile Include="Models\OrdenVenta.cs" />
     <Compile Include="Models\ProductosBoleta.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
