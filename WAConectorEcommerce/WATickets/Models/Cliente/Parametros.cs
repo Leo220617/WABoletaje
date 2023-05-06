@@ -24,5 +24,8 @@ namespace WATickets.Models.Cliente
         public string CostingCode { get; set; }
         public int SerieOferta { get; set; }
         public int SerieEntrega { get; set; }
+        public string SQLClientesOrdenes { get; set; }
+        public string SQLProductosOrdenes { get; set; }
+        public int SeriesOrdenVenta { get; set; }
     }
 }

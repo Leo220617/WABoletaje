@@ -173,7 +173,6 @@ namespace WATickets.Controllers
                             productos.Costo = Convert.ToDecimal(item["Costo"].ToString());
                             productos.PorMinimo = Convert.ToInt32(item["PorMinimo"].ToString());
                             productos.Rate = Convert.ToDecimal(item["Rate"].ToString());
-
                             db.ProductosHijos.Add(productos);
                             db.SaveChanges();
                         }
@@ -214,7 +213,7 @@ namespace WATickets.Controllers
 
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = ex1.Message;
+                            be.Descripcion = ex1.Message + " " + itemcode;
                             be.StackTrace = ex1.StackTrace;
                             be.Fecha = DateTime.Now;
 

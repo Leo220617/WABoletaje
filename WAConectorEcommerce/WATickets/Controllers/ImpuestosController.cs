@@ -22,12 +22,12 @@ namespace WATickets.Controllers
         public async Task<HttpResponseMessage> Get([FromUri] Filtros filtro)
         {
             try
-            {
-
+            { 
+                
 
                 var impuestos = db.Impuestos.ToList();
 
-
+                
 
                 return Request.CreateResponse(HttpStatusCode.OK, impuestos);
 
@@ -129,7 +129,7 @@ namespace WATickets.Controllers
                 if (Impuesto != null)
                 {
                     db.Entry(Impuesto).State = EntityState.Modified;
-
+                   
                     Impuesto.CodSAP = impuesto.CodSAP;
                     Impuesto.Tarifa = impuesto.Tarifa;
 

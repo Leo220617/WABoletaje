@@ -89,7 +89,7 @@ namespace WATickets.Controllers
                 {
                     Asunto = new Asuntos();
                     Asunto.Asunto = asunto.Asunto;
-
+                    
                     db.Asuntos.Add(Asunto);
                     db.SaveChanges();
 
@@ -129,7 +129,7 @@ namespace WATickets.Controllers
                 {
                     db.Entry(Asunto).State = EntityState.Modified;
 
-                    Asunto.Asunto = asunto.Asunto;
+                    Asunto.Asunto = asunto.Asunto; 
 
                     db.SaveChanges();
 

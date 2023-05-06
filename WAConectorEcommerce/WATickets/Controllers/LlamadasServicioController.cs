@@ -243,7 +243,8 @@ namespace WATickets.Controllers
                     bodyH = bodyH.Replace("@DiagnosticosDelCliente", Llamada.Asunto);
                     bodyH = bodyH.Replace("@Observaciones", Llamada.Comentarios);
                     bodyH = bodyH.Replace("@NumBoleta", Llamada.DocEntry.ToString());
-                    bodyH = bodyH.Replace("@Imagen", "<img src="+Llamada.Firma+" width='100'   />");
+                  //  bodyH = bodyH.Replace("@Imagen", "<img src="+Llamada.Firma+" width='100' style='margin-left: -50%;' />");
+                    bodyH = bodyH.Replace("@Imagen", "<img src=" + Llamada.Firma + " width='100'   />");
 
 
                     Cn.Close();
@@ -306,7 +307,7 @@ namespace WATickets.Controllers
             catch (Exception ex)
             {
 
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -409,6 +410,8 @@ namespace WATickets.Controllers
                         client.ItemCode = Llamada.ItemCode;
                         client.UserFields.Fields.Item("U_TPCASO").Value = Llamada.TipoCaso.Value.ToString();
 
+
+                      
                         if (Llamada.FechaSISO != null)
                         {
                             client.UserFields.Fields.Item("U_SISO").Value = Llamada.FechaSISO.Value;
@@ -845,7 +848,11 @@ namespace WATickets.Controllers
 
                             client.AssigneeCode = Llamada.TratadoPor.Value;
 
-
+                            var Status = db.Status.Where(a => a.Nombre.ToLower().Contains("cerrado")).FirstOrDefault() == null ? "0" : db.Status.Where(a => a.Nombre.ToLower().Contains("cerrado")).FirstOrDefault().idSAP;
+                            if (Convert.ToInt32(Status) == Llamada.Status)
+                            {
+                                client.Resolution = Llamada.Comentarios;
+                            }
 
 
                             //client.CallType = Llamada.Garantia.Value;

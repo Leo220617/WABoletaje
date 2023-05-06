@@ -57,7 +57,7 @@ namespace WATickets.Controllers
         {
             try
             {
-                if(v.Length > tamaño)
+                if (v.Length > tamaño)
                 {
                     return v.Substring(0, tamaño);
                 }

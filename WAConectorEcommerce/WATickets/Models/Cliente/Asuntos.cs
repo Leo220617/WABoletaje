@@ -1,4 +1,5 @@
 ﻿ 
+
 namespace WATickets.Models.Cliente
 {
     using System;

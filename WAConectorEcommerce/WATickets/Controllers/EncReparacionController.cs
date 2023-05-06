@@ -607,9 +607,9 @@ namespace WATickets.Controllers
                         }
                         else
                         {
-                            throw new Exception("No se puede generar un movimiento con ningun repuesto");
+                            throw new Exception("No se puede generar un traslado con ningun repuesto");
                         }
-                       
+                        
 
                     }
                     catch (Exception ex)
@@ -870,6 +870,7 @@ namespace WATickets.Controllers
                             encMovimiento.TotalComprobante = 0;
                             encMovimiento.DocEntry = 0;
                             encMovimiento.Moneda = "COL";
+
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 
