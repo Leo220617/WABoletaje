@@ -46,6 +46,7 @@ namespace WATickets.Models.Cliente
         public virtual DbSet<Asuntos> Asuntos { get; set; }
         public virtual DbSet<EncOrden> EncOrden { get; set; }
         public virtual DbSet<DetOrden> DetOrden { get; set; }
+        public virtual DbSet<AdjuntosIdentificacion> AdjuntosIdentificacion { get; set; }
 
         public virtual DbSet<Impuestos> Impuestos { get; set; }
         public virtual DbSet<Asuntos> Asuntos { get; set; }

@@ -35,6 +35,8 @@ namespace WATickets.Controllers
                 var EncReparacion = db.EncReparacion.Select(a => new
                 {
                     a.id,
+                    idLlamada2 = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().id == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().id,
+                     
                     idLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry,
                     a.idTecnico,
                     a.idDiagnostico,
@@ -49,7 +51,8 @@ namespace WATickets.Controllers
                     a.BodegaFinal,
                   
                     Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
-                    Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList()
+                    Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
+                    AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
                 })
                     
                     .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)).ToList();
@@ -93,7 +96,10 @@ namespace WATickets.Controllers
                     }
 
                 }
-
+                if(filtro.Codigo4 > 0)
+                {
+                    EncReparacion = EncReparacion.Where(a => a.idLlamada2 == filtro.Codigo4).ToList();
+                }
                 return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
 
             }
@@ -135,7 +141,9 @@ namespace WATickets.Controllers
                     a.BodegaOrigen,
                     a.BodegaFinal,
                     Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
-                    Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList()
+                    Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
+                    AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
+
                 }).Where(a => a.id == id).FirstOrDefault();
 
 
