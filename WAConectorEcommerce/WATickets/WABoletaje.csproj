@@ -279,6 +279,7 @@
     <Compile Include="Models\BoletaViewModel.cs" />
     <Compile Include="Models\ClientesViewModel.cs" />
     <Compile Include="Models\Cliente\Adjuntos.cs" />
+    <Compile Include="Models\Cliente\AdjuntosIdentificacion.cs" />
     <Compile Include="Models\Cliente\Asuntos.cs" />
     <Compile Include="Models\Cliente\BackOffice.cs" />
     <Compile Include="Models\Cliente\BitacoraErrores.cs" />
