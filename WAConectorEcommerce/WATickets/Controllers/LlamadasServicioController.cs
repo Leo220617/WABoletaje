@@ -685,16 +685,20 @@ namespace WATickets.Controllers
                     Llamada.ProcesadaSAP = false;
                     db.SaveChanges();
                     var enc2 = db.EncReparacion.Where(a => a.idLlamada == llamada.id).FirstOrDefault();
-                    foreach (var item in llamada.AdjuntosIdentificacion)
+                    if(llamada.AdjuntosIdentificacion != null)
                     {
-                        AdjuntosIdentificacion adjunto = new AdjuntosIdentificacion();
-                        adjunto.idEncabezado = enc2.id;
+                        foreach (var item in llamada.AdjuntosIdentificacion)
+                        {
+                            AdjuntosIdentificacion adjunto = new AdjuntosIdentificacion();
+                            adjunto.idEncabezado = enc2.id;
 
-                        byte[] hex = Convert.FromBase64String(item.base64.Replace("data:image/jpeg;base64,", "").Replace("data:image/png;base64,", ""));
-                        adjunto.base64 = hex;
-                        db.AdjuntosIdentificacion.Add(adjunto);
-                        db.SaveChanges();
+                            byte[] hex = Convert.FromBase64String(item.base64.Replace("data:image/jpeg;base64,", "").Replace("data:image/png;base64,", ""));
+                            adjunto.base64 = hex;
+                            db.AdjuntosIdentificacion.Add(adjunto);
+                            db.SaveChanges();
+                        }
                     }
+                  
 
                     try
                     {
