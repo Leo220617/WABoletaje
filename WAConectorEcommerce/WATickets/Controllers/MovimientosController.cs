@@ -27,7 +27,7 @@ namespace WATickets.Controllers
 
         [Route("api/Movimientos/GenerarAprobacion")]
         [HttpGet]
-        public HttpResponseMessage GetCorreo([FromUri]int id)
+        public HttpResponseMessage GetAprobacion([FromUri]int id)
         {
             try
             {///Alt + 125 }
@@ -54,7 +54,21 @@ namespace WATickets.Controllers
                         coti.idEncabezado = Convert.ToInt32(EncMovimiento.NumLlamada);
                         coti.ItemCode = item.ItemCode + " | " + item.ItemName;
                         coti.Cantidad = item.Cantidad;
+                        coti.Opcional = item.Opcional;
                         db.CotizacionesAprobadas.Add(coti);
+                        db.SaveChanges();
+                    }
+
+
+                    db.Entry(EncMovimiento).State = EntityState.Modified;
+                    EncMovimiento.Aprobada = true;
+                    db.SaveChanges();
+
+                    var MovimientosAnteriores = db.EncMovimiento.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && (a.TipoMovimiento == 1 || a.TipoMovimiento == 3) && a.id != EncMovimiento.id).ToList();
+                    foreach (var item in MovimientosAnteriores)
+                    {
+                        db.Entry(item).State = EntityState.Modified;
+                        item.Aprobada = false;
                         db.SaveChanges();
                     }
 
@@ -162,7 +176,7 @@ namespace WATickets.Controllers
             try
             {///Alt + 125 }
                 var EncMovimiento = db.EncMovimiento.Where(a => a.id == id).FirstOrDefault();
-
+                var Moneda = EncMovimiento.Moneda == "COL" ? "₡" : "$";
                 if (EncMovimiento != null)
                 {
                     if (EncMovimiento.TipoMovimiento == 1 || EncMovimiento.TipoMovimiento == 3)
@@ -207,10 +221,10 @@ namespace WATickets.Controllers
                             bodyH = bodyH.Replace("@PorDesc", Math.Round(EncMovimiento.PorDescuento, 2).ToString());
 
 
-                            bodyH = bodyH.Replace("@Subtotal", Math.Round(EncMovimiento.Subtotal, 2).ToString());
-                            bodyH = bodyH.Replace("@Descuento", Math.Round(EncMovimiento.Descuento, 2).ToString());
-                            bodyH = bodyH.Replace("@Impuestos", Math.Round(EncMovimiento.Impuestos, 2).ToString());
-                            bodyH = bodyH.Replace("@Total", Math.Round(EncMovimiento.TotalComprobante, 2).ToString());
+                            bodyH = bodyH.Replace("@Subtotal", Moneda + Math.Round(EncMovimiento.Subtotal, 2).ToString());
+                            bodyH = bodyH.Replace("@Descuento", Moneda + Math.Round(EncMovimiento.Descuento, 2).ToString());
+                            bodyH = bodyH.Replace("@Impuestos", Moneda + Math.Round(EncMovimiento.Impuestos, 2).ToString());
+                            bodyH = bodyH.Replace("@Total", Moneda + Math.Round(EncMovimiento.TotalComprobante, 2).ToString());
 
 
 
@@ -230,14 +244,14 @@ namespace WATickets.Controllers
                                 if (z == 0)
                                 {
 
-                                    inyectado = Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Math.Round(item.TotalLinea, 2).ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
+                                    inyectado = Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
                                 }
                                 else
                                 {
                                     top1 += 20;
 
-                                    inyectado += Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Math.Round(item.TotalLinea, 2).ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
+                                    inyectado += Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                 }
@@ -349,10 +363,10 @@ namespace WATickets.Controllers
 
                             bodyH = bodyH.Replace("@NumContacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
 
-                            bodyH = bodyH.Replace("@SubTotal", Math.Round(EncMovimiento.Subtotal, 2).ToString());
-                            bodyH = bodyH.Replace("@Descuento", Math.Round(EncMovimiento.Descuento, 2).ToString());
-                            bodyH = bodyH.Replace("@Impuestos", Math.Round(EncMovimiento.Impuestos, 2).ToString());
-                            bodyH = bodyH.Replace("@TotalEntrega", Math.Round(EncMovimiento.TotalComprobante, 2).ToString());
+                            bodyH = bodyH.Replace("@SubTotal", Moneda + Math.Round(EncMovimiento.Subtotal, 2).ToString());
+                            bodyH = bodyH.Replace("@Descuento", Moneda + Math.Round(EncMovimiento.Descuento, 2).ToString());
+                            bodyH = bodyH.Replace("@Impuestos", Moneda + Math.Round(EncMovimiento.Impuestos, 2).ToString());
+                            bodyH = bodyH.Replace("@TotalEntrega", Moneda + Math.Round(EncMovimiento.TotalComprobante, 2).ToString());
                             bodyH = bodyH.Replace("@PorDesc", Math.Round(EncMovimiento.PorDescuento, 2).ToString());
 
 
@@ -377,7 +391,7 @@ namespace WATickets.Controllers
                             {
                                 if (z == 0)
                                 {
-                                    inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Math.Round(item.TotalLinea, 2).ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+                                    inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                 }
@@ -385,7 +399,7 @@ namespace WATickets.Controllers
                                 {
                                     top1 += 23;
                                     top2 += 23;
-                                    inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Math.Round(item.TotalLinea, 2).ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+                                    inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                 }
@@ -676,7 +690,7 @@ namespace WATickets.Controllers
                                 Det.TotalLinea = item.TotalLinea;
                                 Det.Garantia = item.Garantia;
                                 Det.idImpuesto = item.idImpuesto;
-
+                                Det.Opcional = item.Opcional;
                                 db.SaveChanges();
                             }
                             else
@@ -695,6 +709,7 @@ namespace WATickets.Controllers
                                 Det.TotalLinea = item.TotalLinea;
                                 Det.Garantia = item.Garantia;
                                 Det.idImpuesto = item.idImpuesto;
+                                Det.Opcional = item.Opcional;
 
                                 db.DetMovimiento.Add(Det);
                                 db.SaveChanges();
@@ -735,6 +750,7 @@ namespace WATickets.Controllers
                         EncMovimiento.TotalComprobante = encMovimiento.TotalComprobante;
                         EncMovimiento.Comentarios = encMovimiento.Comentarios;
                         EncMovimiento.Moneda = encMovimiento.Moneda;
+                        EncMovimiento.Aprobada = false;
                         db.EncMovimiento.Add(EncMovimiento);
                         db.SaveChanges();
 
@@ -747,7 +763,7 @@ namespace WATickets.Controllers
                         foreach (var item in encMovimiento.Detalle)
                         {
 
-                           var Det = new DetMovimiento();
+                            var Det = new DetMovimiento();
                             Det.idEncabezado = EncMovimiento.id;
                             Det.idError = 0;
                             Det.NumLinea = item.NumLinea;
@@ -761,6 +777,7 @@ namespace WATickets.Controllers
                             Det.TotalLinea = item.TotalLinea;
                             Det.Garantia = item.Garantia;
                             Det.idImpuesto = item.idImpuesto;
+                            Det.Opcional = item.Opcional;
 
                             db.DetMovimiento.Add(Det);
                             db.SaveChanges();
@@ -797,7 +814,7 @@ namespace WATickets.Controllers
                     throw new Exception("EncMovimiento no existe");
                 }
 
-
+                // PAra mandar a SAP
                 if (encMovimiento.Generar)
                 {
                     if ((EncMovimiento.TipoMovimiento == 1 || EncMovimiento.TipoMovimiento == 3) && db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).Count() > 0)
@@ -910,120 +927,263 @@ namespace WATickets.Controllers
                     }
                     else
                     {
-                        var client = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
-                        client.DocObjectCode = BoObjectTypes.oDeliveryNotes;
-                        client.CardCode = EncMovimiento.CardCode;
-                        client.DocCurrency = EncMovimiento.Moneda; //"COL";
-                        client.DocDate = EncMovimiento.Fecha; //listo
-                        client.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
-                        client.DocNum = 0; //automatico
-                        client.DocType = BoDocumentTypes.dDocument_Items;
-                        client.HandWritten = BoYesNoEnum.tNO;
-                        client.NumAtCard = EncMovimiento.NumLlamada; //orderid               
-                        client.ReserveInvoice = BoYesNoEnum.tNO;
-                        client.Series = Parametros.SerieEntrega;//3; //3 quemado
-                        client.Comments = g.TruncarString(EncMovimiento.Comentarios, 200); //direccion
-                        client.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
-                        var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
-                        var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
-                        var Tec = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
-                        var Tecnico = db.Tecnicos.Where(a => a.idSAP == Tec).FirstOrDefault();
-
-                        client.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico); // Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
-                        if (Tecnico.Letra > 0)
-                        {
-                            client.SalesPersonCode = Tecnico.Letra;
-                        }
-                        client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
-
                         var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).ToList();
-                        var i = 0;
-                        foreach (var item in DetalleSAP)
+                        var CumpleParaOrden = (DetalleSAP.Count() == 1 && DetalleSAP.Where(a => a.ItemName.ToLower().Contains("mano de obra")).FirstOrDefault() != null);
+                        if (CumpleParaOrden)
                         {
-                            client.Lines.SetCurrentLine(i);
-                            client.Lines.CostingCode = "";
-                            client.Lines.CostingCode2 = "";
-                            client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
-                            client.Lines.CostingCode4 = "";
-                            client.Lines.CostingCode5 = "";
-                            client.Lines.Currency = EncMovimiento.Moneda; //"COL";
-                            client.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
-                            client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
-                            client.Lines.ItemCode = item.ItemCode;
-                            client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
-                            client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
-                            client.Lines.TaxOnly = BoYesNoEnum.tNO;
-                            client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
-                            client.Lines.Add();
+                            var orden = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oOrders);
+                            orden.DocObjectCode = BoObjectTypes.oOrders;
+                            orden.CardCode = EncMovimiento.CardCode;
+                            orden.DocCurrency = EncMovimiento.Moneda; //"COL";
+                            orden.DocDate = EncMovimiento.Fecha; //listo
+                            orden.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
+                            orden.DocNum = 0; //automatico
+                            orden.DocType = BoDocumentTypes.dDocument_Items;
+                            orden.HandWritten = BoYesNoEnum.tNO;
+                            orden.NumAtCard = EncMovimiento.NumLlamada; //orderid               
+                            orden.ReserveInvoice = BoYesNoEnum.tNO;
+                            orden.Series = Parametros.SeriesOrdenVenta;//3; //3 quemado
+                            orden.Comments = g.TruncarString(EncMovimiento.Comentarios, 200); //direccion
+                            orden.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion 
+                            var LlamO = Convert.ToInt32(EncMovimiento.NumLlamada);
+                            var LlamadaO2 = db.LlamadasServicios.Where(a => a.DocEntry == LlamO).FirstOrDefault();
+                            var Tec2 = LlamadaO2.Tecnico == null ? "" : LlamadaO2.Tecnico.ToString();
+                            var Tecnico2 = db.Tecnicos.Where(a => a.idSAP == Tec2).FirstOrDefault();
 
-
-                            i++;
-                        }
-
-                        var respuesta = client.Add();
-
-                        if (respuesta == 0)
-                        {
-                            db.Entry(EncMovimiento).State = EntityState.Modified;
-                            EncMovimiento.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
-                            db.SaveChanges();
-                            var idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
-                            var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
-                            if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
+                            orden.DocumentsOwner = Convert.ToInt32(LlamadaO2.Tecnico); // Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
+                            if (Tecnico2.Letra > 0)
                             {
-                                if (client2.Expenses.Count > 0)
-                                {
-                                    client2.Expenses.Add();
-                                }
-                                client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Delivery;
-                                client2.Expenses.DocumentNumber = idEntry;
-                                client2.Expenses.DocEntry = idEntry;
+                                orden.SalesPersonCode = Tecnico2.Letra;
+                            }
+                            orden.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
 
-                                if (client2.Expenses.Count == 0)
-                                {
-                                    client2.Expenses.Add();
-                                }
-                                client2.Expenses.Add();
-                                var respuesta2 = client2.Update();
-                                if (respuesta2 == 0)
-                                {
-                                    Conexion.Desconectar();
-                                }
-                                else
-                                {
-                                    BitacoraErrores be = new BitacoraErrores();
+                            var ii = 0;
+                            foreach (var item in DetalleSAP)
+                            {
+                                orden.Lines.SetCurrentLine(ii);
+                                orden.Lines.CostingCode = "";
+                                orden.Lines.CostingCode2 = "";
+                                orden.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
+                                orden.Lines.CostingCode4 = "";
+                                orden.Lines.CostingCode5 = "";
+                                orden.Lines.Currency = EncMovimiento.Moneda; //"COL";
+                                orden.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
+                                orden.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                                orden.Lines.ItemCode = item.ItemCode;
+                                orden.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                                orden.Lines.Quantity = Convert.ToDouble(item.Cantidad);
+                                orden.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+                                orden.Lines.TaxOnly = BoYesNoEnum.tNO;
+                                orden.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
 
-                                    be.Descripcion = Conexion.Company.GetLastErrorDescription();
-                                    be.StackTrace = "Llamada de Servicio - Actualizar";
-                                    be.Fecha = DateTime.Now;
+                                orden.Lines.Add();
 
-                                    db.BitacoraErrores.Add(be);
-                                    db.SaveChanges();
-                                    Conexion.Desconectar();
-                                    throw new Exception(be.Descripcion);
 
-                                }
+                                ii++;
                             }
 
-                            Conexion.Desconectar();
+                            var respuestaO = orden.Add();
+
+                            if (respuestaO == 0)
+                            {
+                                 
+                                var DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                var DocNum = 0; 
+                                var conexion = g.DevuelveCadena(db);
+
+                                var SQL =  " select top 1 DocNum from ORDR where DocEntry = '" + DocEntry + "'";
+
+                                SqlConnection Cn = new SqlConnection(conexion);
+                                SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                DataSet Ds = new DataSet();
+                                Cn.Open();
+                                Da.Fill(Ds, "Encabezado");
+                                DocNum = Convert.ToInt32(Ds.Tables["Encabezado"].Rows[0]["DocNum"].ToString());
+                                Cn.Close();
+                                Cn.Dispose();
+
+                                var idEntry = DocEntry;
+                                var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
+                                if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
+                                {
+                                    if (client2.Expenses.Count > 0)
+                                    {
+                                        client2.Expenses.Add();
+                                    }
+                                    client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Order; 
+                                    client2.Expenses.DocumentNumber = DocNum;
+                                    client2.Expenses.DocEntry = idEntry;
+
+                                    if (client2.Expenses.Count == 0)
+                                    {
+                                        client2.Expenses.Add();
+                                    }
+                                    client2.Expenses.Add();
+                                    var respuesta2 = client2.Update();
+                                    if (respuesta2 == 0)
+                                    {
+                                        Conexion.Desconectar();
+                                    }
+                                    else
+                                    {
+                                        BitacoraErrores be = new BitacoraErrores();
+
+                                        be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                        be.StackTrace = "Insercion de Liga EN - OR " + DocNum;
+                                        be.Fecha = DateTime.Now;
+
+                                        db.BitacoraErrores.Add(be);
+                                        db.SaveChanges();
+                                        Conexion.Desconectar();
+                                       
+
+                                    }
+                                }
+
+                                
 
 
 
 
+                            }
+                            else
+                            {
+                                BitacoraErrores be = new BitacoraErrores();
+
+                                be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                be.StackTrace = "Movimientos Ordenes";
+                                be.Fecha = DateTime.Now;
+
+                                db.BitacoraErrores.Add(be);
+                                db.SaveChanges();
+                                Conexion.Desconectar();
+                            }
                         }
-                        else
+
+                        var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
+                        var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
+                        if (!CumpleParaOrden)
                         {
-                            BitacoraErrores be = new BitacoraErrores();
+                            var client = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
+                            client.DocObjectCode = BoObjectTypes.oDeliveryNotes;
+                            client.CardCode = EncMovimiento.CardCode;
+                            client.DocCurrency = EncMovimiento.Moneda; //"COL";
+                            client.DocDate = EncMovimiento.Fecha; //listo
+                            client.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
+                            client.DocNum = 0; //automatico
+                            client.DocType = BoDocumentTypes.dDocument_Items;
+                            client.HandWritten = BoYesNoEnum.tNO;
+                            client.NumAtCard = EncMovimiento.NumLlamada; //orderid               
+                            client.ReserveInvoice = BoYesNoEnum.tNO;
+                            client.Series = Parametros.SerieEntrega;//3; //3 quemado
+                            client.Comments = g.TruncarString(EncMovimiento.Comentarios, 200); //direccion
+                            client.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
+                           
+                            var Tec = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
+                            var Tecnico = db.Tecnicos.Where(a => a.idSAP == Tec).FirstOrDefault();
 
-                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
-                            be.StackTrace = "Movimientos";
-                            be.Fecha = DateTime.Now;
+                            client.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico); // Convert.ToInt32(EncMovimiento.CreadoPor); //Quemado 47
+                            if (Tecnico.Letra > 0)
+                            {
+                                client.SalesPersonCode = Tecnico.Letra;
+                            }
+                            client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
 
-                            db.BitacoraErrores.Add(be);
-                            db.SaveChanges();
-                            Conexion.Desconectar();
+                            var i = 0;
+                            foreach (var item in DetalleSAP)
+                            {
+                                client.Lines.SetCurrentLine(i);
+                                client.Lines.CostingCode = "";
+                                client.Lines.CostingCode2 = "";
+                                client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
+                                client.Lines.CostingCode4 = "";
+                                client.Lines.CostingCode5 = "";
+                                client.Lines.Currency = EncMovimiento.Moneda; //"COL";
+                                client.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
+                                client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                                client.Lines.ItemCode = item.ItemCode;
+                                client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                                client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
+                                client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+                                client.Lines.TaxOnly = BoYesNoEnum.tNO;
+                                client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
+
+                                client.Lines.Add();
+
+
+                                i++;
+                            }
+
+                            var respuesta = client.Add();
+
+                            if (respuesta == 0)
+                            {
+                                db.Entry(EncMovimiento).State = EntityState.Modified;
+                                EncMovimiento.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                db.SaveChanges();
+                                var idEntry = EncMovimiento.DocEntry;//Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
+                                if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
+                                {
+                                    if (client2.Expenses.Count > 0)
+                                    {
+                                        client2.Expenses.Add();
+                                    }
+                                    client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Delivery;
+
+
+                                    client2.Expenses.DocumentNumber = idEntry;
+                                    client2.Expenses.DocEntry = idEntry;
+
+
+
+                                    if (client2.Expenses.Count == 0)
+                                    {
+                                        client2.Expenses.Add();
+                                    }
+                                    client2.Expenses.Add();
+                                    var respuesta2 = client2.Update();
+                                    if (respuesta2 == 0)
+                                    {
+                                        Conexion.Desconectar();
+                                    }
+                                    else
+                                    {
+                                        BitacoraErrores be = new BitacoraErrores();
+
+                                        be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                        be.StackTrace = "Insercion de Liga EN - LL " + client.DocNum;
+                                        be.Fecha = DateTime.Now;
+
+                                        db.BitacoraErrores.Add(be);
+                                        db.SaveChanges();
+                                        Conexion.Desconectar();
+                                        throw new Exception(be.Descripcion);
+
+                                    }
+                                }
+
+                                Conexion.Desconectar();
+
+
+
+
+                            }
+                            else
+                            {
+                                BitacoraErrores be = new BitacoraErrores();
+
+                                be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                be.StackTrace = "Movimientos";
+                                be.Fecha = DateTime.Now;
+
+                                db.BitacoraErrores.Add(be);
+                                db.SaveChanges();
+                                Conexion.Desconectar();
+                            }
                         }
+                            
 
                         //Pregunto si existe algun producto con garantia, para generar entonces una entrega
                         if (db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).Count() > 0)
@@ -1093,6 +1253,7 @@ namespace WATickets.Controllers
                                 EncMovimientoEntrega.PorDescuento = 0;
                                 EncMovimientoEntrega.TotalComprobante = 0;
                                 EncMovimientoEntrega.Comentarios = "Esta es la entrega de los productos por garantia";
+                                EncMovimientoEntrega.Aprobada = false;
                                 db.EncMovimiento.Add(EncMovimientoEntrega);
                                 db.SaveChanges();
 
