@@ -85,6 +85,7 @@ namespace WATickets.Controllers
                         db.BitacoraErrores.Add(be);
                         db.SaveChanges();
                         Conexion.Desconectar();
+                        throw new Exception(be.Descripcion);
                     }
 
 

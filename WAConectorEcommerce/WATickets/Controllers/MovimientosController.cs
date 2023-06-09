@@ -644,6 +644,7 @@ namespace WATickets.Controllers
         [Route("api/Movimientos/Actualizar")]
         public HttpResponseMessage Put([FromBody] ColeccionMovimientos encMovimiento)
         {
+            var t = db.Database.BeginTransaction();
             try
             {
 
@@ -713,27 +714,36 @@ namespace WATickets.Controllers
 
                                 db.DetMovimiento.Add(Det);
                                 db.SaveChanges();
-                                if (!item.ItemName.ToUpper().Contains("mano de obra".ToUpper()))
+                                try
                                 {
-                                    var Prod = db.ProductosHijos.Where(a => a.codSAP == item.ItemCode).FirstOrDefault();
-                                    if (Prod != null)
+                                    if (!item.ItemName.ToUpper().Contains("mano de obra".ToUpper()))
                                     {
-                                        var idLLamada = Convert.ToInt32(EncMovimiento.NumLlamada);
-                                        var llamada = db.LlamadasServicios.Where(a => a.DocEntry == idLLamada).FirstOrDefault();
-                                        var ProdPadre = db.ProductosPadres.Where(a => a.codSAP == llamada.ItemCode).FirstOrDefault();
-                                        var ExisteEnPadre = db.PadresHijosProductos.Where(a => a.idProductoPadre == ProdPadre.id && a.idProductoHijo == Prod.id).FirstOrDefault();
-
-                                        if (ExisteEnPadre == null)
+                                        var Prod = db.ProductosHijos.Where(a => a.codSAP == item.ItemCode).FirstOrDefault();
+                                        if (Prod != null)
                                         {
-                                            ExisteEnPadre = new PadresHijosProductos();
-                                            ExisteEnPadre.idProductoHijo = Prod.id;
-                                            ExisteEnPadre.idProductoPadre = ProdPadre.id;
-                                            ExisteEnPadre.Cantidad = item.Cantidad;
-                                            db.PadresHijosProductos.Add(ExisteEnPadre);
-                                            db.SaveChanges();
+                                            var idLLamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                                            var llamada = db.LlamadasServicios.Where(a => a.DocEntry == idLLamada).FirstOrDefault();
+                                            var ProdPadre = db.ProductosPadres.Where(a => a.codSAP == llamada.ItemCode).FirstOrDefault();
+                                            var ExisteEnPadre = db.PadresHijosProductos.Where(a => a.idProductoPadre == ProdPadre.id && a.idProductoHijo == Prod.id).FirstOrDefault();
+
+                                            if (ExisteEnPadre == null)
+                                            {
+                                                ExisteEnPadre = new PadresHijosProductos();
+                                                ExisteEnPadre.idProductoHijo = Prod.id;
+                                                ExisteEnPadre.idProductoPadre = ProdPadre.id;
+                                                ExisteEnPadre.Cantidad = item.Cantidad;
+                                                db.PadresHijosProductos.Add(ExisteEnPadre);
+                                                db.SaveChanges();
+                                            }
                                         }
                                     }
                                 }
+                                catch (Exception)
+                                {
+
+                                    
+                                }
+                                
                             }
 
                         }
@@ -813,7 +823,7 @@ namespace WATickets.Controllers
                 {
                     throw new Exception("EncMovimiento no existe");
                 }
-
+                t.Commit();
                 // PAra mandar a SAP
                 if (encMovimiento.Generar)
                 {
@@ -988,7 +998,12 @@ namespace WATickets.Controllers
                             {
                                  
                                 var DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
-                                var DocNum = 0; 
+                                var DocNum = 0;
+
+                                db.Entry(EncMovimiento).State = EntityState.Modified;
+                                EncMovimiento.DocEntry = DocEntry;
+                                db.SaveChanges();
+
                                 var conexion = g.DevuelveCadena(db);
 
                                 var SQL =  " select top 1 DocNum from ORDR where DocEntry = '" + DocEntry + "'";
@@ -1346,6 +1361,15 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                try
+                {
+                    t.Rollback();
+                }
+                catch (Exception)
+                {
+
+                    
+                }
                 BitacoraErrores be = new BitacoraErrores();
 
                 be.Descripcion = ex.Message;
