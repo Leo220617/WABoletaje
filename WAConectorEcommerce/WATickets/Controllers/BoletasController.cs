@@ -136,10 +136,11 @@ namespace WATickets.Controllers
             try
             {
                 var ID = 0;
+                var itemCode = "";
                 var Parametros = db.Parametros.FirstOrDefault();
                 var conexion = G.DevuelveCadena(db); //aqui extraemos la informacion de la tabla de sap para hacerle un query a sap
 
-                var SQL = Parametros.SQLProductos + " where manufSN = '" + boleta.NoSerieFabricante + "' and internalSN = '" + boleta.NoSerie + "'"; //Preparo el query
+                var SQL = Parametros.SQLProductos + " where manufSN = '" + boleta.NoSerieFabricante + "' and internalSN = '" + boleta.NoSerie + "' and itemCode = '" + boleta.ItemCode + "'"; //Preparo el query
 
                 SqlConnection Cn = new SqlConnection(conexion);
                 SqlCommand Cmd = new SqlCommand(SQL, Cn);
@@ -155,6 +156,7 @@ namespace WATickets.Controllers
                 else
                 {
                     ID = Convert.ToInt32(Ds.Tables["Productos"].Rows[0]["ID"]);
+                    itemCode = Ds.Tables["Productos"].Rows[0]["itemCode"].ToString();
                 }
 
                 Cn.Close();
@@ -175,7 +177,7 @@ namespace WATickets.Controllers
 
                         }
                         client.ManufacturerSerialNum = boleta.NoSerieFabricante;
-                       // client.ItemCode = boleta.ItemCode;
+                        client.ItemCode = itemCode;
                         client.CustomerCode = boleta.CardCode;
 
 
