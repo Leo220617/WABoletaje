@@ -93,6 +93,7 @@ namespace WATickets.Controllers
                             productos.codSAP = item["ItemCode"].ToString();
                             productos.Nombre = item["ItemName"].ToString();
                             productos.Stock = Convert.ToDecimal(item["Stock"].ToString());
+                            productos.Precio = Convert.ToDecimal(item["Price"].ToString());
                             db.ProductosPadres.Add(productos);
                             db.SaveChanges();
                         }
@@ -118,6 +119,8 @@ namespace WATickets.Controllers
                             Prod.codSAP = item["ItemCode"].ToString();
                             Prod.Nombre = item["ItemName"].ToString();
                             Prod.Stock = Convert.ToDecimal(item["Stock"].ToString());
+                            Prod.Precio = Convert.ToDecimal(item["Price"].ToString());
+
                             db.SaveChanges();
                         }
                         catch (Exception ex1)
@@ -172,7 +175,16 @@ namespace WATickets.Controllers
                             productos.Localizacion = item["localizacion"].ToString();
                             productos.Costo = Convert.ToDecimal(item["Costo"].ToString());
                             productos.PorMinimo = Convert.ToInt32(item["PorMinimo"].ToString());
+                            try
+                            {
                             productos.Rate = Convert.ToDecimal(item["Rate"].ToString());
+
+                            }
+                            catch (Exception)
+                            {
+                                productos.Rate = Convert.ToDecimal(item["Rate"].ToString().Replace(".",","));
+
+                            }
                             db.ProductosHijos.Add(productos);
                             db.SaveChanges();
                         }
@@ -205,7 +217,16 @@ namespace WATickets.Controllers
                             Prod.Costo = Convert.ToDecimal(item["Costo"].ToString());
                             Prod.PorMinimo = Convert.ToInt32(item["PorMinimo"].ToString());
                             Prod.Rate = Convert.ToDecimal(item["Rate"].ToString());
+                            try
+                            {
+                                Prod.Rate = Convert.ToDecimal(item["Rate"].ToString());
 
+                            }
+                            catch (Exception)
+                            {
+                                Prod.Rate = Convert.ToDecimal(item["Rate"].ToString().Replace(".", ","));
+
+                            }
                             db.SaveChanges();
                         }
                         catch (Exception ex1)

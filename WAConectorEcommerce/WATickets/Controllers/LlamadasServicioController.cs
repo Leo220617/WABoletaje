@@ -419,9 +419,7 @@ namespace WATickets.Controllers
                         client.Subject = Llamada.Asunto;
                         client.ItemCode = Llamada.ItemCode;
                         client.UserFields.Fields.Item("U_TPCASO").Value = Llamada.TipoCaso.Value.ToString();
-
-
-                      
+                         
                         if (Llamada.FechaSISO != null)
                         {
                             client.UserFields.Fields.Item("U_SISO").Value = Llamada.FechaSISO.Value;
@@ -698,7 +696,7 @@ namespace WATickets.Controllers
                             db.SaveChanges();
                         }
                     }
-                   
+                  
 
                     try
                     {
