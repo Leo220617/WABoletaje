@@ -244,6 +244,7 @@
     <Compile Include="Controllers\ClientController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\ClientesProductosController.cs" />
+    <Compile Include="Controllers\CondicionesPagosController.cs" />
     <Compile Include="Controllers\Conexion.cs" />
     <Compile Include="Controllers\ControlProductosController.cs" />
     <Compile Include="Controllers\CotizacionesAprobadasController.cs" />
@@ -269,6 +270,7 @@
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\SucursalesController.cs" />
     <Compile Include="Controllers\TecnicosController.cs" />
+    <Compile Include="Controllers\TiemposEntregasController.cs" />
     <Compile Include="Controllers\TiposCasosController.cs" />
     <Compile Include="Controllers\TokenGenerator.cs" />
     <Compile Include="Controllers\TokenValidationHandler.cs" />
@@ -285,6 +287,7 @@
     <Compile Include="Models\Cliente\BitacoraErrores.cs" />
     <Compile Include="Models\Cliente\BitacoraMovimientos.cs" />
     <Compile Include="Models\Cliente\Bodegas.cs" />
+    <Compile Include="Models\Cliente\CondicionesPagos.cs" />
     <Compile Include="Models\Cliente\ConexionSAP.cs" />
     <Compile Include="Models\Cliente\CorreoEnvio.cs" />
     <Compile Include="Models\Cliente\CotizacionesAprobadas.cs" />
@@ -314,6 +317,7 @@
     <Compile Include="Models\Cliente\Status.cs" />
     <Compile Include="Models\Cliente\Sucursales.cs" />
     <Compile Include="Models\Cliente\Tecnicos.cs" />
+    <Compile Include="Models\Cliente\TiemposEntregas.cs" />
     <Compile Include="Models\Cliente\TiposCasos.cs" />
     <Compile Include="Models\ColeccionMovimientos.cs" />
     <Compile Include="Models\ColeccionProductos.cs" />

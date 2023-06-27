@@ -31,6 +31,9 @@ namespace WATickets.Controllers
                 var Orden = db.EncOrden.Select(a => new {
 
                     a.id,
+                    a.idTiemposEntregas,
+                    a.idCondPago,
+                    a.idGarantia,
                     a.BaseEntry,
                     a.DocEntry,
                     a.DocNum,
@@ -84,6 +87,9 @@ namespace WATickets.Controllers
 
                     a.id,
                     a.BaseEntry,
+                    a.idCondPago,
+                    a.idGarantia,
+                    a.idTiemposEntregas,
 
                     a.DocEntry,
                     a.DocNum,
@@ -136,6 +142,9 @@ namespace WATickets.Controllers
                 if (EncOrden == null)
                 {
                     EncOrden = new EncOrden();
+                    EncOrden.idCondPago = orden.idCondPago;
+                    EncOrden.idGarantia = orden.idGarantia;
+                    EncOrden.idTiemposEntregas = orden.idTiemposEntregas;
                     EncOrden.BaseEntry = orden.BaseEntry;
                     EncOrden.CardCode = orden.CardCode;
                     EncOrden.Moneda = orden.Moneda;
@@ -200,6 +209,9 @@ namespace WATickets.Controllers
                         client.TaxDate = EncOrden.Fecha;
                         client.Comments = EncOrden.Comentarios;
                         client.SalesPersonCode = EncOrden.CodVendedor;
+                        client.GroupNumber = db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault() == null ? 0 : Convert.ToInt32(db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault().codSAP);
+                        client.UserFields.Fields.Item("U_DYD_TEntrega").Value = db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault() == null ? "0" : db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault().codSAP;
+                        client.UserFields.Fields.Item("U_DYD_TGarantia").Value = db.Garantias.Where(a => a.id == EncOrden.idGarantia).FirstOrDefault() == null ? "0" : db.Garantias.Where(a => a.id == EncOrden.idGarantia).FirstOrDefault().idSAP;
 
 
                         var Detalle = db.DetOrden.Where(a => a.idEncabezado == EncOrden.id).ToList();
@@ -237,7 +249,7 @@ namespace WATickets.Controllers
                             EncOrden.ProcesadaSAP = true;
                             orden.ProcesadaSAP = true;
                             db.SaveChanges();
-
+                             
                             resp = new
                             {
 
@@ -318,6 +330,9 @@ namespace WATickets.Controllers
                         client.TaxDate = EncOrden.Fecha;
                         client.Comments = EncOrden.Comentarios;
                         client.SalesPersonCode = EncOrden.CodVendedor;
+                        client.GroupNumber = db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault() == null ? 0 : Convert.ToInt32(db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault().codSAP);
+                        client.UserFields.Fields.Item("U_DYD_TEntrega").Value = db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault() == null ? "0" : db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault().codSAP;
+                        client.UserFields.Fields.Item("U_DYD_TGarantia").Value = db.Garantias.Where(a => a.id == EncOrden.idGarantia).FirstOrDefault() == null ? "0" : db.Garantias.Where(a => a.id == EncOrden.idGarantia).FirstOrDefault().idSAP;
 
 
                         var Detalle = db.DetOrden.Where(a => a.idEncabezado == EncOrden.id).ToList();

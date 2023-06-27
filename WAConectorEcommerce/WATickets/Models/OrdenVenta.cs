@@ -9,6 +9,10 @@ namespace WATickets.Models
     public class OrdenVenta
     {
         public int id { get; set; }
+        public int idCondPago { get; set; }
+        public int idGarantia { get; set; }
+        public int idTiemposEntregas { get; set; }
+
         public int BaseEntry { get; set; }
         public int DocEntry { get; set; }
         public int DocNum { get; set; }

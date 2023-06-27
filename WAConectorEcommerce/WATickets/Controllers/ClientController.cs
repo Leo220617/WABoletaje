@@ -117,5 +117,69 @@ namespace WATickets.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+        [HttpPost]
+        [Route("api/Client/Actualizar")]
+        public HttpResponseMessage Put([FromBody] ClientesViewModel cliente)
+        {
+            try
+            {
+
+                var client = (SAPbobsCOM.BusinessPartners)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oBusinessPartners);
+
+                if (client.GetByKey(cliente.CardCode))
+                {
+                    if (client.ContactEmployees.Count > 0)
+                    {
+                        client.ContactEmployees.Add();
+                    }
+                    else
+                    {
+                        if (client.ContactEmployees.Name != "")
+                        {
+
+                            client.ContactEmployees.Add();
+                        }
+                    }
+
+                    
+                    client.ContactEmployees.Name = cliente.NombreContacto;
+                    client.ContactEmployees.Phone1 = cliente.NumeroContacto;
+                    client.ContactEmployees.E_Mail = cliente.Email;
+                    client.ContactEmployees.Add();
+                    var respuesta = client.Update();
+
+                    if (respuesta == 0)
+                    {
+                        Conexion.Desconectar();
+                    }
+                    else
+                    {
+                        BitacoraErrores be = new BitacoraErrores();
+
+                        be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                        be.StackTrace = "Actualizar Cliente";
+                        be.Fecha = DateTime.Now;
+
+                        db.BitacoraErrores.Add(be);
+                        db.SaveChanges();
+                        Conexion.Desconectar();
+                        throw new Exception(be.Descripcion);
+                    }
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                BitacoraErrores be = new BitacoraErrores();
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
     }
 }
