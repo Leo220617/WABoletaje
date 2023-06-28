@@ -28,6 +28,9 @@ namespace WATickets.Models
         public string Comentarios { get; set; }
         public int CodVendedor { get; set; }
         public bool ProcesadaSAP { get; set; }
+        public string PersonaContacto { get; set; }
+        public string TelefonoContacto { get; set; }
+        public string CorreoContacto { get; set; }
         public List<DetOrden> Detalle { get; set; }
     }
 }

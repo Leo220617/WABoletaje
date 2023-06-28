@@ -56,6 +56,9 @@ namespace WATickets.Controllers
                     a.CodVendedor,
                     a.ProcesadaSAP,
                     a.Status,
+                    a.PersonaContacto,
+                    a.TelefonoContacto,
+                    a.CorreoContacto,
                     Detalle = db.DetOferta.Where(d => d.idEncabezado == a.id).ToList()
 
                 }).Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)).ToList();
@@ -111,6 +114,9 @@ namespace WATickets.Controllers
                     a.CodVendedor,
                     a.ProcesadaSAP,
                     a.Status,
+                    a.PersonaContacto,
+                    a.TelefonoContacto,
+                    a.CorreoContacto,
                     Detalle = db.DetOferta.Where(d => d.idEncabezado == a.id).ToList()
 
 
@@ -165,7 +171,9 @@ namespace WATickets.Controllers
                     EncOrden.FechaEntrega = orden.FechaEntrega;
                     EncOrden.idTiemposEntregas = orden.idTiemposEntregas;
                     EncOrden.Status = "O";
-
+                    EncOrden.PersonaContacto = orden.PersonaContacto;
+                    EncOrden.TelefonoContacto = orden.TelefonoContacto;
+                    EncOrden.CorreoContacto = orden.CorreoContacto;
                     db.EncOferta.Add(EncOrden);
                     db.SaveChanges();
                     var i = 1;

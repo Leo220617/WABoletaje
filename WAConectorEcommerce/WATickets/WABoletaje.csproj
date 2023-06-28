@@ -261,6 +261,7 @@
     <Compile Include="Controllers\MovimientosController.cs" />
     <Compile Include="Controllers\OfertaVentaController.cs" />
     <Compile Include="Controllers\OrdenVentaController.cs" />
+    <Compile Include="Controllers\PersonasContactoController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\ProductosHijosController.cs" />
     <Compile Include="Controllers\ProductosPadresController.cs" />
