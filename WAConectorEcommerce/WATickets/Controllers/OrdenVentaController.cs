@@ -168,7 +168,7 @@ namespace WATickets.Controllers
                     EncOrden.CorreoContacto = orden.CorreoContacto;
                     db.EncOrden.Add(EncOrden);
                     db.SaveChanges();
-                    var i = 1;
+                    var i = 0;
                     foreach (var item in orden.Detalle)
                     {
                         var DetOrden = new DetOrden();
@@ -186,7 +186,7 @@ namespace WATickets.Controllers
                         DetOrden.TaxCode = db.Impuestos.Where(a => a.Tarifa == Imp).FirstOrDefault() == null ? "IVA-13" : db.Impuestos.Where(a => a.Tarifa == Imp).FirstOrDefault().CodSAP;
                         db.DetOrden.Add(DetOrden);
                         db.SaveChanges();
-
+                        i++;
                     }
 
                     t.Commit();
@@ -214,12 +214,12 @@ namespace WATickets.Controllers
                         client.ReserveInvoice = BoYesNoEnum.tNO;
                         client.Series = EncOrden.Series;
                         client.TaxDate = EncOrden.Fecha;
-                        client.Comments = EncOrden.Comentarios;
+                        client.Comments = EncOrden.Comentarios != null ? EncOrden.Comentarios.Length > 200 ? EncOrden.Comentarios.Substring(0, 199) : EncOrden.Comentarios : EncOrden.Comentarios;
                         client.SalesPersonCode = EncOrden.CodVendedor;
                         client.GroupNumber = db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault() == null ? 0 : Convert.ToInt32(db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault().codSAP);
                         client.UserFields.Fields.Item("U_DYD_TEntrega").Value = db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault() == null ? "0" : db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault().codSAP;
                         client.UserFields.Fields.Item("U_DYD_TGarantia").Value = db.Garantias.Where(a => a.id == EncOrden.idGarantia).FirstOrDefault() == null ? "0" : db.Garantias.Where(a => a.id == EncOrden.idGarantia).FirstOrDefault().idSAP;
-
+                        
 
                         var Detalle = db.DetOrden.Where(a => a.idEncabezado == EncOrden.id).ToList();
 
@@ -242,6 +242,26 @@ namespace WATickets.Controllers
 
                             client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
                             client.Lines.WarehouseCode = item.Bodega;
+                            if (EncOrden.BaseEntry > 0)
+                            {
+                                var EncOferta = db.EncOferta.Where(a => a.id == EncOrden.BaseEntry).FirstOrDefault();
+                                if (EncOferta != null)
+                                {
+                                    client.Lines.BaseEntry = EncOferta.DocEntry;
+                                    client.Lines.BaseType = 23;
+                                    var DetalleOferta = db.DetOferta.Where(a => a.idEncabezado == EncOferta.id).ToList();
+                                    if(DetalleOferta.Count() > 0)
+                                    {
+                                        if(DetalleOferta.Where(a => a.ItemCode == item.ItemCode).FirstOrDefault() != null)
+                                        {
+                                            client.Lines.BaseLine = DetalleOferta.Where(a => a.ItemCode == item.ItemCode).FirstOrDefault().NumLinea;
+
+                                        }
+                                    }
+                                }
+                            }
+
+
                             client.Lines.Add();
                             z++;
                         }
@@ -257,6 +277,8 @@ namespace WATickets.Controllers
                             orden.ProcesadaSAP = true;
                             db.SaveChanges();
                              
+
+
                             resp = new
                             {
 
@@ -335,7 +357,7 @@ namespace WATickets.Controllers
                         client.ReserveInvoice = BoYesNoEnum.tNO;
                         client.Series = EncOrden.Series;
                         client.TaxDate = EncOrden.Fecha;
-                        client.Comments = EncOrden.Comentarios;
+                        client.Comments = EncOrden.Comentarios != null ? EncOrden.Comentarios.Length > 200 ? EncOrden.Comentarios.Substring(0, 199) : EncOrden.Comentarios : EncOrden.Comentarios;
                         client.SalesPersonCode = EncOrden.CodVendedor;
                         client.GroupNumber = db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault() == null ? 0 : Convert.ToInt32(db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault().codSAP);
                         client.UserFields.Fields.Item("U_DYD_TEntrega").Value = db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault() == null ? "0" : db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault().codSAP;

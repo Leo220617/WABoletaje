@@ -28,5 +28,6 @@ namespace WATickets.Models.Cliente
         public string SQLProductosOrdenes { get; set; }
         public int SeriesOrdenVenta { get; set; }
         public string SQLPersonasContacto { get; set; }
+        public int SerieCliente { get; set; }
     }
 }

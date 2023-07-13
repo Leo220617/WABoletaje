@@ -176,7 +176,7 @@ namespace WATickets.Controllers
                     EncOrden.CorreoContacto = orden.CorreoContacto;
                     db.EncOferta.Add(EncOrden);
                     db.SaveChanges();
-                    var i = 1;
+                    var i = 0;
                     foreach (var item in orden.Detalle)
                     {
                         var DetOrden = new DetOferta();
@@ -197,7 +197,7 @@ namespace WATickets.Controllers
 
                         db.DetOferta.Add(DetOrden);
                         db.SaveChanges();
-
+                        i++;
                     }
 
                     t.Commit();
@@ -225,7 +225,7 @@ namespace WATickets.Controllers
                         client.ReserveInvoice = BoYesNoEnum.tNO;
                         client.Series = EncOrden.Series;
                         client.TaxDate = EncOrden.Fecha;
-                        client.Comments = EncOrden.Comentarios;
+                        client.Comments = EncOrden.Comentarios != null ? EncOrden.Comentarios.Length > 200  ? EncOrden.Comentarios.Substring(0,199) : EncOrden.Comentarios : EncOrden.Comentarios;
                         client.SalesPersonCode = EncOrden.CodVendedor;
                         client.GroupNumber = db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault() == null ? 0 : Convert.ToInt32(db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault().codSAP);
                         client.UserFields.Fields.Item("U_DYD_TEntrega").Value = db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault() == null ? "0" : db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault().codSAP;
@@ -247,7 +247,7 @@ namespace WATickets.Controllers
                             client.Lines.Currency = EncOrden.Moneda;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorcentajeDescuento);
                             client.Lines.ItemCode = item.ItemCode;
-                            client.Lines.ItemDescription = item.ItemName;
+                            client.Lines.ItemDescription = item.ItemName.Length > 200 ? item.ItemName.Substring(0, 199) : item.ItemName ;
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
                             client.Lines.TaxCode = item.TaxCode;
                             client.Lines.TaxOnly = item.TaxOnly == true ? BoYesNoEnum.tYES : BoYesNoEnum.tNO;
@@ -347,7 +347,7 @@ namespace WATickets.Controllers
                         client.ReserveInvoice = BoYesNoEnum.tNO;
                         client.Series = EncOrden.Series;
                         client.TaxDate = EncOrden.Fecha;
-                        client.Comments = EncOrden.Comentarios;
+                        client.Comments = EncOrden.Comentarios != null ? EncOrden.Comentarios.Length > 200 ? EncOrden.Comentarios.Substring(0, 199) : EncOrden.Comentarios : EncOrden.Comentarios;
                         client.SalesPersonCode = EncOrden.CodVendedor;
                         client.GroupNumber = db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault() == null ? 0 : Convert.ToInt32(db.CondicionesPagos.Where(a => a.id == EncOrden.idCondPago).FirstOrDefault().codSAP);
                         client.UserFields.Fields.Item("U_DYD_TEntrega").Value = db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault() == null ? "0" : db.TiemposEntregas.Where(a => a.id == EncOrden.idTiemposEntregas).FirstOrDefault().codSAP;
@@ -369,7 +369,7 @@ namespace WATickets.Controllers
                             client.Lines.Currency = EncOrden.Moneda;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorcentajeDescuento);
                             client.Lines.ItemCode = item.ItemCode;
-                            client.Lines.ItemDescription = item.ItemName;
+                            client.Lines.ItemDescription = item.ItemName.Length > 200 ? item.ItemName.Substring(0, 199) : item.ItemName;
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
                             client.Lines.TaxCode = item.TaxCode;
                             client.Lines.TaxOnly = item.TaxOnly == true ? BoYesNoEnum.tYES : BoYesNoEnum.tNO;

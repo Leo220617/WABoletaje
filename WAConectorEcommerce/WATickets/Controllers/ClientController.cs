@@ -39,7 +39,7 @@ namespace WATickets.Controllers
 
                     client.CardName = cliente.CardName;
                     client.EmailAddress = cliente.Email;
-                    client.Series = 48;
+                    client.Series = Parametros.SerieCliente;
                     client.CardForeignName = cliente.Cedula;
                     client.FederalTaxID = cliente.Cedula;
                     client.Currency = "##";
@@ -129,28 +129,59 @@ namespace WATickets.Controllers
 
                 if (client.GetByKey(cliente.CardCode))
                 {
-                    if (client.ContactEmployees.Count > 0)
+                    //if (client.ContactEmployees.Count > 0)
+                    //{
+                    //    client.ContactEmployees.Add();
+                    //}
+                    //else
+                    //{
+                    //    if (client.ContactEmployees.Name != "")
+                    //    {
+                    //        G.GuardarTxt("EditarCliente.txt", "El nombre de los contactos: " + client.ContactEmployees.Name + " del cliente: " + cliente.CardCode);
+                    //        client.ContactEmployees.Add();
+                    //    }
+                    //}
+
+                    var conexion = G.DevuelveCadena(db);
+
+                    var SQL = "select CardCode from ocpr where CardCode = '" + cliente.CardCode + "' ";
+
+                    SqlConnection Cn = new SqlConnection(conexion);
+                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                    DataSet Ds = new DataSet();
+                    Cn.Open();
+                    Da.Fill(Ds, "Clientes");
+
+                    var CantidadContactos = Ds.Tables["Clientes"].Rows.Count;
+
+                    Cn.Close();
+                    Cn.Dispose();
+
+                    if (CantidadContactos > 0)
                     {
                         client.ContactEmployees.Add();
                     }
                     else
                     {
-                        if (client.ContactEmployees.Name != "")
-                        {
+                        var Linea = client.ContactEmployees.Count - 1;
 
-                            client.ContactEmployees.Add();
-                        }
+
+                        client.ContactEmployees.SetCurrentLine(Linea);
                     }
-
+                    G.GuardarTxt("EditarCliente.txt", "El tamaño de los contactos: " + client.ContactEmployees.Count + " del cliente: " + cliente.CardCode);
                     
                     client.ContactEmployees.Name = cliente.NombreContacto;
                     client.ContactEmployees.Phone1 = cliente.NumeroContacto;
                     client.ContactEmployees.E_Mail = cliente.Email;
-                    client.ContactEmployees.Add();
+
+                    
                     var respuesta = client.Update();
 
                     if (respuesta == 0)
                     {
+                        G.GuardarTxt("EditarCliente.txt", "La respuesta: " + respuesta + " codigo: " + Conexion.Company.GetNewObjectType().ToString());
+
                         Conexion.Desconectar();
                     }
                     else
