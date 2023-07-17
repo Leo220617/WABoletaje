@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -175,6 +176,9 @@ namespace WATickets.Controllers
         {
             try
             {///Alt + 125 }
+                NumberFormatInfo formato = new CultureInfo("en-US").NumberFormat;
+                formato.CurrencyGroupSeparator = ",";
+                formato.NumberDecimalSeparator = ".";
                 var EncMovimiento = db.EncMovimiento.Where(a => a.id == id).FirstOrDefault();
                 var Moneda = EncMovimiento.Moneda == "COL" ? "₡" : "$";
                 if (EncMovimiento != null)
@@ -211,7 +215,8 @@ namespace WATickets.Controllers
 
                             bodyH = bodyH.Replace("@TelefonoCliente", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
 
-                            bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
+                            bodyH = bodyH.Replace("@DocEntry", EncMovimiento.id.ToString());
+                            bodyH = bodyH.Replace("@NumBoleta", EncMovimiento.NumLlamada);
 
 
 
@@ -221,10 +226,10 @@ namespace WATickets.Controllers
                             bodyH = bodyH.Replace("@PorDesc", Math.Round(EncMovimiento.PorDescuento, 2).ToString());
 
 
-                            bodyH = bodyH.Replace("@Subtotal", Moneda + Math.Round(EncMovimiento.Subtotal, 2).ToString());
-                            bodyH = bodyH.Replace("@Descuento", Moneda + Math.Round(EncMovimiento.Descuento, 2).ToString());
-                            bodyH = bodyH.Replace("@Impuestos", Moneda + Math.Round(EncMovimiento.Impuestos, 2).ToString());
-                            bodyH = bodyH.Replace("@Total", Moneda + Math.Round(EncMovimiento.TotalComprobante, 2).ToString());
+                            bodyH = bodyH.Replace("@Subtotal", Moneda + Math.Round(EncMovimiento.Subtotal, 2).ToString("N", formato));
+                            bodyH = bodyH.Replace("@Descuento", Moneda + Math.Round(EncMovimiento.Descuento, 2).ToString("N", formato));
+                            bodyH = bodyH.Replace("@Impuestos", Moneda + Math.Round(EncMovimiento.Impuestos, 2).ToString("N", formato));
+                            bodyH = bodyH.Replace("@Total", Moneda + Math.Round(EncMovimiento.TotalComprobante, 2).ToString("N", formato));
 
 
 
@@ -244,14 +249,14 @@ namespace WATickets.Controllers
                                 if (z == 0)
                                 {
 
-                                    inyectado = Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
+                                    inyectado = Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
                                 }
                                 else
                                 {
                                     top1 += 20;
 
-                                    inyectado += Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
+                                    inyectado += Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                 }
@@ -354,7 +359,9 @@ namespace WATickets.Controllers
                             bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                             bodyH = bodyH.Replace("@TelefonoCliente", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
                             bodyH = bodyH.Replace("@Celular", "      ");
-                            bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
+                            bodyH = bodyH.Replace("@DocEntry", EncMovimiento.id.ToString());
+                             
+
                             bodyH = bodyH.Replace("@NumBoleta", EncMovimiento.NumLlamada);
 
 
@@ -363,11 +370,11 @@ namespace WATickets.Controllers
 
                             bodyH = bodyH.Replace("@NumContacto", Ds.Tables["Encabezado"].Rows[0]["Tel1"].ToString());
 
-                            bodyH = bodyH.Replace("@SubTotal", Moneda + Math.Round(EncMovimiento.Subtotal, 2).ToString());
-                            bodyH = bodyH.Replace("@Descuento", Moneda + Math.Round(EncMovimiento.Descuento, 2).ToString());
-                            bodyH = bodyH.Replace("@Impuestos", Moneda + Math.Round(EncMovimiento.Impuestos, 2).ToString());
-                            bodyH = bodyH.Replace("@TotalEntrega", Moneda + Math.Round(EncMovimiento.TotalComprobante, 2).ToString());
-                            bodyH = bodyH.Replace("@PorDesc", Math.Round(EncMovimiento.PorDescuento, 2).ToString());
+                            bodyH = bodyH.Replace("@SubTotal", Moneda + Math.Round(EncMovimiento.Subtotal, 2).ToString("N", formato));
+                            bodyH = bodyH.Replace("@Descuento", Moneda + Math.Round(EncMovimiento.Descuento, 2).ToString("N", formato));
+                            bodyH = bodyH.Replace("@Impuestos", Moneda + Math.Round(EncMovimiento.Impuestos, 2).ToString("N", formato));
+                            bodyH = bodyH.Replace("@TotalEntrega", Moneda + Math.Round(EncMovimiento.TotalComprobante, 2).ToString("N", formato));
+                            bodyH = bodyH.Replace("@PorDesc", Math.Round(EncMovimiento.PorDescuento, 2).ToString("N", formato));
 
 
 
@@ -391,7 +398,7 @@ namespace WATickets.Controllers
                             {
                                 if (z == 0)
                                 {
-                                    inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+                                    inyectado = Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                 }
@@ -399,7 +406,7 @@ namespace WATickets.Controllers
                                 {
                                     top1 += 23;
                                     top2 += 23;
-                                    inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString()).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+                                    inyectado += Html.Inyectado.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                 }
@@ -431,7 +438,7 @@ namespace WATickets.Controllers
                             var bytes = doc.Save();
                             doc.Close();
 
-                            System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Entrega_Mercaderia.pdf");
+                            System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Presupuesto_Reparacion.pdf");
                             adjuntos.Add(att3);
 
                             var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
@@ -450,7 +457,7 @@ namespace WATickets.Controllers
                             }
 
 
-                            var resp = G.SendV2(correo, "", "", CorreoEnvio.RecepcionEmail, "Entrega de Mercaderia", "Entrega de Producto", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Entrega Mercaderia</h1> <p> En el presente correo se le hace el envio de la entrega de mercaderia. Estimado Cliente Agradecemos su pronta respuesta a este Correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+                            var resp = G.SendV2(correo, "", "", CorreoEnvio.RecepcionEmail, "Presupuesto de Reparación", "Presupuesto de Reparación", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Presupuesto de Reparación</h1> <p> En el presente correo se le hace el envio del presupuesto de reparación. </br> Estimado Cliente Agradecemos su pronta respuesta a este Correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
 
                             g.GuardarTxt("html.txt", bodyH);
 

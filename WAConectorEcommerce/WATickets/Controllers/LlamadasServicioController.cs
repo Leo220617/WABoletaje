@@ -92,7 +92,7 @@ namespace WATickets.Controllers
                     filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
                 }
 
-                var Llamada = db.LlamadasServicios.Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true))
+                var Llamada = db.LlamadasServicios.Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true) && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true))
                  .ToList();
 
                 if (!string.IsNullOrEmpty(filtro.Texto))
@@ -100,16 +100,7 @@ namespace WATickets.Controllers
                     Llamada = Llamada.Where(a => a.Asunto.ToUpper().Contains(filtro.Texto.ToUpper())).ToList();
                 }
 
-                if(filtro.Codigo1 > 0)
-                {
-                    Llamada = Llamada.Where(a => a.Tecnico == filtro.Codigo1).ToList();
-                }
-
-                if (filtro.Codigo2 != 0)
-                {
-                    Llamada = Llamada.Where(a => a.Status.Value == filtro.Codigo2).ToList();
-                }
-
+             
                 return Request.CreateResponse(HttpStatusCode.OK, Llamada);
 
             }
@@ -765,20 +756,17 @@ namespace WATickets.Controllers
                                 var Reparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
                                 if(Reparacion != null)
                                 {
-                                    client.Resolution = Reparacion.Comentarios;
+                                    client.Resolution = string.IsNullOrEmpty(Reparacion.Comentarios) ? "Favor revisar operaciones" : Reparacion.Comentarios;
 
                                 }
                                 else
                                 {
-                                    client.Resolution = Llamada.Comentarios;
+                                    client.Resolution = string.IsNullOrEmpty(Llamada.Comentarios) ? "Favor revisar operaciones" : Llamada.Comentarios;
 
                                 }
 
                             }
-
-
-                            //client.CallType = Llamada.Garantia.Value;
-
+                             
 
 
                             client.UserFields.Fields.Item("U_CONTHRS").Value = Llamada.Horas.ToString();

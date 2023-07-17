@@ -55,17 +55,14 @@ namespace WATickets.Controllers
                     AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
                 })
 
-                    .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)).ToList();
+                    .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && (filtro.Codigo1 > 0 ? a.idTecnico == filtro.Codigo1 : true) && (filtro.Codigo4 > 0 ? a.idLlamada2 == filtro.Codigo4 : true)).ToList();
 
                 if (!string.IsNullOrEmpty(filtro.Texto))
                 {
                     EncReparacion = EncReparacion.Where(a => a.idProductoArreglar.ToUpper().Contains(filtro.Texto.ToUpper())).ToList();
                 }
 
-                if (filtro.Codigo1 > 0)
-                {
-                    EncReparacion = EncReparacion.Where(a => a.idTecnico == filtro.Codigo1).ToList();
-                }
+                 
 
                 if (filtro.Codigo2 > 0)
                 {
@@ -96,10 +93,7 @@ namespace WATickets.Controllers
                     }
 
                 }
-                if (filtro.Codigo4 > 0)
-                {
-                    EncReparacion = EncReparacion.Where(a => a.idLlamada2 == filtro.Codigo4).ToList();
-                }
+               
                 return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
 
             }
