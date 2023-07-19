@@ -32,6 +32,7 @@ namespace WATickets.Controllers
 
                     a.id,
                     a.idTiemposEntregas,
+                    a.idDiasValidos,
                     a.idCondPago,
                     a.idGarantia,
                     a.BaseEntry,
@@ -93,6 +94,7 @@ namespace WATickets.Controllers
                     a.idCondPago,
                     a.idGarantia,
                     a.idTiemposEntregas,
+                    a.idDiasValidos,
 
                     a.DocEntry,
                     a.DocNum,
@@ -166,6 +168,8 @@ namespace WATickets.Controllers
                     EncOrden.PersonaContacto = orden.PersonaContacto;
                     EncOrden.TelefonoContacto = orden.TelefonoContacto;
                     EncOrden.CorreoContacto = orden.CorreoContacto;
+                    EncOrden.idDiasValidos = orden.idDiasValidos;
+                    EncOrden.idUsuarioCreador = orden.idUsuarioCreador;
                     db.EncOrden.Add(EncOrden);
                     db.SaveChanges();
                     var i = 0;

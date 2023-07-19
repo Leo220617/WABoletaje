@@ -39,7 +39,7 @@ namespace WATickets.Controllers
 
                     a.id,
                     a.idTiemposEntregas,
-
+                    a.idDiasValidos,
                     a.idCondPago,
                     a.idGarantia,
                     a.DocEntry,
@@ -100,6 +100,7 @@ namespace WATickets.Controllers
                     a.idTiemposEntregas,
                     a.idCondPago,
                     a.idGarantia,
+                    a.idDiasValidos,
                     a.DocEntry,
                     a.DocNum,
                     a.CardCode,
@@ -174,6 +175,8 @@ namespace WATickets.Controllers
                     EncOrden.PersonaContacto = orden.PersonaContacto;
                     EncOrden.TelefonoContacto = orden.TelefonoContacto;
                     EncOrden.CorreoContacto = orden.CorreoContacto;
+                    EncOrden.idDiasValidos = orden.idDiasValidos;
+                    EncOrden.idUsuarioCreador = orden.idUsuarioCreador;
                     db.EncOferta.Add(EncOrden);
                     db.SaveChanges();
                     var i = 0;
@@ -589,7 +592,7 @@ namespace WATickets.Controllers
 
                         bodyH = bodyH.Replace("@TelefonoCliente", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
 
-                        bodyH = bodyH.Replace("@DocEntry", EncMovimiento.DocEntry.ToString());
+                        bodyH = bodyH.Replace("@DocEntry", EncMovimiento.id.ToString());
 
 
 
@@ -610,6 +613,26 @@ namespace WATickets.Controllers
 
                         Cn.Close();
                         Cn.Dispose();
+
+
+                        bodyH = bodyH.Replace("@ContactoReferencia", EncMovimiento.PersonaContacto);
+                        bodyH = bodyH.Replace("@Referencia", EncMovimiento.NumAtCard);
+
+                        var CondicionPago = db.CondicionesPagos.Where(a => a.id == EncMovimiento.idCondPago).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta la condicion de pago") : db.CondicionesPagos.Where(a => a.id == EncMovimiento.idCondPago).FirstOrDefault();
+                        var TiempoEntrega = db.TiemposEntregas.Where(a => a.id == EncMovimiento.idTiemposEntregas).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta el Tiempos de Entregas") : db.TiemposEntregas.Where(a => a.id == EncMovimiento.idTiemposEntregas).FirstOrDefault();
+                        var Garantia = db.Garantias.Where(a => a.id == EncMovimiento.idGarantia).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta la garantia") : db.Garantias.Where(a => a.id == EncMovimiento.idGarantia).FirstOrDefault();
+                        var DiasValidos = db.DiasValidos.Where(a => a.id == EncMovimiento.idDiasValidos).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta los dias validos") : db.DiasValidos.Where(a => a.id == EncMovimiento.idDiasValidos).FirstOrDefault();
+                        var UsuarioCreador = db.Login.Where(a => a.id == EncMovimiento.idUsuarioCreador).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta el usuario creador") : db.Login.Where(a => a.id == EncMovimiento.idUsuarioCreador).FirstOrDefault();
+
+                        bodyH = bodyH.Replace("@CondicionPago", CondicionPago.Nombre);
+                        bodyH = bodyH.Replace("@TiempoEntrega", TiempoEntrega.Nombre);
+                        bodyH = bodyH.Replace("@Garantia", Garantia.Nombre);
+                        bodyH = bodyH.Replace("@VigenciaOferta", DiasValidos.Nombre);
+
+                        bodyH = bodyH.Replace("@NombreUsuario", UsuarioCreador.Nombre);
+                        bodyH = bodyH.Replace("@TelefonoUsuario", UsuarioCreador.Telefono);
+                        bodyH = bodyH.Replace("@CorreoVentas", UsuarioCreador.CorreoVentas);
+
 
                         var inyectado = "";
                         var z = 0;
@@ -661,12 +684,12 @@ namespace WATickets.Controllers
                         var bytes = doc.Save();
                         doc.Close();
 
-                        System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Oferta_Venta.pdf");
+                        System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Oferta_Venta_"+ EncMovimiento.id + ".pdf");
                         adjuntos.Add(att3);
 
                        
 
-                        var resp = G.SendV2(correo, "", "", CorreoEnvio.RecepcionEmail, "Oferta de Venta", "Oferta de Venta", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Oferta de Venta</h1> <p> En el presente correo se le hace el envio de la oferta de venta, Estimado Cliente Agradecemos su pronta respuesta a este Correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+                        var resp = G.SendV2(correo, "", "", CorreoEnvio.RecepcionEmail, "Oferta de Venta", "Oferta de Venta #" + EncMovimiento.id, "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Oferta de Venta</h1> <p> En el presente correo se le hace el envio de la oferta de venta, Estimado Cliente Agradecemos su pronta respuesta a este Correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
 
                         g.GuardarTxt("html.txt", bodyH);
 

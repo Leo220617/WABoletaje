@@ -235,7 +235,17 @@ namespace WATickets.Controllers
 
                             Cn.Close();
                             Cn.Dispose();
-
+                            var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                            var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
+                            bodyH = bodyH.Replace("@ContactoReferencia", Llamada.PersonaContacto);
+                            bodyH = bodyH.Replace("@Referencia", "");
+                            bodyH = bodyH.Replace("@CondicionPago", "");
+                            bodyH = bodyH.Replace("@TiempoEntrega", "");
+                            bodyH = bodyH.Replace("@Garantia", "");
+                            bodyH = bodyH.Replace("@VigenciaOferta", "");
+                            bodyH = bodyH.Replace("@NombreUsuario", "");
+                            bodyH = bodyH.Replace("@TelefonoUsuario", "");
+                            bodyH = bodyH.Replace("@CorreoVentas", "");
                             var inyectado = "";
                             var z = 0;
                             var top1 = 290;
@@ -287,11 +297,10 @@ namespace WATickets.Controllers
                             var bytes = doc.Save();
                             doc.Close();
 
-                            System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Oferta_Venta.pdf");
+                            System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Oferta_Venta_" + Llamada.DocEntry + ".pdf");
                             adjuntos.Add(att3);
 
-                            var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
-                            var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
+
                             var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
                             var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
                             var ui = 1;
@@ -306,7 +315,7 @@ namespace WATickets.Controllers
                             }
 
 
-                            var resp = G.SendV2(correo, "", "", CorreoEnvio.RecepcionEmail, "Oferta de Venta", "Oferta de Venta", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Oferta de Venta</h1> <p> En el presente correo se le hace el envio de la oferta de venta, Estimado Cliente Agradecemos su pronta respuesta a este Correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+                            var resp = G.SendV2(correo, "", "", CorreoEnvio.RecepcionEmail, "Oferta de Venta", "Oferta de Venta #" + Llamada.DocEntry, "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Oferta de Venta</h1> <p> En el presente correo se le hace el envio de la oferta de venta, Estimado Cliente Agradecemos su pronta respuesta a este Correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
 
                             g.GuardarTxt("html.txt", bodyH);
 
@@ -360,7 +369,7 @@ namespace WATickets.Controllers
                             bodyH = bodyH.Replace("@TelefonoCliente", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
                             bodyH = bodyH.Replace("@Celular", "      ");
                             bodyH = bodyH.Replace("@DocEntry", EncMovimiento.id.ToString());
-                             
+
 
                             bodyH = bodyH.Replace("@NumBoleta", EncMovimiento.NumLlamada);
 
@@ -437,12 +446,12 @@ namespace WATickets.Controllers
 
                             var bytes = doc.Save();
                             doc.Close();
-
-                            System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Presupuesto_Reparacion.pdf");
-                            adjuntos.Add(att3);
-
                             var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
                             var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
+                            System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Presupuesto_Reparacion_"+ NumLlamada.ToString() + ".pdf");
+                            adjuntos.Add(att3);
+
+                            
                             var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
                             var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
                             var ui = 1;
@@ -457,7 +466,7 @@ namespace WATickets.Controllers
                             }
 
 
-                            var resp = G.SendV2(correo, "", "", CorreoEnvio.RecepcionEmail, "Presupuesto de Reparación", "Presupuesto de Reparación", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Presupuesto de Reparación</h1> <p> En el presente correo se le hace el envio del presupuesto de reparación. </br> Estimado Cliente Agradecemos su pronta respuesta a este Correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+                            var resp = G.SendV2(correo, "", "", CorreoEnvio.RecepcionEmail, "Presupuesto de Reparación", "Presupuesto de Reparación #" + NumLlamada, "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Presupuesto de Reparación</h1> <p> En el presente correo se le hace el envio del presupuesto de reparación. </br> Estimado Cliente Agradecemos su pronta respuesta a este Correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
 
                             g.GuardarTxt("html.txt", bodyH);
 
@@ -748,9 +757,9 @@ namespace WATickets.Controllers
                                 catch (Exception)
                                 {
 
-                                    
+
                                 }
-                                
+
                             }
 
                         }
@@ -1003,7 +1012,7 @@ namespace WATickets.Controllers
 
                             if (respuestaO == 0)
                             {
-                                 
+
                                 var DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
                                 var DocNum = 0;
 
@@ -1013,7 +1022,7 @@ namespace WATickets.Controllers
 
                                 var conexion = g.DevuelveCadena(db);
 
-                                var SQL =  " select top 1 DocNum from ORDR where DocEntry = '" + DocEntry + "'";
+                                var SQL = " select top 1 DocNum from ORDR where DocEntry = '" + DocEntry + "'";
 
                                 SqlConnection Cn = new SqlConnection(conexion);
                                 SqlCommand Cmd = new SqlCommand(SQL, Cn);
@@ -1033,7 +1042,7 @@ namespace WATickets.Controllers
                                     {
                                         client2.Expenses.Add();
                                     }
-                                    client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Order; 
+                                    client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Order;
                                     client2.Expenses.DocumentNumber = DocNum;
                                     client2.Expenses.DocEntry = idEntry;
 
@@ -1058,12 +1067,12 @@ namespace WATickets.Controllers
                                         db.BitacoraErrores.Add(be);
                                         db.SaveChanges();
                                         Conexion.Desconectar();
-                                       
+
 
                                     }
                                 }
 
-                                
+
 
 
 
@@ -1101,7 +1110,7 @@ namespace WATickets.Controllers
                             client.Series = Parametros.SerieEntrega;//3; //3 quemado
                             client.Comments = g.TruncarString(EncMovimiento.Comentarios, 200); //direccion
                             client.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
-                           
+
                             var Tec = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
                             var Tecnico = db.Tecnicos.Where(a => a.idSAP == Tec).FirstOrDefault();
 
@@ -1205,7 +1214,7 @@ namespace WATickets.Controllers
                                 Conexion.Desconectar();
                             }
                         }
-                            
+
 
                         //Pregunto si existe algun producto con garantia, para generar entonces una entrega
                         if (db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).Count() > 0)
@@ -1375,7 +1384,7 @@ namespace WATickets.Controllers
                 catch (Exception)
                 {
 
-                    
+
                 }
                 BitacoraErrores be = new BitacoraErrores();
 

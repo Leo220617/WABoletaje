@@ -250,6 +250,7 @@
     <Compile Include="Controllers\CotizacionesAprobadasController.cs" />
     <Compile Include="Controllers\DetReparacionController.cs" />
     <Compile Include="Controllers\DiagnosticosController.cs" />
+    <Compile Include="Controllers\DiasValidosController.cs" />
     <Compile Include="Controllers\EncReparacionController.cs" />
     <Compile Include="Controllers\ErroresController.cs" />
     <Compile Include="Controllers\G.cs" />
@@ -298,6 +299,7 @@
     <Compile Include="Models\Cliente\DetOrden.cs" />
     <Compile Include="Models\Cliente\DetReparacion.cs" />
     <Compile Include="Models\Cliente\Diagnosticos.cs" />
+    <Compile Include="Models\Cliente\DiasValidos.cs" />
     <Compile Include="Models\Cliente\EncMovimiento.cs" />
     <Compile Include="Models\Cliente\EncOferta.cs" />
     <Compile Include="Models\Cliente\EncOrden.cs" />

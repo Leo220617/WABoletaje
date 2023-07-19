@@ -139,6 +139,8 @@ namespace WATickets.Controllers
                 Usuario.Clave = BCrypt.Net.BCrypt.HashPassword(usuario.Clave);
                 Usuario.CardCode = usuario.CardCode;
                 Usuario.Bodega = usuario.Bodega;
+                Usuario.CorreoVentas = usuario.CorreoVentas;
+                Usuario.Telefono = usuario.Telefono;
                 db.Login.Add(Usuario);
                 db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.OK);
@@ -199,6 +201,17 @@ namespace WATickets.Controllers
                 {
                     Usuario.Bodega = usuario.Bodega;
                 }
+
+                if(!string.IsNullOrEmpty(usuario.CorreoVentas))
+                {
+                    Usuario.CorreoVentas = usuario.CorreoVentas;
+                }
+
+                if (!string.IsNullOrEmpty(usuario.Telefono))
+                {
+                    Usuario.Telefono = usuario.Telefono;
+                }
+
 
                 db.SaveChanges();
 

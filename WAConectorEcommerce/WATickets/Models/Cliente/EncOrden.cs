@@ -32,6 +32,8 @@ namespace WATickets.Models.Cliente
         public string PersonaContacto { get; set; }
         public string TelefonoContacto { get; set; }
         public string CorreoContacto { get; set; }
+        public int idDiasValidos { get; set; }
+        public int idUsuarioCreador { get; set; }
 
     }
 }
