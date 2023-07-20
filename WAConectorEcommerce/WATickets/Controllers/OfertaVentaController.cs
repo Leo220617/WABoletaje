@@ -15,6 +15,7 @@ using WATickets.Models;
 using WATickets.Models.Cliente;
 using SelectPdf;
 using System.IO;
+using System.Globalization;
 
 namespace WATickets.Controllers
 {
@@ -560,6 +561,9 @@ namespace WATickets.Controllers
         {
             try
             {///Alt + 125 }
+                NumberFormatInfo formato = new CultureInfo("en-US").NumberFormat;
+                formato.CurrencyGroupSeparator = ",";
+                formato.NumberDecimalSeparator = ".";
                 var EncMovimiento = db.EncOferta.Where(a => a.id == id).FirstOrDefault();
                 var Moneda = EncMovimiento.Moneda == "COL" ? "₡" : "$";
                 if (EncMovimiento != null)
@@ -604,10 +608,10 @@ namespace WATickets.Controllers
                         bodyH = bodyH.Replace("@PorDesc", Math.Round(Porcentaje, 2).ToString());
 
 
-                        bodyH = bodyH.Replace("@Subtotal", Moneda + Math.Round(DetalleSAP.Sum(a => a.Cantidad * a.PrecioUnitario), 2).ToString());
-                        bodyH = bodyH.Replace("@Descuento", Moneda + Math.Round(DetalleSAP.Sum(a => ((a.PrecioUnitario * a.Cantidad) * (a.PorcentajeDescuento / 100))), 2).ToString());
-                        bodyH = bodyH.Replace("@Impuestos", Moneda + Math.Round(DetalleSAP.Sum(a => (((a.PrecioUnitario * a.Cantidad) - ((a.PrecioUnitario * a.Cantidad) * (a.PorcentajeDescuento / 100))) * (Convert.ToDecimal(a.Impuesto) / 100))), 2).ToString());
-                        bodyH = bodyH.Replace("@Total", Moneda + Math.Round(DetalleSAP.Sum(a => a.Total), 2).ToString());
+                        bodyH = bodyH.Replace("@Subtotal", Moneda + Math.Round(DetalleSAP.Sum(a => a.Cantidad * a.PrecioUnitario), 2).ToString("N",formato));
+                        bodyH = bodyH.Replace("@Descuento", Moneda + Math.Round(DetalleSAP.Sum(a => ((a.PrecioUnitario * a.Cantidad) * (a.PorcentajeDescuento / 100))), 2).ToString("N", formato));
+                        bodyH = bodyH.Replace("@Impuestos", Moneda + Math.Round(DetalleSAP.Sum(a => (((a.PrecioUnitario * a.Cantidad) - ((a.PrecioUnitario * a.Cantidad) * (a.PorcentajeDescuento / 100))) * (Convert.ToDecimal(a.Impuesto) / 100))), 2).ToString("N", formato));
+                        bodyH = bodyH.Replace("@Total", Moneda + Math.Round(DetalleSAP.Sum(a => a.Total), 2).ToString("N", formato));
 
 
 
@@ -646,14 +650,14 @@ namespace WATickets.Controllers
                             if (z == 0)
                             {
 
-                                inyectado = Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Moneda + Math.Round(item.Total, 2).ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
+                                inyectado = Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@Desc", Math.Round(item.PorcentajeDescuento, 2).ToString("N", formato) + "%").Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round((item.PrecioUnitario * item.Cantidad), 2).ToString("N", formato)).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
                                // diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
                             }
                             else
                             {
                                 top1 += 20;
 
-                                inyectado += Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString()).Replace("@TotalLinea", Moneda + Math.Round(item.Total, 2).ToString()).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
+                                inyectado += Html.InyectadoOferta.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@Desc",Math.Round(item.PorcentajeDescuento,2).ToString("N", formato) + "%").Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round((item.PrecioUnitario * item.Cantidad), 2).ToString("N", formato)).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
                                 //diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                             }
