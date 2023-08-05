@@ -623,7 +623,7 @@ namespace WATickets.Controllers
                     {
                         BitacoraErrores be = new BitacoraErrores();
                         be.DocNum = Encabezado.id.ToString();
-                        be.Descripcion = ex.Message;
+                        be.Descripcion = "Error en la reparacion #" + Encabezado.id + " -> " + ex.Message;
                         be.StackTrace = ex.StackTrace;
                         be.Fecha = DateTime.Now;
 
@@ -745,7 +745,7 @@ namespace WATickets.Controllers
 
                         BitacoraErrores be = new BitacoraErrores();
                         be.DocNum = Encabezado.id.ToString();
-                        be.Descripcion = ex.Message;
+                        be.Descripcion = "Error en la reparacion #" + Encabezado.id + " -> " + ex.Message;
                         be.StackTrace = ex.StackTrace;
                         be.Fecha = DateTime.Now;
 
@@ -1087,7 +1087,7 @@ namespace WATickets.Controllers
             {
                 BitacoraErrores be = new BitacoraErrores();
 
-                be.Descripcion = ex.Message;
+                be.Descripcion = "Error en la reparacion #" + coleccion.EncReparacion.idLlamada + " -> " + ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
@@ -1124,7 +1124,7 @@ namespace WATickets.Controllers
             {
                 BitacoraErrores be = new BitacoraErrores();
 
-                be.Descripcion = ex.Message;
+                be.Descripcion = "Error en la reparacion #" + coleccion.EncReparacion.id + " -> " + ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);

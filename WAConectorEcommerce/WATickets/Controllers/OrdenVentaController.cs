@@ -308,7 +308,7 @@ namespace WATickets.Controllers
 
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                            be.Descripcion = "Error en la orden #" + orden.id + " -> " + Conexion.Company.GetLastErrorDescription();
                             be.StackTrace = "Orden de Venta";
                             be.Fecha = DateTime.Now;
 
@@ -324,7 +324,7 @@ namespace WATickets.Controllers
                         Conexion.Desconectar();
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = ex1.Message;
+                        be.Descripcion = "Error en la orden #" + orden.id + " -> " + ex1.Message;
                         be.StackTrace = ex1.StackTrace;
                         be.Fecha = DateTime.Now;
 
@@ -428,7 +428,7 @@ namespace WATickets.Controllers
                             };
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                            be.Descripcion = "Error en la orden #" + orden.id + " -> " + Conexion.Company.GetLastErrorDescription();
                             be.StackTrace = "Orden de Venta";
                             be.Fecha = DateTime.Now;
 
@@ -448,7 +448,7 @@ namespace WATickets.Controllers
                         t.Rollback();
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = ex1.Message;
+                        be.Descripcion = "Error en la orden #" + orden.id + " -> " + ex1.Message;
                         be.StackTrace = ex1.StackTrace;
                         be.Fecha = DateTime.Now;
 
@@ -469,7 +469,7 @@ namespace WATickets.Controllers
                 t.Rollback();
                 BitacoraErrores be = new BitacoraErrores();
 
-                be.Descripcion = ex.Message;
+                be.Descripcion = "Error en la orden #" + orden.id + " -> " + ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
 

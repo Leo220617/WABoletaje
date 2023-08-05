@@ -70,7 +70,7 @@ namespace WATickets.Controllers
                     {
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                        be.Descripcion = "Error en el cliente #" + cliente.CardName + " -> " + Conexion.Company.GetLastErrorDescription();
                         be.StackTrace = "Crear Cliente";
                         be.Fecha = DateTime.Now;
 
@@ -89,7 +89,7 @@ namespace WATickets.Controllers
                     Conexion.Desconectar();
                     BitacoraErrores be = new BitacoraErrores();
 
-                    be.Descripcion = ex1.Message;
+                    be.Descripcion = "Error en el cliente #" + cliente.CardName + " -> " + ex1.Message;
                     be.StackTrace = ex1.StackTrace;
                     be.Fecha = DateTime.Now;
 
@@ -107,7 +107,7 @@ namespace WATickets.Controllers
             catch (Exception ex)
             {
                 BitacoraErrores bit = new BitacoraErrores();
-                bit.Descripcion = ex.Message;
+                bit.Descripcion = "Error en el cliente #" + cliente.CardName + " -> " + ex.Message;
                 bit.StackTrace = ex.StackTrace;
                 bit.Fecha = DateTime.Now;
                 bit.DocNum = "";
@@ -188,7 +188,7 @@ namespace WATickets.Controllers
                     {
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                        be.Descripcion = "Error en el cliente #" + cliente.CardCode + " -> " + Conexion.Company.GetLastErrorDescription();
                         be.StackTrace = "Actualizar Cliente";
                         be.Fecha = DateTime.Now;
 
@@ -204,7 +204,7 @@ namespace WATickets.Controllers
             catch (Exception ex)
             {
                 BitacoraErrores be = new BitacoraErrores();
-                be.Descripcion = ex.Message;
+                be.Descripcion = "Error en el cliente #" + cliente.CardCode + " -> " + ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);

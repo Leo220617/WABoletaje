@@ -1388,7 +1388,7 @@ namespace WATickets.Controllers
                 }
                 BitacoraErrores be = new BitacoraErrores();
 
-                be.Descripcion = ex.Message;
+                be.Descripcion = "Error en el movimiento #" + encMovimiento.id + " -> " + ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
@@ -1435,7 +1435,7 @@ namespace WATickets.Controllers
                 t.Rollback();
                 BitacoraErrores be = new BitacoraErrores();
 
-                be.Descripcion = ex.Message;
+                be.Descripcion = "Error en el Movimiento #" + id + " -> " + ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);

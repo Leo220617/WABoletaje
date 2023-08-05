@@ -135,7 +135,7 @@ namespace WATickets.Controllers
             catch (Exception ex)
             {
                 BitacoraErrores be = new BitacoraErrores();
-                be.Descripcion = ex.Message;
+                be.Descripcion = "Error en la oferta #" + id + " -> " + ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
@@ -298,7 +298,7 @@ namespace WATickets.Controllers
 
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                            be.Descripcion = "Error en la oferta #" + orden.id + " -> " + Conexion.Company.GetLastErrorDescription();
                             be.StackTrace = "Oferta de Venta";
                             be.Fecha = DateTime.Now;
 
@@ -314,7 +314,7 @@ namespace WATickets.Controllers
                         Conexion.Desconectar();
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = ex1.Message;
+                        be.Descripcion = "Error en la oferta #" + orden.id + " -> " + ex1.Message;
                         be.StackTrace = ex1.StackTrace;
                         be.Fecha = DateTime.Now;
 
@@ -420,7 +420,7 @@ namespace WATickets.Controllers
                             };
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                            be.Descripcion = "Error en la oferta #" + orden.id + " -> " + Conexion.Company.GetLastErrorDescription();
                             be.StackTrace = "Oferta de Venta";
                             be.Fecha = DateTime.Now;
 
@@ -440,7 +440,7 @@ namespace WATickets.Controllers
                         t.Rollback();
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = ex1.Message;
+                        be.Descripcion = "Error en la oferta #" + orden.id + " -> " + ex1.Message;
                         be.StackTrace = ex1.StackTrace;
                         be.Fecha = DateTime.Now;
 
@@ -461,7 +461,7 @@ namespace WATickets.Controllers
                 t.Rollback();
                 BitacoraErrores be = new BitacoraErrores();
 
-                be.Descripcion = ex.Message;
+                be.Descripcion = "Error en la oferta #" + orden.id + " -> " + ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
 
@@ -501,7 +501,7 @@ namespace WATickets.Controllers
             catch (Exception ex)
             {
                 BitacoraErrores be = new BitacoraErrores();
-                be.Descripcion = ex.Message;
+                be.Descripcion = "Error en la oferta #" + id + " -> " + ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
@@ -546,7 +546,7 @@ namespace WATickets.Controllers
             {
                 t.Rollback();
                 BitacoraErrores be = new BitacoraErrores();
-                be.Descripcion = ex.Message;
+                be.Descripcion = "Error en la oferta #" + id + " -> " + ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
@@ -679,9 +679,14 @@ namespace WATickets.Controllers
                         // set converter options
                         converter.Options.PdfPageSize = PdfPageSize.A4;
                         converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
-                        converter.Options.MarginLeft = 5;
-                        converter.Options.MarginRight = 5;
+                        converter.Options.MarginLeft = 20;
+                        converter.Options.MarginRight = 20;
+                        converter.Options.MarginTop = 20;
+                        converter.Options.MarginBottom = 20;
 
+                        // Set the enhanced page breaks algorithm option
+                        converter.Options.PageBreaksEnhancedAlgorithm = true;
+                        
                         // create a new pdf document converting an html string
                         SelectPdf.PdfDocument doc = converter.ConvertHtmlString(bodyH);
 
@@ -707,7 +712,7 @@ namespace WATickets.Controllers
                     {
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = ex.Message;
+                        be.Descripcion = "Error en la oferta #" + id + " -> " + ex.Message;
                         be.StackTrace = ex.StackTrace;
                         be.Fecha = DateTime.Now;
 
@@ -730,7 +735,7 @@ namespace WATickets.Controllers
             {
                 BitacoraErrores be = new BitacoraErrores();
 
-                be.Descripcion = ex.Message;
+                be.Descripcion = "Error en la oferta #" + id + " -> " + ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
