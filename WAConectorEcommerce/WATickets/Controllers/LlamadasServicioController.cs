@@ -126,7 +126,12 @@ namespace WATickets.Controllers
 
                 if (LlamadasServicio == null)
                 {
-                    throw new Exception("Este LlamadasServicio no se encuentra registrado");
+                    LlamadasServicio = db.LlamadasServicios.Where(a => a.DocEntry == id).FirstOrDefault();
+                    if (LlamadasServicio == null)
+                    {
+                        throw new Exception("Este LlamadasServicio no se encuentra registrado");
+
+                    }
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK, LlamadasServicio);
@@ -328,7 +333,7 @@ namespace WATickets.Controllers
                     Llamada.ItemCode = llamada.ItemCode;
                     Llamada.Asunto = llamada.Asunto;
                     Llamada.TipoCaso = llamada.TipoCaso;
-                    Llamada.FechaSISO = llamada.FechaSISO;
+                    Llamada.FechaSISO = DateTime.Now.AddDays(1); //llamada.FechaSISO;
                     Llamada.LugarReparacion = llamada.LugarReparacion;
                    
 
