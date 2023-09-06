@@ -47,7 +47,8 @@ namespace WATickets.Controllers
                     client.CardType = BoCardTypes.cCustomer;
                     client.Addresses.Add();
                     client.Addresses.SetCurrentLine(0);
-                    client.Addresses.AddressName = cliente.Direccion;
+                    client.Addresses.AddressName = "Direccion";
+                    client.Addresses.Street = cliente.Direccion;
                     client.Address = cliente.Direccion;
 
                     client.ContactPerson = cliente.NombreContacto;
