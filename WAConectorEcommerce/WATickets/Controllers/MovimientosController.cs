@@ -1035,18 +1035,22 @@ namespace WATickets.Controllers
                                 Cn.Dispose();
 
                                 var idEntry = DocEntry;
+                                var CantidadExpenses = 0;
                                 var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
                                 if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
                                 {
-                                    if (client2.Expenses.Count > 0)
+                                    CantidadExpenses = client2.Expenses.Count;
+                                    if (client2.Expenses.Count > 1)
                                     {
                                         client2.Expenses.Add();
                                     }
                                     client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Order;
                                     client2.Expenses.DocumentNumber = DocNum;
                                     client2.Expenses.DocEntry = idEntry;
+                                    
+                                     
 
-                                    if (client2.Expenses.Count == 0)
+                                    if (client2.Expenses.Count == 1 || client2.Expenses.Count == 0)
                                     {
                                         client2.Expenses.Add();
                                     }
@@ -1061,7 +1065,7 @@ namespace WATickets.Controllers
                                         BitacoraErrores be = new BitacoraErrores();
 
                                         be.Descripcion = Conexion.Company.GetLastErrorDescription();
-                                        be.StackTrace = "Insercion de Liga EN - OR " + DocNum;
+                                        be.StackTrace = "Insercion de Liga EN - OR " + DocNum + " - " + idEntry + " - " + CantidadExpenses;
                                         be.Fecha = DateTime.Now;
 
                                         db.BitacoraErrores.Add(be);
