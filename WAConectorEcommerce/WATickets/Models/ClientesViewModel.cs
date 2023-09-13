@@ -7,6 +7,7 @@ namespace WATickets.Models
 {
     public class ClientesViewModel
     {
+        public string CardCode { get; set; }
         public string Cedula { get; set; }
         public string CardName { get; set; }
         public string Telefono { get; set; }

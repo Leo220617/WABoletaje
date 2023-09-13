@@ -92,7 +92,7 @@ namespace WATickets.Controllers
                     filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
                 }
 
-                var Llamada = db.LlamadasServicios.Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true))
+                var Llamada = db.LlamadasServicios.Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true) && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true))
                  .ToList();
 
                 if (!string.IsNullOrEmpty(filtro.Texto))
@@ -100,16 +100,7 @@ namespace WATickets.Controllers
                     Llamada = Llamada.Where(a => a.Asunto.ToUpper().Contains(filtro.Texto.ToUpper())).ToList();
                 }
 
-                if(filtro.Codigo1 > 0)
-                {
-                    Llamada = Llamada.Where(a => a.Tecnico == filtro.Codigo1).ToList();
-                }
-
-                if (filtro.Codigo2 != 0)
-                {
-                    Llamada = Llamada.Where(a => a.Status.Value == filtro.Codigo2).ToList();
-                }
-
+             
                 return Request.CreateResponse(HttpStatusCode.OK, Llamada);
 
             }
@@ -135,7 +126,12 @@ namespace WATickets.Controllers
 
                 if (LlamadasServicio == null)
                 {
-                    throw new Exception("Este LlamadasServicio no se encuentra registrado");
+                    LlamadasServicio = db.LlamadasServicios.Where(a => a.DocEntry == id).FirstOrDefault();
+                    if (LlamadasServicio == null)
+                    {
+                        throw new Exception("Este LlamadasServicio no se encuentra registrado");
+
+                    }
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK, LlamadasServicio);
@@ -318,6 +314,10 @@ namespace WATickets.Controllers
         {
             try
             {
+                if(llamada == null)
+                {
+                    throw new Exception("El objeto llamada viene null");
+                }
 
                 var Parametros = db.Parametros.FirstOrDefault();
                 var Llamada = db.LlamadasServicios.Where(a => a.id == llamada.id).FirstOrDefault();
@@ -333,7 +333,7 @@ namespace WATickets.Controllers
                     Llamada.ItemCode = llamada.ItemCode;
                     Llamada.Asunto = llamada.Asunto;
                     Llamada.TipoCaso = llamada.TipoCaso;
-                    Llamada.FechaSISO = llamada.FechaSISO;
+                    Llamada.FechaSISO = DateTime.Now.AddDays(1); //llamada.FechaSISO;
                     Llamada.LugarReparacion = llamada.LugarReparacion;
                    
 
@@ -468,7 +468,7 @@ namespace WATickets.Controllers
 
                                 BitacoraErrores be = new BitacoraErrores();
 
-                                be.Descripcion = ex2.Message;
+                                be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex2.Message;
                                 be.StackTrace = ex2.StackTrace;
                                 be.Fecha = DateTime.Now;
 
@@ -490,7 +490,7 @@ namespace WATickets.Controllers
                         {
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                            be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + Conexion.Company.GetLastErrorDescription();
                             be.StackTrace = "Llamada de Servicio";
                             be.Fecha = DateTime.Now;
 
@@ -508,7 +508,7 @@ namespace WATickets.Controllers
                         Conexion.Desconectar();
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = ex1.Message;
+                        be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex1.Message;
                         be.StackTrace = ex1.StackTrace;
                         be.Fecha = DateTime.Now;
 
@@ -656,7 +656,7 @@ namespace WATickets.Controllers
 
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = ex3.Message;
+                            be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex3.Message;
                             be.StackTrace = ex3.StackTrace;
                             be.Fecha = DateTime.Now;
 
@@ -701,7 +701,7 @@ namespace WATickets.Controllers
                     try
                     {
                         var client = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
-
+                      
                         if (client.GetByKey(Llamada.DocEntry.Value))
                         {
 
@@ -765,20 +765,17 @@ namespace WATickets.Controllers
                                 var Reparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
                                 if(Reparacion != null)
                                 {
-                                    client.Resolution = Reparacion.Comentarios;
+                                    client.Resolution = string.IsNullOrEmpty(Reparacion.Comentarios) ? "Favor revisar operaciones" : Reparacion.Comentarios;
 
                                 }
                                 else
                                 {
-                                    client.Resolution = Llamada.Comentarios;
+                                    client.Resolution = string.IsNullOrEmpty(Llamada.Comentarios) ? "Favor revisar operaciones" : Llamada.Comentarios;
 
                                 }
 
                             }
-
-
-                            //client.CallType = Llamada.Garantia.Value;
-
+                             
 
 
                             client.UserFields.Fields.Item("U_CONTHRS").Value = Llamada.Horas.ToString();
@@ -786,7 +783,7 @@ namespace WATickets.Controllers
 
 
                             client.TechnicianCode = Llamada.Tecnico.Value;
-
+                             
                             try
                             {
                                 var enc = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
@@ -803,7 +800,7 @@ namespace WATickets.Controllers
 
                                 BitacoraErrores be = new BitacoraErrores();
 
-                                be.Descripcion = ex3.Message;
+                                be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex3.Message;
                                 be.StackTrace = ex3.StackTrace;
                                 be.Fecha = DateTime.Now;
 
@@ -835,7 +832,7 @@ namespace WATickets.Controllers
                             {
                                 BitacoraErrores be = new BitacoraErrores();
 
-                                be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + Conexion.Company.GetLastErrorDescription();
                                 be.StackTrace = "Llamada de Servicio";
                                 be.Fecha = DateTime.Now;
 
@@ -852,7 +849,7 @@ namespace WATickets.Controllers
                     {
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = ex.Message;
+                        be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex.Message;
                         be.StackTrace = ex.StackTrace;
                         be.Fecha = DateTime.Now;
 
@@ -958,7 +955,7 @@ namespace WATickets.Controllers
 
                                 BitacoraErrores be = new BitacoraErrores();
 
-                                be.Descripcion = ex2.Message;
+                                be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex2.Message;
                                 be.StackTrace = ex2.StackTrace;
                                 be.Fecha = DateTime.Now;
 
@@ -977,7 +974,7 @@ namespace WATickets.Controllers
                         {
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                            be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + Conexion.Company.GetLastErrorDescription();
                             be.StackTrace = "Llamada de Servicio";
                             be.Fecha = DateTime.Now;
 
@@ -995,7 +992,7 @@ namespace WATickets.Controllers
                         Conexion.Desconectar();
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = ex1.Message;
+                        be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex1.Message;
                         be.StackTrace = ex1.StackTrace;
                         be.Fecha = DateTime.Now;
 

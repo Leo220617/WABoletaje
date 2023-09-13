@@ -108,6 +108,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="bin/es/Microsoft.VisualStudio.Shell.Design.resources.dll">
       <publishTime>07/18/2022 17:22:48</publishTime>
     </File>
+    <File Include="bin/es/StreamJsonRpc.resources.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
     <File Include="bin/es/System.Net.Http.Formatting.resources.dll">
       <publishTime>07/18/2022 17:40:38</publishTime>
     </File>
@@ -186,8 +189,23 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="bin/Microsoft.VisualStudio.ComponentModelHost.dll">
       <publishTime>07/18/2022 15:59:00</publishTime>
     </File>
+    <File Include="bin/Microsoft.VisualStudio.CoreUtility.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
+    <File Include="bin/Microsoft.VisualStudio.Designer.Interfaces.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
+    <File Include="bin/Microsoft.VisualStudio.Editor.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
     <File Include="bin/Microsoft.VisualStudio.GraphModel.dll">
       <publishTime>07/18/2022 17:22:37</publishTime>
+    </File>
+    <File Include="bin/Microsoft.VisualStudio.ImageCatalog.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
+    <File Include="bin/Microsoft.VisualStudio.Imaging.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
     </File>
     <File Include="bin/Microsoft.VisualStudio.OLE.Interop.dll">
       <publishTime>07/18/2022 17:21:56</publishTime>
@@ -213,6 +231,18 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="bin/Microsoft.VisualStudio.Shell.Interop.dll">
       <publishTime>07/18/2022 17:21:56</publishTime>
     </File>
+    <File Include="bin/Microsoft.VisualStudio.Text.Data.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
+    <File Include="bin/Microsoft.VisualStudio.Text.Logic.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
+    <File Include="bin/Microsoft.VisualStudio.Text.UI.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
+    <File Include="bin/Microsoft.VisualStudio.Text.UI.Wpf.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
     <File Include="bin/Microsoft.VisualStudio.TextManager.Interop.8.0.dll">
       <publishTime>07/18/2022 17:21:56</publishTime>
     </File>
@@ -224,6 +254,15 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="bin/Microsoft.VisualStudio.TextTemplating.Interfaces.11.0.dll">
       <publishTime>07/18/2022 17:24:19</publishTime>
+    </File>
+    <File Include="bin/Microsoft.VisualStudio.Threading.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
+    <File Include="bin/Microsoft.VisualStudio.Utilities.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
+    <File Include="bin/Microsoft.VisualStudio.Validation.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
     </File>
     <File Include="bin/Microsoft.VisualStudio.VSHelp.dll">
       <publishTime>07/18/2022 17:21:56</publishTime>
@@ -387,6 +426,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="bin/stdole.dll">
       <publishTime>07/18/2022 17:21:56</publishTime>
     </File>
+    <File Include="bin/StreamJsonRpc.dll">
+      <publishTime>07/21/2023 09:33:13</publishTime>
+    </File>
     <File Include="bin/System.IdentityModel.Tokens.Jwt.dll">
       <publishTime>07/18/2022 17:40:40</publishTime>
     </File>
@@ -433,10 +475,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/18/2022 17:21:56</publishTime>
     </File>
     <File Include="bin/WATickets.dll">
-      <publishTime>06/15/2023 15:14:58</publishTime>
+      <publishTime>09/08/2023 11:58:27</publishTime>
     </File>
     <File Include="bin/WATickets.pdb">
-      <publishTime>06/15/2023 15:14:58</publishTime>
+      <publishTime>09/08/2023 11:58:27</publishTime>
     </File>
     <File Include="bin/WebGrease.dll">
       <publishTime>07/18/2022 17:40:40</publishTime>
@@ -532,7 +574,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/18/2022 17:40:35</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>06/13/2023 16:34:40</publishTime>
+      <publishTime>09/08/2023 11:17:03</publishTime>
     </File>
   </ItemGroup>
 </Project>

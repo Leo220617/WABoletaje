@@ -9,6 +9,10 @@ namespace WATickets.Models
     public class OrdenVenta
     {
         public int id { get; set; }
+        public int idCondPago { get; set; }
+        public int idGarantia { get; set; }
+        public int idTiemposEntregas { get; set; }
+
         public int BaseEntry { get; set; }
         public int DocEntry { get; set; }
         public int DocNum { get; set; }
@@ -24,6 +28,12 @@ namespace WATickets.Models
         public string Comentarios { get; set; }
         public int CodVendedor { get; set; }
         public bool ProcesadaSAP { get; set; }
+        public string PersonaContacto { get; set; }
+        public string TelefonoContacto { get; set; }
+        public string CorreoContacto { get; set; }
+        public int idDiasValidos { get; set; }
+        public int idUsuarioCreador { get; set; }
+
         public List<DetOrden> Detalle { get; set; }
     }
 }
