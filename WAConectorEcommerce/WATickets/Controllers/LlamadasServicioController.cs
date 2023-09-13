@@ -701,7 +701,7 @@ namespace WATickets.Controllers
                     try
                     {
                         var client = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
-
+                      
                         if (client.GetByKey(Llamada.DocEntry.Value))
                         {
 
@@ -783,7 +783,7 @@ namespace WATickets.Controllers
 
 
                             client.TechnicianCode = Llamada.Tecnico.Value;
-
+                             
                             try
                             {
                                 var enc = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
