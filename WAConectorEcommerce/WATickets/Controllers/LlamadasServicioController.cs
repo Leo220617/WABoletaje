@@ -894,7 +894,7 @@ namespace WATickets.Controllers
             try
             {
                 var Parametros = db.Parametros.FirstOrDefault();
-                var Llamada = db.LlamadasServicios.Where(a => a.id == llamada.id).FirstOrDefault();
+                var Llamada = db.LlamadasServicios.Where(a => a.id == llamada.id && a.ProcesadaSAP == false).FirstOrDefault();
 
                 if(Llamada != null)
                 {
