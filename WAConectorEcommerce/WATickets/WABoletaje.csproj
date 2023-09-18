@@ -235,6 +235,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\ActividadesController.cs" />
     <Compile Include="Controllers\AsuntosController.cs" />
     <Compile Include="Controllers\BackOfficeController.cs" />
     <Compile Include="Controllers\BitacoraController.cs" />
@@ -283,6 +284,7 @@
     <Compile Include="Models\AdjuntosViewModel.cs" />
     <Compile Include="Models\BoletaViewModel.cs" />
     <Compile Include="Models\ClientesViewModel.cs" />
+    <Compile Include="Models\Cliente\Actividades.cs" />
     <Compile Include="Models\Cliente\Adjuntos.cs" />
     <Compile Include="Models\Cliente\AdjuntosIdentificacion.cs" />
     <Compile Include="Models\Cliente\Asuntos.cs" />
