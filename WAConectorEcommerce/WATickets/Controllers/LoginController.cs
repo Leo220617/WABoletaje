@@ -141,6 +141,8 @@ namespace WATickets.Controllers
                 Usuario.Bodega = usuario.Bodega;
                 Usuario.CorreoVentas = usuario.CorreoVentas;
                 Usuario.Telefono = usuario.Telefono;
+                Usuario.NumeroDimension = usuario.NumeroDimension;
+                Usuario.NormaReparto = usuario.NormaReparto;
                 db.Login.Add(Usuario);
                 db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.OK);
@@ -211,6 +213,9 @@ namespace WATickets.Controllers
                 {
                     Usuario.Telefono = usuario.Telefono;
                 }
+
+                Usuario.NumeroDimension = usuario.NumeroDimension;
+                Usuario.NormaReparto = usuario.NormaReparto;
 
 
                 db.SaveChanges();

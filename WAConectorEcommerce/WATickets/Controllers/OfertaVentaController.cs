@@ -237,17 +237,43 @@ namespace WATickets.Controllers
 
 
                         var Detalle = db.DetOferta.Where(a => a.idEncabezado == EncOrden.id).ToList();
+                        var Usuario = db.Login.Where(a => a.id == EncOrden.idUsuarioCreador).FirstOrDefault();
 
                         int z = 0;
                         foreach (var item in Detalle)
                         {
                             client.Lines.SetCurrentLine(z);
 
-                            client.Lines.CostingCode = "";
-                            client.Lines.CostingCode2 = "";
-                            client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
-                            client.Lines.CostingCode4 = "";
-                            client.Lines.CostingCode5 = "";
+                            switch (Usuario.NumeroDimension)
+                            {
+                                case 1:
+                                    {
+                                        client.Lines.CostingCode = Usuario.NormaReparto;
+
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        client.Lines.CostingCode2 = Usuario.NormaReparto;
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        client.Lines.CostingCode3 = Usuario.NormaReparto;
+                                        break;
+                                    }
+                                case 4:
+                                    {
+                                        client.Lines.CostingCode4 = Usuario.NormaReparto;
+                                        break;
+                                    }
+                                case 5:
+                                    {
+                                        client.Lines.CostingCode5 = Usuario.NormaReparto;
+                                        break;
+                                    }
+
+                            }
                             client.Lines.Currency = EncOrden.Moneda;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorcentajeDescuento);
                             client.Lines.ItemCode = item.ItemCode;
@@ -359,17 +385,43 @@ namespace WATickets.Controllers
 
 
                         var Detalle = db.DetOferta.Where(a => a.idEncabezado == EncOrden.id).ToList();
+                        var Usuario = db.Login.Where(a => a.id == EncOrden.idUsuarioCreador).FirstOrDefault();
 
                         int z = 0;
                         foreach (var item in Detalle)
                         {
                             client.Lines.SetCurrentLine(z);
 
-                            client.Lines.CostingCode = "";
-                            client.Lines.CostingCode2 = "";
-                            client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
-                            client.Lines.CostingCode4 = "";
-                            client.Lines.CostingCode5 = "";
+                            switch (Usuario.NumeroDimension)
+                            {
+                                case 1:
+                                    {
+                                        client.Lines.CostingCode = Usuario.NormaReparto;
+
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        client.Lines.CostingCode2 = Usuario.NormaReparto;
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        client.Lines.CostingCode3 = Usuario.NormaReparto;
+                                        break;
+                                    }
+                                case 4:
+                                    {
+                                        client.Lines.CostingCode4 = Usuario.NormaReparto;
+                                        break;
+                                    }
+                                case 5:
+                                    {
+                                        client.Lines.CostingCode5 = Usuario.NormaReparto;
+                                        break;
+                                    }
+
+                            }
                             client.Lines.Currency = EncOrden.Moneda;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorcentajeDescuento);
                             client.Lines.ItemCode = item.ItemCode;
