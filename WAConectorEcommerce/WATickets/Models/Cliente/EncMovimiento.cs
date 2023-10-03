@@ -27,5 +27,6 @@ namespace WATickets.Models.Cliente
         public decimal TotalComprobante { get; set; }
         public string Moneda { get; set; }
         public bool Aprobada { get; set; }
+        public bool AprobadaSuperior { get; set; }
     }
 }

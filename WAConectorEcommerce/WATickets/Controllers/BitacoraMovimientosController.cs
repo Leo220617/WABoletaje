@@ -137,6 +137,7 @@ namespace WATickets.Controllers
         {
             try
             {
+                var errorSAP = "";
                 var BT = db.BitacoraMovimientos.Where(a => a.id == bts.id).FirstOrDefault();
 
                 if(BT != null)
@@ -231,6 +232,10 @@ namespace WATickets.Controllers
                                     }
                                     else
                                     {
+                                        db.Entry(BT).State = EntityState.Modified;
+                                        BT.Status = "0"; 
+                                        db.SaveChanges();
+                                        errorSAP = Conexion.Company.GetLastErrorDescription();
                                         BitacoraErrores be = new BitacoraErrores();
                                         be.DocNum = idEntry.ToString();
                                         be.Descripcion = count + "- " + Conexion.Company.GetLastErrorDescription();
@@ -248,6 +253,10 @@ namespace WATickets.Controllers
                             }
                             else
                             {
+                                db.Entry(BT).State = EntityState.Modified;
+                                BT.Status = "0";
+                                db.SaveChanges();
+                                errorSAP = Conexion.Company.GetLastErrorDescription();
                                 BitacoraErrores be = new BitacoraErrores();
                                 be.DocNum = Encabezado.idLlamada.ToString();
                                 be.Descripcion = Conexion.Company.GetLastErrorDescription();
@@ -262,7 +271,10 @@ namespace WATickets.Controllers
                         }
                         catch (Exception ex1)
                         {
-
+                            db.Entry(BT).State = EntityState.Modified;
+                            BT.Status = "0";
+                            db.SaveChanges();
+                            errorSAP = ex1.Message;
                             BitacoraErrores be = new BitacoraErrores();
 
                             be.Descripcion = ex1.Message;
@@ -275,7 +287,11 @@ namespace WATickets.Controllers
                         }
                     }
 
+                    if(BT.Status == "0" && bts.Status != "0")
+                    {
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ha ocurrido un error al enviar a SAP ("+errorSAP+") , por lo tanto debe volver a intentarlo");
 
+                    }
 
                     return Request.CreateResponse(HttpStatusCode.OK, BT);
 

@@ -363,6 +363,7 @@ namespace WATickets.Controllers
                                     encMovimiento.TotalComprobante = OfertaAprobada.TotalComprobante;
                                     encMovimiento.Moneda = OfertaAprobada.Moneda;
                                     encMovimiento.Aprobada = false;
+                                    encMovimiento.AprobadaSuperior = false;
                                     db.EncMovimiento.Add(encMovimiento);
                                     db.SaveChanges();
 
@@ -430,6 +431,7 @@ namespace WATickets.Controllers
                                         encMovimiento.TotalComprobante = OfertaAprobada.TotalComprobante;
                                         encMovimiento.Moneda = OfertaAprobada.Moneda;
                                         encMovimiento.Aprobada = false;
+                                        encMovimiento.AprobadaSuperior = false;
                                         db.EncMovimiento.Add(encMovimiento);
                                         db.SaveChanges();
 
@@ -489,6 +491,7 @@ namespace WATickets.Controllers
                                 encMovimiento.TotalComprobante = 0;
                                 encMovimiento.Moneda = "COL";
                                 encMovimiento.Aprobada = false;
+                                encMovimiento.AprobadaSuperior = false;
                                 db.EncMovimiento.Add(encMovimiento);
                                 db.SaveChanges();
 
@@ -804,6 +807,7 @@ namespace WATickets.Controllers
                             encMovimiento.DocEntry = 0;
                             encMovimiento.Moneda = "COL";
                             encMovimiento.Aprobada = false;
+                            encMovimiento.AprobadaSuperior = false;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 
@@ -1011,6 +1015,7 @@ namespace WATickets.Controllers
                             encMovimiento.DocEntry = 0;
                             encMovimiento.Moneda = "COL";
                             encMovimiento.Aprobada = false;
+                            encMovimiento.AprobadaSuperior = false;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 

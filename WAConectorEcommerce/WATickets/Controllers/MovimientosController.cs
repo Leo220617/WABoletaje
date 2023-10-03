@@ -542,7 +542,7 @@ namespace WATickets.Controllers
                         a.Impuestos,
                         a.TotalComprobante,
                         a.Moneda,
-
+                        a.AprobadaSuperior,
                         Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
 
                     }
@@ -628,6 +628,7 @@ namespace WATickets.Controllers
                     a.Impuestos,
                     a.TotalComprobante,
                     a.Moneda,
+                    a.AprobadaSuperior,
                     Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
 
                 }
@@ -777,6 +778,7 @@ namespace WATickets.Controllers
                         EncMovimiento.Comentarios = encMovimiento.Comentarios;
                         EncMovimiento.Moneda = encMovimiento.Moneda;
                         EncMovimiento.Aprobada = false;
+                        EncMovimiento.AprobadaSuperior = false;
                         db.EncMovimiento.Add(EncMovimiento);
                         db.SaveChanges();
 
@@ -1289,6 +1291,7 @@ namespace WATickets.Controllers
                                 EncMovimientoEntrega.TotalComprobante = 0;
                                 EncMovimientoEntrega.Comentarios = "Esta es la entrega de los productos por garantia";
                                 EncMovimientoEntrega.Aprobada = false;
+                                EncMovimientoEntrega.AprobadaSuperior = false;
                                 db.EncMovimiento.Add(EncMovimientoEntrega);
                                 db.SaveChanges();
 
@@ -1424,6 +1427,48 @@ namespace WATickets.Controllers
                     }
 
                     db.EncMovimiento.Remove(EncMovimiento);
+                    db.SaveChanges();
+                    t.Commit();
+                }
+                else
+                {
+                    throw new Exception("EncMovimmiento no existe");
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                t.Rollback();
+                BitacoraErrores be = new BitacoraErrores();
+
+                be.Descripcion = "Error en el Movimiento #" + id + " -> " + ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+
+        [HttpPost]
+        [Route("api/Movimientos/AprobarSuperior")]
+        public HttpResponseMessage AprobarSuperior([FromUri] int id)
+        {
+            var t = db.Database.BeginTransaction();
+            try
+            {
+
+
+                var EncMovimiento = db.EncMovimiento.Where(a => a.id == id).FirstOrDefault();
+
+                if (EncMovimiento != null)
+                {
+
+                    db.Entry(EncMovimiento).State = EntityState.Modified;
+                    EncMovimiento.AprobadaSuperior = true;
+                     
                     db.SaveChanges();
                     t.Commit();
                 }
