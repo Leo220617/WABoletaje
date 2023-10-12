@@ -507,8 +507,16 @@ namespace WATickets.Controllers
 
                         Conexion.Desconectar();
                         BitacoraErrores be = new BitacoraErrores();
+                        try
+                        {
+                            be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex1.Message + " -> " + Conexion.Company.GetNewObjectKey();
+                        }
+                        catch (Exception)
+                        {
 
-                        be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex1.Message;
+                            be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex1.Message ;
+                        }
+                        
                         be.StackTrace = ex1.StackTrace;
                         be.Fecha = DateTime.Now;
 
