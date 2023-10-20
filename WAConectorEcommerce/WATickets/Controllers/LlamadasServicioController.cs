@@ -219,7 +219,7 @@ namespace WATickets.Controllers
                     Cn.Dispose();
 
 
-                    SQL = parametros.SQLProductos + " where itemCode = '" + Llamada.ItemCode + "'";
+                    SQL = parametros.SQLProductos + " where itemCode = '" + Llamada.ItemCode + "'";//+ " and customer= '" +Llamada.CardCode+ "' and ";
                     Cn = new SqlConnection(conexion);
                     Cmd = new SqlCommand(SQL, Cn);
                     Da = new SqlDataAdapter(Cmd);
@@ -228,7 +228,7 @@ namespace WATickets.Controllers
                     Da.Fill(Ds, "Producto");
 
                     bodyH = bodyH.Replace("@EquipoDelClie", Ds.Tables["Producto"].Rows[0]["itemName"].ToString());
-                    bodyH = bodyH.Replace("@Serie", Ds.Tables["Producto"].Rows[0]["manufSN"].ToString());
+                    bodyH = bodyH.Replace("@Serie", Llamada.SerieFabricante); //bodyH.Replace("@Serie", Ds.Tables["Producto"].Rows[0]["manufSN"].ToString());
                     bodyH = bodyH.Replace("@Fecha", Llamada.FechaCreacion.ToString("dd/MM/yyyy"));
                     var sucR = Llamada.SucRecibo.Value.ToString();
                     var sucE = Llamada.SucRetiro.Value.ToString();
