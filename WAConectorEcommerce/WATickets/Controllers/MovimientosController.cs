@@ -237,6 +237,32 @@ namespace WATickets.Controllers
                             Cn.Dispose();
                             var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
                             var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
+
+                            var SQLANTES = parametros.SQLProductosBoleta.Replace("and t0.validFor = 'Y' ", " ");
+                            SQLANTES = SQLANTES.Replace("and t0.validFor = 'Y'", " ");
+                            SQL = SQLANTES + " and ItemCode = '" + Llamada.ItemCode + "'";
+
+                            Cn = new SqlConnection(conexion);
+                             Cmd = new SqlCommand(SQL, Cn);
+                             Da = new SqlDataAdapter(Cmd);
+                             Ds = new DataSet();
+                            Cn.Open();
+                            Da.Fill(Ds, "Encabezado");
+                            var NombreProducto = "";
+                            try
+                            {
+                                NombreProducto = Ds.Tables["Encabezado"].Rows[0]["ItemName"].ToString();
+                            }
+                            catch (Exception)
+                            {
+
+
+                            }
+                            Cn.Close();
+
+                            bodyH = bodyH.Replace("@ItemCodeProd", Llamada.ItemCode + " - " + NombreProducto);
+                            bodyH = bodyH.Replace("@SerieProd", Llamada.SerieFabricante);
+
                             bodyH = bodyH.Replace("@ContactoReferencia", Llamada.PersonaContacto);
                             bodyH = bodyH.Replace("@Referencia", "");
                             bodyH = bodyH.Replace("@CondicionPago", "");
@@ -430,7 +456,33 @@ namespace WATickets.Controllers
 
 
 
+                            var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                            var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
+                            var SQLANTES = parametros.SQLProductosBoleta.Replace("and t0.validFor = 'Y' ", " ");
+                            SQLANTES = SQLANTES.Replace("and t0.validFor = 'Y'", " ");
+                            SQL = SQLANTES + " and ItemCode = '" + Llamada.ItemCode + "'";
 
+                            Cn = new SqlConnection(conexion);
+                            Cmd = new SqlCommand(SQL, Cn);
+                            Da = new SqlDataAdapter(Cmd);
+                            Ds = new DataSet();
+                            Cn.Open();
+                            Da.Fill(Ds, "Encabezado");
+                            var NombreProducto = "";
+                            try
+                            {
+                                NombreProducto = Ds.Tables["Encabezado"].Rows[0]["ItemName"].ToString();
+                            }
+                            catch (Exception)
+                            {
+
+
+                            }
+
+                            Cn.Close();
+
+                            bodyH = bodyH.Replace("@ItemCodeProd", Llamada.ItemCode + " - " + NombreProducto);
+                            bodyH = bodyH.Replace("@SerieProd", Llamada.SerieFabricante);
 
 
                             HtmlToPdf converter = new HtmlToPdf();
@@ -446,8 +498,7 @@ namespace WATickets.Controllers
 
                             var bytes = doc.Save();
                             doc.Close();
-                            var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
-                            var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
+                           
                             System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Presupuesto_Reparacion_"+ NumLlamada.ToString() + ".pdf");
                             adjuntos.Add(att3);
 
