@@ -446,6 +446,8 @@ namespace WATickets.Controllers
                         {
 
                             db.Entry(Llamada).State = EntityState.Modified;
+                            Llamada.DocEntry = 0;
+                            Llamada.DocNum = 0;
                             try
                             {
                                 Llamada.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
@@ -477,37 +479,40 @@ namespace WATickets.Controllers
 
 
                             }
-
-                            try
-                            {
-                                var conexion = g.DevuelveCadena(db);
-
-                                var SQL = Parametros.SQLDocNum.Replace("@reemplazo", Llamada.DocEntry.ToString());
-
-                                SqlConnection Cn = new SqlConnection(conexion);
-                                SqlCommand Cmd = new SqlCommand(SQL, Cn);
-                                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
-                                DataSet Ds = new DataSet();
-                                Cn.Open();
-                                Da.Fill(Ds, "DocNum1");
-                                Llamada.DocNum = Convert.ToInt32(Ds.Tables["DocNum1"].Rows[0]["DocNum"]);
-
-                                Cn.Close();
-                            }
-                            catch (Exception ex2)
-                            {
-
-                                BitacoraErrores be = new BitacoraErrores();
-
-                                be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex2.Message;
-                                be.StackTrace = ex2.StackTrace;
-                                be.Fecha = DateTime.Now;
-
-                                db.BitacoraErrores.Add(be);
-                                db.SaveChanges();
-                            }
-
                             if (Llamada.DocEntry != null || Llamada.DocEntry != 0)
+                            {
+                                try
+                                {
+                                    var conexion = g.DevuelveCadena(db);
+
+                                    var SQL = Parametros.SQLDocNum.Replace("@reemplazo", Llamada.DocEntry.ToString());
+
+                                    SqlConnection Cn = new SqlConnection(conexion);
+                                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                    DataSet Ds = new DataSet();
+                                    Cn.Open();
+                                    Da.Fill(Ds, "DocNum1");
+                                    Llamada.DocNum = Convert.ToInt32(Ds.Tables["DocNum1"].Rows[0]["DocNum"]);
+
+                                    Cn.Close();
+                                }
+                                catch (Exception ex2)
+                                {
+
+                                    BitacoraErrores be = new BitacoraErrores();
+
+                                    be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex2.Message;
+                                    be.StackTrace = ex2.StackTrace;
+                                    be.Fecha = DateTime.Now;
+
+                                    db.BitacoraErrores.Add(be);
+                                    db.SaveChanges();
+                                }
+                            }
+                               
+
+                            if (Llamada.DocEntry != 0)
                             {
                                 Llamada.ProcesadaSAP = true;
 
@@ -969,7 +974,69 @@ namespace WATickets.Controllers
                         {
 
                             db.Entry(Llamada).State = EntityState.Modified;
-                            Llamada.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                            Llamada.DocEntry = 0;
+                            Llamada.DocNum = 0;
+
+                            try
+                            {
+                                var conexion = g.DevuelveCadena(db);
+                                var filtroSQL = "customer = '" + Llamada.CardCode + "' and itemCode = '" + Llamada.ItemCode + "' and subject like '%" + Llamada.Asunto + "%' and createDate = '" + Llamada.FechaCreacion.Date + "'";
+                                var SQL = Parametros.SQLDocNum.Replace("callID = @reemplazo", filtroSQL);
+
+                                SqlConnection Cn = new SqlConnection(conexion);
+                                SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                DataSet Ds = new DataSet();
+                                Cn.Open();
+                                Da.Fill(Ds, "DocNum1");
+                                Llamada.DocEntry = Convert.ToInt32(Ds.Tables["DocNum1"].Rows[0]["callID"]);
+
+                                Cn.Close();
+                            }
+                            catch (Exception)
+                            {
+
+
+                            }
+
+                            try
+                            {
+                                if(Llamada.DocEntry == 0)
+                                {
+                                    Llamada.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+
+                                }
+
+                            }
+                            catch (Exception)
+
+                            {
+                                try
+                                {
+                                    var conexion = g.DevuelveCadena(db);
+                                    var filtroSQL = "customer = '" + Llamada.CardCode + "' and itemCode = '" + Llamada.ItemCode + "' and subject like '%" + Llamada.Asunto + "%' and createDate = '" + Llamada.FechaCreacion.Date + "'";
+                                    var SQL = Parametros.SQLDocNum.Replace("callID = @reemplazo", filtroSQL);
+
+                                    SqlConnection Cn = new SqlConnection(conexion);
+                                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                    DataSet Ds = new DataSet();
+                                    Cn.Open();
+                                    Da.Fill(Ds, "DocNum1");
+                                    Llamada.DocEntry = Convert.ToInt32(Ds.Tables["DocNum1"].Rows[0]["callID"]);
+
+                                    Cn.Close();
+                                }
+                                catch (Exception)
+                                {
+
+
+                                }
+
+
+                            }
+
+
                             try
                             {
                                 var conexion = g.DevuelveCadena(db);
@@ -998,7 +1065,11 @@ namespace WATickets.Controllers
                                 db.BitacoraErrores.Add(be);
                                 db.SaveChanges();
                             }
-                            Llamada.ProcesadaSAP = true;
+                            if(Llamada.DocEntry != 0)
+                            {
+                                Llamada.ProcesadaSAP = true;
+
+                            }
 
                             db.SaveChanges();
 
