@@ -56,6 +56,8 @@ namespace WATickets.Models.Cliente
 
         public virtual DbSet<DiasValidos> DiasValidos { get; set; }
         public virtual DbSet<Actividades> Actividades { get; set; }
+        public virtual DbSet<Ubicaciones> Ubicaciones { get; set; }
+
 
 
 
