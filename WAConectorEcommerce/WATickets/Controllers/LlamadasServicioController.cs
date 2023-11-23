@@ -471,9 +471,16 @@ namespace WATickets.Controllers
 
                                     Cn.Close();
                                 }
-                                catch (Exception)
+                                catch (Exception ex1)
                                 {
+                                    BitacoraErrores be = new BitacoraErrores();
 
+                                    be.Descripcion = "Error en la llamada #" + Llamada.id + " , al conseguir el docEntry -> " + ex1.Message;
+                                    be.StackTrace = ex1.StackTrace;
+                                    be.Fecha = DateTime.Now;
+
+                                    db.BitacoraErrores.Add(be);
+                                    db.SaveChanges();
 
                                 }
 
@@ -703,6 +710,7 @@ namespace WATickets.Controllers
 
                             db.BitacoraErrores.Add(be);
                             db.SaveChanges();
+                            throw new Exception(be.Descripcion);
                         }
 
                     }
