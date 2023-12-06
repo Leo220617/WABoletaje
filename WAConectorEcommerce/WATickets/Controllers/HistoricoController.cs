@@ -57,5 +57,43 @@ namespace WATickets.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+        [Route("api/Historico/Detallado")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetHistoricoDetallado([FromUri] Filtros filtro)
+        {
+            try
+            {
+
+                Parametros parametros = db.Parametros.FirstOrDefault();
+                var conexion = G.DevuelveCadena(db);
+
+                var SQL = parametros.SQLInformacionLlamadaDetallada.Replace("@Serie", "'" + filtro.CardCode.ToString() + "'").Replace("@ProductoPadre", "'"+ filtro.CardName.ToString()+"'");
+
+                SqlConnection Cn = new SqlConnection(conexion);
+                SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                DataSet Ds = new DataSet();
+                Cn.Open();
+                Da.Fill(Ds, "Historico");
+
+
+                Cn.Close();
+
+
+                return Request.CreateResponse(HttpStatusCode.OK, Ds);
+
+            }
+            catch (Exception ex)
+            {
+                BitacoraErrores be = new BitacoraErrores();
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
     }
 }
