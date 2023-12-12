@@ -458,7 +458,7 @@ namespace WATickets.Controllers
                                 try
                                 {
                                     var conexion = g.DevuelveCadena(db);
-                                    var filtroSQL = "customer = '" + Llamada.CardCode + "' and itemCode = '" + Llamada.ItemCode + "' and subject like '%" + Llamada.Asunto + "%' and createDate = '" + Llamada.FechaCreacion.Date + "'";
+                                    var filtroSQL = "customer = '" + Llamada.CardCode + "' and itemCode = '" + Llamada.ItemCode + "' and subject like '%" + Llamada.Asunto + "%' and createDate = '" + Llamada.FechaCreacion.Date + "' and manufSN = '" + Llamada.SerieFabricante + "'";
                                     var SQL = Parametros.SQLDocNum.Replace("callID = @reemplazo", filtroSQL);
 
                                     SqlConnection Cn = new SqlConnection(conexion);
@@ -988,7 +988,7 @@ namespace WATickets.Controllers
                             try
                             {
                                 var conexion = g.DevuelveCadena(db);
-                                var filtroSQL = "customer = '" + Llamada.CardCode + "' and itemCode = '" + Llamada.ItemCode + "' and subject like '%" + Llamada.Asunto + "%' and createDate = '" + Llamada.FechaCreacion.Date + "'";
+                                var filtroSQL = "customer = '" + Llamada.CardCode + "' and itemCode = '" + Llamada.ItemCode + "' and subject like '%" + Llamada.Asunto + "%' and createDate = '" + Llamada.FechaCreacion.Date + "' and manufSN = '" + Llamada.SerieFabricante + "'";
                                 var SQL = Parametros.SQLDocNum.Replace("callID = @reemplazo", filtroSQL);
 
                                 SqlConnection Cn = new SqlConnection(conexion);
