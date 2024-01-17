@@ -752,6 +752,7 @@ namespace WATickets.Controllers
 
                         foreach (var item in encMovimiento.Detalle)
                         {
+                            item.id = 0;
                             var Det = db.DetMovimiento.Where(a => a.id == item.id).FirstOrDefault();
                             if (Det != null)
                             {
