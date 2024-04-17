@@ -206,7 +206,7 @@ namespace WATickets.Controllers
 
                     List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
                     html Html = new html();
-                    var bodyH = Html.texto;
+                    var bodyH = G.ObtenerConfig("Empresa") == "G" ? Html.textoGermantec : Html.textoAlsara;
                     bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                     bodyH = bodyH.Replace("@telefono", Llamada.NumeroPersonaContacto);
                     bodyH = bodyH.Replace("@celular", "      ");
