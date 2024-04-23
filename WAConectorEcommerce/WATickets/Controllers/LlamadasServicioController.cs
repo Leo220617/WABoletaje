@@ -519,7 +519,7 @@ namespace WATickets.Controllers
                             }
                                
 
-                            if (Llamada.DocEntry != 0)
+                            if (Llamada.DocEntry != 0 && Llamada.DocEntry != null)
                             {
                                 Llamada.ProcesadaSAP = true;
 
