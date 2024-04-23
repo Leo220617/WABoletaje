@@ -166,8 +166,16 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                ModelCliente db = new ModelCliente();
 
+                BitacoraErrores be = new BitacoraErrores();
 
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
                 return false;
             }
         }

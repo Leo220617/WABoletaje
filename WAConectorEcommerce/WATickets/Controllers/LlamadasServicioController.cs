@@ -206,7 +206,7 @@ namespace WATickets.Controllers
 
                     List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
                     html Html = new html();
-                    var bodyH = Html.texto;
+                    var bodyH = G.ObtenerConfig("Empresa") == "G" ? Html.textoGermantec : Html.textoAlsara;
                     bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                     bodyH = bodyH.Replace("@telefono", Llamada.NumeroPersonaContacto);
                     bodyH = bodyH.Replace("@celular", "      ");
@@ -458,7 +458,7 @@ namespace WATickets.Controllers
                                 try
                                 {
                                     var conexion = g.DevuelveCadena(db);
-                                    var filtroSQL = "customer = '" + Llamada.CardCode + "' and itemCode = '" + Llamada.ItemCode + "' and subject like '%" + Llamada.Asunto + "%' and createDate = '" + Llamada.FechaCreacion.Date + "'";
+                                    var filtroSQL = "customer = '" + Llamada.CardCode + "' and itemCode = '" + Llamada.ItemCode + "' and subject like '%" + Llamada.Asunto.TrimEnd() + "%' and createDate = '" + Llamada.FechaCreacion.Date + "' and manufSN = '" + Llamada.SerieFabricante + "'";
                                     var SQL = Parametros.SQLDocNum.Replace("callID = @reemplazo", filtroSQL);
 
                                     SqlConnection Cn = new SqlConnection(conexion);
@@ -471,9 +471,16 @@ namespace WATickets.Controllers
 
                                     Cn.Close();
                                 }
-                                catch (Exception)
+                                catch (Exception ex1)
                                 {
+                                    BitacoraErrores be = new BitacoraErrores();
 
+                                    be.Descripcion = "Error en la llamada #" + Llamada.id + " , al conseguir el docEntry -> " + ex1.Message;
+                                    be.StackTrace = ex1.StackTrace;
+                                    be.Fecha = DateTime.Now;
+
+                                    db.BitacoraErrores.Add(be);
+                                    db.SaveChanges();
 
                                 }
 
@@ -512,7 +519,7 @@ namespace WATickets.Controllers
                             }
                                
 
-                            if (Llamada.DocEntry != 0)
+                            if (Llamada.DocEntry != 0 && Llamada.DocEntry != null)
                             {
                                 Llamada.ProcesadaSAP = true;
 
@@ -711,6 +718,7 @@ namespace WATickets.Controllers
 
                             db.BitacoraErrores.Add(be);
                             db.SaveChanges();
+                            throw new Exception(be.Descripcion);
                         }
 
                     }
@@ -988,7 +996,7 @@ namespace WATickets.Controllers
                             try
                             {
                                 var conexion = g.DevuelveCadena(db);
-                                var filtroSQL = "customer = '" + Llamada.CardCode + "' and itemCode = '" + Llamada.ItemCode + "' and subject like '%" + Llamada.Asunto + "%' and createDate = '" + Llamada.FechaCreacion.Date + "'";
+                                var filtroSQL = "customer = '" + Llamada.CardCode + "' and itemCode = '" + Llamada.ItemCode + "' and subject like '%" + Llamada.Asunto + "%' and createDate = '" + Llamada.FechaCreacion.Date + "' and manufSN = '" + Llamada.SerieFabricante + "'";
                                 var SQL = Parametros.SQLDocNum.Replace("callID = @reemplazo", filtroSQL);
 
                                 SqlConnection Cn = new SqlConnection(conexion);

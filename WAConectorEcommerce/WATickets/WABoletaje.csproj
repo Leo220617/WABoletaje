@@ -278,6 +278,7 @@
     <Compile Include="Controllers\TiposCasosController.cs" />
     <Compile Include="Controllers\TokenGenerator.cs" />
     <Compile Include="Controllers\TokenValidationHandler.cs" />
+    <Compile Include="Controllers\UbicacionesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -325,6 +326,7 @@
     <Compile Include="Models\Cliente\Tecnicos.cs" />
     <Compile Include="Models\Cliente\TiemposEntregas.cs" />
     <Compile Include="Models\Cliente\TiposCasos.cs" />
+    <Compile Include="Models\Cliente\Ubicaciones.cs" />
     <Compile Include="Models\ColeccionMovimientos.cs" />
     <Compile Include="Models\ColeccionProductos.cs" />
     <Compile Include="Models\ColeccionRepuestos.cs" />

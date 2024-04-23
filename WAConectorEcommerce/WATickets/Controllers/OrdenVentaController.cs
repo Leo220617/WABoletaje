@@ -187,7 +187,8 @@ namespace WATickets.Controllers
                         DetOrden.PrecioUnitario = item.PrecioUnitario;
                         DetOrden.Total = item.Total;
                         var Imp = Decimal.Parse(item.Impuesto);
-                        DetOrden.TaxCode = db.Impuestos.Where(a => a.Tarifa == Imp).FirstOrDefault() == null ? "IVA-13" : db.Impuestos.Where(a => a.Tarifa == Imp).FirstOrDefault().CodSAP;
+                        DetOrden.TaxCode = item.TaxCode;
+                        //DetOrden.TaxCode = db.Impuestos.Where(a => a.Tarifa == Imp).FirstOrDefault() == null ? "IVA-13" : db.Impuestos.Where(a => a.Tarifa == Imp).FirstOrDefault().CodSAP;
                         db.DetOrden.Add(DetOrden);
                         db.SaveChanges();
                         i++;
