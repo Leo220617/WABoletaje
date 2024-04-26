@@ -133,7 +133,7 @@ namespace WATickets.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage Post([FromBody] BitacoraMovimientos bts)
+        public HttpResponseMessage Post([FromBody] BitacoraMovimientosViewModel bts)
         {
             try
             {
@@ -146,7 +146,17 @@ namespace WATickets.Controllers
                     BT.Status = bts.Status;
                     db.SaveChanges();
 
-                    if(BT.Status == "1" && !BT.ProcesadaSAP)
+                    foreach (var item in bts.Detalle)
+                    {
+                        var DetBitacoraMovimiento = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.idProducto == item.idProducto && a.idError == item.idError).FirstOrDefault();
+                        db.Entry(DetBitacoraMovimiento).State = EntityState.Modified;
+                        DetBitacoraMovimiento.Enviar = item.Enviar;
+                        db.SaveChanges();
+
+                    }
+
+
+                    if (BT.Status == "1" && !BT.ProcesadaSAP)
                     {
                         try
                         {

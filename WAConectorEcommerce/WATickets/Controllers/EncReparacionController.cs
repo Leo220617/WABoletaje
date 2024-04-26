@@ -715,6 +715,7 @@ namespace WATickets.Controllers
                                 dbt.Cantidad = item.Cantidad;
                                 dbt.ItemCode = item.ItemCode;
                                 dbt.idError = item.idError;
+                                dbt.Enviar = false;
                                 db.DetBitacoraMovimientos.Add(dbt);
                                 db.SaveChanges();
 
