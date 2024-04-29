@@ -54,7 +54,7 @@ namespace WATickets.Controllers
                 {
                     Bitacora = Bitacora.Where(a => a.idEncabezado == filtro.Codigo1).ToList();
                 }
-                 if (filtro.Codigo3 >= 0)
+                else if (filtro.Codigo3 >= 0)
                 {
                     string status = filtro.Codigo3.ToString();
                     Bitacora = Bitacora.Where(a => a.Status == status).ToList();

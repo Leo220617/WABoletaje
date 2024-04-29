@@ -505,7 +505,7 @@ namespace WATickets.Controllers
                                 foreach (var item in bitacorasEntradas)
                                 {
                                     //Traemos todo el detalle de las entradas
-                                    var DetallesEntradas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
+                                    var DetallesEntradas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id && a.Enviar).ToList();
                                     //Recorremos todos los detalles de las entradas que traen los productos seleccionados
                                     foreach (var item2 in DetallesEntradas)
 
@@ -561,7 +561,7 @@ namespace WATickets.Controllers
                                 foreach (var item in bitacorasSalidas)
                                 {
                                     //Traemos todo el detalle de las salidas
-                                    var DetallesSalidas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
+                                    var DetallesSalidas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id && a.Enviar).ToList();
                                     //Recorremos todos los detalles de las salidas que traen los productos seleccionados
                                     foreach (var item2 in DetallesSalidas)
                                     {
@@ -715,7 +715,7 @@ namespace WATickets.Controllers
                                 dbt.Cantidad = item.Cantidad;
                                 dbt.ItemCode = item.ItemCode;
                                 dbt.idError = item.idError;
-                                dbt.Enviar = false;
+                                dbt.Enviar = true;
                                 db.DetBitacoraMovimientos.Add(dbt);
                                 db.SaveChanges();
 
@@ -822,7 +822,7 @@ namespace WATickets.Controllers
                             foreach (var item in bitacorasEntradas)
                             {
                                 //Traemos todo el detalle de las entradas
-                                var DetallesEntradas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
+                                var DetallesEntradas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id && a.Enviar).ToList();
                                 //Recorremos todos los detalles de las entradas que traen los productos seleccionados
                                 foreach (var item2 in DetallesEntradas)
 
@@ -879,7 +879,7 @@ namespace WATickets.Controllers
                             foreach (var item in bitacorasSalidas)
                             {
                                 //Traemos todo el detalle de las salidas
-                                var DetallesSalidas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
+                                var DetallesSalidas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id && a.Enviar).ToList();
                                 //Recorremos todos los detalles de las salidas que traen los productos seleccionados
                                 foreach (var item2 in DetallesSalidas)
                                 {
