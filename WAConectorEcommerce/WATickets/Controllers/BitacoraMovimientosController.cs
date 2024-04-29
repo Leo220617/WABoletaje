@@ -54,7 +54,7 @@ namespace WATickets.Controllers
                 {
                     Bitacora = Bitacora.Where(a => a.idEncabezado == filtro.Codigo1).ToList();
                 }
-                else if (filtro.Codigo3 >= 0)
+                 if (filtro.Codigo3 >= 0)
                 {
                     string status = filtro.Codigo3.ToString();
                     Bitacora = Bitacora.Where(a => a.Status == status).ToList();
@@ -185,7 +185,7 @@ namespace WATickets.Controllers
                             client.JournalMemo = "Traslados - " + Llamada.CardCode;
 
                             var i = 0;
-                            var Det = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id).ToList();
+                            var Det = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.Enviar).ToList();
                             foreach (var item in Det)
                             {
                                 client.Lines.ItemCode = item.ItemCode.Split('|')[0].Trim();
