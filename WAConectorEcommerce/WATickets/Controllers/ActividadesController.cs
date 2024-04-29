@@ -98,6 +98,7 @@ namespace WATickets.Controllers
                     Actividad.DocEntry = 0;
                     Actividad.ProcesadaSAP = false;
                     Actividad.UsuarioCreador = actividad.UsuarioCreador;
+                    Actividad.idLogin = actividad.idLogin;
                     db.Actividades.Add(Actividad);
                     db.SaveChanges();
 

@@ -18,5 +18,6 @@ namespace WATickets.Models.Cliente
         public DateTime FechaCreacion { get; set; }
         public bool ProcesadaSAP { get; set; }
         public int UsuarioCreador { get; set; }
+        public int idLogin { get; set; }
     }
 }
