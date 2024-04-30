@@ -229,7 +229,7 @@ namespace WATickets.Controllers
                                     {
                                         db.Entry(BT).State = EntityState.Modified;
                                         BT.DocEntry = idEntry;
-                                        BT.ProcesadaSAP = true;
+                                       // BT.ProcesadaSAP = true;
                                         db.SaveChanges();
 
                                         db.Entry(Encabezado).State = EntityState.Modified;
