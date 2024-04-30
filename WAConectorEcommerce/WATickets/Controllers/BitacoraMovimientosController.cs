@@ -205,9 +205,9 @@ namespace WATickets.Controllers
                                 var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
                                 if (client2.GetByKey(Llamada.DocEntry.Value))
                                 {
-                                    count = db.BitacoraMovimientos.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).Count();
+                                   // count = db.BitacoraMovimientos.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).Count();
 
-
+                                    count = db.BitacoraMovimientosSAP.Where(a => a.idEncabezado == Encabezado.idLlamada && a.ProcesadaSAP == true).Count();
 
                                     if (count > 0)
                                     {
