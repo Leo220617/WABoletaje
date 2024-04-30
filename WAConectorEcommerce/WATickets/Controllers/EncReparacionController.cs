@@ -505,7 +505,7 @@ namespace WATickets.Controllers
                                 foreach (var item in bitacorasEntradas)
                                 {
                                     //Traemos todo el detalle de las entradas
-                                    var DetallesEntradas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id && a.Enviar).ToList();
+                                    var DetallesEntradas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
                                     //Recorremos todos los detalles de las entradas que traen los productos seleccionados
                                     foreach (var item2 in DetallesEntradas)
 
@@ -527,7 +527,7 @@ namespace WATickets.Controllers
                                                 detMovimiento.ItemCode = itemCode;
                                                 detMovimiento.ItemName = itemName;
                                                 detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
-                                                detMovimiento.Cantidad = item2.Cantidad;
+                                                detMovimiento.Cantidad = item2.Cantidad - item2.CantidadFaltante;
                                                 detMovimiento.PorDescuento = 0;
                                                 detMovimiento.Descuento = 0;
                                                 detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
@@ -561,7 +561,7 @@ namespace WATickets.Controllers
                                 foreach (var item in bitacorasSalidas)
                                 {
                                     //Traemos todo el detalle de las salidas
-                                    var DetallesSalidas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id && a.Enviar).ToList();
+                                    var DetallesSalidas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
                                     //Recorremos todos los detalles de las salidas que traen los productos seleccionados
                                     foreach (var item2 in DetallesSalidas)
                                     {
@@ -575,7 +575,7 @@ namespace WATickets.Controllers
                                         else //si si existe
                                         {
                                             db.Entry(Item).State = EntityState.Modified;
-                                            Item.Cantidad -= item2.Cantidad;
+                                            Item.Cantidad -= item2.Cantidad - item2.CantidadFaltante;
                                             Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
                                             Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
                                             db.SaveChanges();
@@ -715,7 +715,8 @@ namespace WATickets.Controllers
                                 dbt.Cantidad = item.Cantidad;
                                 dbt.ItemCode = item.ItemCode;
                                 dbt.idError = item.idError;
-                                dbt.Enviar = true;
+                                dbt.CantidadEnviar = 0;
+                                dbt.CantidadFaltante = item.Cantidad;
                                 db.DetBitacoraMovimientos.Add(dbt);
                                 db.SaveChanges();
 
@@ -822,7 +823,7 @@ namespace WATickets.Controllers
                             foreach (var item in bitacorasEntradas)
                             {
                                 //Traemos todo el detalle de las entradas
-                                var DetallesEntradas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id && a.Enviar).ToList();
+                                var DetallesEntradas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
                                 //Recorremos todos los detalles de las entradas que traen los productos seleccionados
                                 foreach (var item2 in DetallesEntradas)
 
@@ -845,7 +846,7 @@ namespace WATickets.Controllers
                                             detMovimiento.ItemCode = itemCode;
                                             detMovimiento.ItemName = itemName;
                                             detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
-                                            detMovimiento.Cantidad = item2.Cantidad;
+                                            detMovimiento.Cantidad = item2.Cantidad - item2.CantidadFaltante;
                                             detMovimiento.PorDescuento = 0;
                                             detMovimiento.Descuento = 0;
                                             detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
@@ -879,7 +880,7 @@ namespace WATickets.Controllers
                             foreach (var item in bitacorasSalidas)
                             {
                                 //Traemos todo el detalle de las salidas
-                                var DetallesSalidas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id && a.Enviar).ToList();
+                                var DetallesSalidas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
                                 //Recorremos todos los detalles de las salidas que traen los productos seleccionados
                                 foreach (var item2 in DetallesSalidas)
                                 {
@@ -893,7 +894,7 @@ namespace WATickets.Controllers
                                     else //si si existe
                                     {
                                         db.Entry(Item).State = EntityState.Modified;
-                                        Item.Cantidad -= item2.Cantidad;
+                                        Item.Cantidad -= item2.Cantidad - item2.CantidadFaltante;
                                         Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
                                         Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
                                         db.SaveChanges();

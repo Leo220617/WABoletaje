@@ -150,13 +150,14 @@ namespace WATickets.Controllers
                     {
                         var DetBitacoraMovimiento = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.idProducto == item.idProducto && a.idError == item.idError).FirstOrDefault();
                         db.Entry(DetBitacoraMovimiento).State = EntityState.Modified;
-                        DetBitacoraMovimiento.Enviar = item.Enviar;
+                        DetBitacoraMovimiento.CantidadEnviar = item.CantidadEnviar;
+                 //       DetBitacoraMovimiento.CantidadFaltante = DetBitacoraMovimiento.CantidadFaltante - DetBitacoraMovimiento.CantidadEnviar;
                         db.SaveChanges();
 
                     }
 
-
-                    if (BT.Status == "1" && !BT.ProcesadaSAP)
+                    if(db.DetBitacoraMovimientos.Where(a => a.CantidadEnviar > 0).Count() > 0)
+                   // if (BT.Status == "1" && !BT.ProcesadaSAP)
                     {
                         try
                         {
@@ -185,11 +186,11 @@ namespace WATickets.Controllers
                             client.JournalMemo = "Traslados - " + Llamada.CardCode;
 
                             var i = 0;
-                            var Det = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.Enviar).ToList();
+                            var Det = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).ToList();
                             foreach (var item in Det)
                             {
                                 client.Lines.ItemCode = item.ItemCode.Split('|')[0].Trim();
-                                client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
+                                client.Lines.Quantity = Convert.ToDouble(item.CantidadEnviar);
                                 client.Lines.Add();
                                 i++;
                             }
@@ -237,7 +238,26 @@ namespace WATickets.Controllers
                                         Encabezado.BodegaFinal = "0";
                                         
                                         db.SaveChanges();
+                                        foreach (var item in bts.Detalle)
+                                        {
+                                            decimal cant = 0;
+                                            var DetBitacoraMovimiento = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.idProducto == item.idProducto && a.idError == item.idError).FirstOrDefault();
+                                            db.Entry(DetBitacoraMovimiento).State = EntityState.Modified;
+                                            DetBitacoraMovimiento.CantidadFaltante = DetBitacoraMovimiento.CantidadFaltante - DetBitacoraMovimiento.CantidadEnviar;
+                                            cant = DetBitacoraMovimiento.CantidadEnviar;
+                                            DetBitacoraMovimiento.CantidadEnviar = 0;
+                                            db.SaveChanges();
 
+                                            BitacoraMovimientosSAP btSAP = new BitacoraMovimientosSAP();
+                                            btSAP.idEncabezado = BT.id;
+                                            btSAP.idDetalle = DetBitacoraMovimiento.id;
+                                            btSAP.Cantidad = cant;
+                                            btSAP.DocEntry = idEntry.ToString();
+                                            btSAP.ProcesadaSAP = true;
+                                            db.BitacoraMovimientosSAP.Add(btSAP);
+                                            db.SaveChanges();
+
+                                        }
                                         Conexion.Desconectar();
                                     }
                                     else

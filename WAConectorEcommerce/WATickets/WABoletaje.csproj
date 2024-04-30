@@ -283,6 +283,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AdjuntosViewModel.cs" />
+    <Compile Include="Models\BitacoraMovimientosSAP.cs" />
     <Compile Include="Models\BitacoraMovimientosViewModel.cs" />
     <Compile Include="Models\BoletaViewModel.cs" />
     <Compile Include="Models\ClientesViewModel.cs" />
