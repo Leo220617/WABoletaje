@@ -156,7 +156,7 @@ namespace WATickets.Controllers
 
                     }
 
-                    if(db.DetBitacoraMovimientos.Where(a => a.CantidadEnviar > 0).Count() > 0)
+                    if(db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).Count() > 0)
                    // if (BT.Status == "1" && !BT.ProcesadaSAP)
                     {
                         try
