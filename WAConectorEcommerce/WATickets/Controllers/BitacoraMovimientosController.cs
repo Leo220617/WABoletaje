@@ -207,7 +207,7 @@ namespace WATickets.Controllers
                                 {
                                    // count = db.BitacoraMovimientos.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).Count();
 
-                                    count = db.BitacoraMovimientosSAP.Where(a => a.idEncabezado == Encabezado.idLlamada && a.ProcesadaSAP == true).Count();
+                                    count = db.BitacoraMovimientosSAP.Where(a => a.idEncabezado == BT.id && a.ProcesadaSAP == true).Distinct().GroupBy(a => a.DocEntry).Count();
 
                                     if (count > 0)
                                     {
