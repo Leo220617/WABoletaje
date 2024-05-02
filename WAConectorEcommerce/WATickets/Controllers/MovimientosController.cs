@@ -56,6 +56,7 @@ namespace WATickets.Controllers
                         coti.ItemCode = item.ItemCode + " | " + item.ItemName;
                         coti.Cantidad = item.Cantidad;
                         coti.Opcional = item.Opcional;
+                        coti.idError = item.idError;
                         db.CotizacionesAprobadas.Add(coti);
                         db.SaveChanges();
                     }
@@ -742,13 +743,29 @@ namespace WATickets.Controllers
                         /// Probar funcionabilidad
                         /// 
                         var Detalles = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id).ToList();
+
+                        foreach(var item in Detalles)
+                        {
+                            try
+                            {
+                                encMovimiento.Detalle.Where(a => a.ItemCode == item.ItemCode).FirstOrDefault().idError = item.idError;
+                            }
+                            catch (Exception)
+                            {
+
+                               
+                            }
+                        }
+                            
+
                         foreach (var item in Detalles)
                         {
+                             
                             db.DetMovimiento.Remove(item);
                             db.SaveChanges();
                         }
 
-
+                        
 
                         foreach (var item in encMovimiento.Detalle)
                         {
@@ -772,7 +789,7 @@ namespace WATickets.Controllers
                             {
                                 Det = new DetMovimiento();
                                 Det.idEncabezado = EncMovimiento.id;
-                                Det.idError = 0;
+                                Det.idError = item.idError;
                                 Det.NumLinea = item.NumLinea;
                                 Det.ItemCode = item.ItemCode;
                                 Det.ItemName = item.ItemName;
@@ -824,6 +841,7 @@ namespace WATickets.Controllers
                     }
                     else
                     {
+                        var Detalles = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id).ToList();
                         EncMovimiento.DocEntry = 0;
                         EncMovimiento.Fecha = DateTime.Now;
                         EncMovimiento.CreadoPor = encMovimiento.CreadoPor;
@@ -841,8 +859,18 @@ namespace WATickets.Controllers
 
                         /// Probar funcionabilidad
                         /// 
+                        foreach (var item in Detalles)
+                        {
+                            try
+                            {
+                                encMovimiento.Detalle.Where(a => a.ItemCode == item.ItemCode).FirstOrDefault().idError = item.idError;
+                            }
+                            catch (Exception)
+                            {
 
 
+                            }
+                        }
 
 
                         foreach (var item in encMovimiento.Detalle)
@@ -850,7 +878,7 @@ namespace WATickets.Controllers
 
                             var Det = new DetMovimiento();
                             Det.idEncabezado = EncMovimiento.id;
-                            Det.idError = 0;
+                            Det.idError = item.idError;
                             Det.NumLinea = item.NumLinea;
                             Det.ItemCode = item.ItemCode;
                             Det.ItemName = item.ItemName;
