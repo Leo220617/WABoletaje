@@ -364,6 +364,10 @@ namespace WATickets.Controllers
                                     encMovimiento.Moneda = OfertaAprobada.Moneda;
                                     encMovimiento.Aprobada = false;
                                     encMovimiento.AprobadaSuperior = false;
+                                    encMovimiento.idCondPago = 0;
+                                    encMovimiento.idDiasValidos = 0;
+                                    encMovimiento.idGarantia = 0;
+                                    encMovimiento.idTiemposEntregas = 0;
                                     db.EncMovimiento.Add(encMovimiento);
                                     db.SaveChanges();
 
@@ -432,6 +436,10 @@ namespace WATickets.Controllers
                                         encMovimiento.Moneda = OfertaAprobada.Moneda;
                                         encMovimiento.Aprobada = false;
                                         encMovimiento.AprobadaSuperior = false;
+                                        encMovimiento.idCondPago = 0;
+                                        encMovimiento.idDiasValidos = 0;
+                                        encMovimiento.idGarantia = 0;
+                                        encMovimiento.idTiemposEntregas = 0;
                                         db.EncMovimiento.Add(encMovimiento);
                                         db.SaveChanges();
 
@@ -492,6 +500,10 @@ namespace WATickets.Controllers
                                 encMovimiento.Moneda = "COL";
                                 encMovimiento.Aprobada = false;
                                 encMovimiento.AprobadaSuperior = false;
+                                encMovimiento.idCondPago = 0;
+                                encMovimiento.idDiasValidos = 0;
+                                encMovimiento.idGarantia = 0;
+                                encMovimiento.idTiemposEntregas = 0;
                                 db.EncMovimiento.Add(encMovimiento);
                                 db.SaveChanges();
 
@@ -810,6 +822,10 @@ namespace WATickets.Controllers
                             encMovimiento.Moneda = "COL";
                             encMovimiento.Aprobada = false;
                             encMovimiento.AprobadaSuperior = false;
+                            encMovimiento.idCondPago = 0;
+                            encMovimiento.idDiasValidos = 0;
+                            encMovimiento.idGarantia = 0;
+                            encMovimiento.idTiemposEntregas = 0;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 
@@ -1018,6 +1034,10 @@ namespace WATickets.Controllers
                             encMovimiento.Moneda = "COL";
                             encMovimiento.Aprobada = false;
                             encMovimiento.AprobadaSuperior = false;
+                            encMovimiento.idCondPago = 0;
+                            encMovimiento.idDiasValidos = 0;
+                            encMovimiento.idGarantia = 0;
+                            encMovimiento.idTiemposEntregas = 0;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 

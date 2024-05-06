@@ -266,10 +266,7 @@ namespace WATickets.Controllers
 
                             bodyH = bodyH.Replace("@ContactoReferencia", Llamada.PersonaContacto);
                             bodyH = bodyH.Replace("@Referencia", "");
-                            bodyH = bodyH.Replace("@CondicionPago", "");
-                            bodyH = bodyH.Replace("@TiempoEntrega", "");
-                            bodyH = bodyH.Replace("@Garantia", "");
-                            bodyH = bodyH.Replace("@VigenciaOferta", "");
+                            
                             bodyH = bodyH.Replace("@NombreUsuario", "");
                             bodyH = bodyH.Replace("@TelefonoUsuario", "");
                             bodyH = bodyH.Replace("@CorreoVentas", "");
@@ -309,7 +306,15 @@ namespace WATickets.Controllers
 
                             bodyH = bodyH.Replace("@Diagnosticos", diagnosticos);
 
+                            var CondicionPago = EncMovimiento.idCondPago != 0 ? db.CondicionesPagos.Where(a => a.id == EncMovimiento.idCondPago).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta la condicion de pago") : db.CondicionesPagos.Where(a => a.id == EncMovimiento.idCondPago).FirstOrDefault() : new CondicionesPagos();
+                            var TiempoEntrega = EncMovimiento.idTiemposEntregas != 0 ? db.TiemposEntregas.Where(a => a.id == EncMovimiento.idTiemposEntregas).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta el Tiempos de Entregas") : db.TiemposEntregas.Where(a => a.id == EncMovimiento.idTiemposEntregas).FirstOrDefault() : new TiemposEntregas();
+                            var Garantia = EncMovimiento.idGarantia != 0 ? db.Garantias.Where(a => a.id == EncMovimiento.idGarantia).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta la garantia") : db.Garantias.Where(a => a.id == EncMovimiento.idGarantia).FirstOrDefault() : new Garantias();
+                            var DiasValidos = EncMovimiento.idDiasValidos != 0 ? db.DiasValidos.Where(a => a.id == EncMovimiento.idDiasValidos).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta los dias validos") : db.DiasValidos.Where(a => a.id == EncMovimiento.idDiasValidos).FirstOrDefault() : new DiasValidos();
 
+                            bodyH = bodyH.Replace("@CondicionPago", CondicionPago.Nombre);
+                            bodyH = bodyH.Replace("@TiempoEntrega", TiempoEntrega.Nombre);
+                            bodyH = bodyH.Replace("@Garantia", Garantia.Nombre);
+                            bodyH = bodyH.Replace("@VigenciaOferta", DiasValidos.Nombre);
 
                             HtmlToPdf converter = new HtmlToPdf();
 
@@ -460,7 +465,15 @@ namespace WATickets.Controllers
 
                             bodyH = bodyH.Replace("@Diagnosticos", diagnosticos);
 
+                            var CondicionPago = EncMovimiento.idCondPago != 0 ? db.CondicionesPagos.Where(a => a.id == EncMovimiento.idCondPago).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta la condicion de pago") : db.CondicionesPagos.Where(a => a.id == EncMovimiento.idCondPago).FirstOrDefault() : new CondicionesPagos();
+                            var TiempoEntrega = EncMovimiento.idTiemposEntregas != 0 ? db.TiemposEntregas.Where(a => a.id == EncMovimiento.idTiemposEntregas).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta el Tiempos de Entregas") : db.TiemposEntregas.Where(a => a.id == EncMovimiento.idTiemposEntregas).FirstOrDefault() : new TiemposEntregas();
+                            var Garantia = EncMovimiento.idGarantia != 0 ? db.Garantias.Where(a => a.id == EncMovimiento.idGarantia).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta la garantia") : db.Garantias.Where(a => a.id == EncMovimiento.idGarantia).FirstOrDefault() : new Garantias();
+                            var DiasValidos = EncMovimiento.idDiasValidos != 0 ? db.DiasValidos.Where(a => a.id == EncMovimiento.idDiasValidos).FirstOrDefault() == null ? throw new Exception("No se puede enviar el correo, falta los dias validos") : db.DiasValidos.Where(a => a.id == EncMovimiento.idDiasValidos).FirstOrDefault() : new DiasValidos();
 
+                            bodyH = bodyH.Replace("@CondicionPago", CondicionPago.Nombre);
+                            bodyH = bodyH.Replace("@TiempoEntrega", TiempoEntrega.Nombre);
+                            bodyH = bodyH.Replace("@Garantia", Garantia.Nombre);
+                            bodyH = bodyH.Replace("@VigenciaOferta", DiasValidos.Nombre);
 
                             var NumLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
                             var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
@@ -600,6 +613,10 @@ namespace WATickets.Controllers
                         a.TotalComprobante,
                         a.Moneda,
                         a.AprobadaSuperior,
+                        a.idCondPago,
+                        a.idDiasValidos,
+                        a.idGarantia,
+                        a.idTiemposEntregas,
                         Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
 
                     }
@@ -686,6 +703,10 @@ namespace WATickets.Controllers
                     a.TotalComprobante,
                     a.Moneda,
                     a.AprobadaSuperior,
+                    a.idCondPago,
+                    a.idDiasValidos,
+                    a.idGarantia,
+                    a.idTiemposEntregas,
                     Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
 
                 }
@@ -738,6 +759,10 @@ namespace WATickets.Controllers
                         EncMovimiento.TotalComprobante = encMovimiento.TotalComprobante;
                         EncMovimiento.Comentarios = encMovimiento.Comentarios;
                         EncMovimiento.Moneda = encMovimiento.Moneda;
+                        EncMovimiento.idCondPago = encMovimiento.idCondPago;
+                        EncMovimiento.idDiasValidos = encMovimiento.idDiasValidos;
+                        EncMovimiento.idGarantia = encMovimiento.idGarantia;
+                        EncMovimiento.idTiemposEntregas = encMovimiento.idTiemposEntregas;
                         db.SaveChanges();
 
                         /// Probar funcionabilidad
@@ -854,6 +879,10 @@ namespace WATickets.Controllers
                         EncMovimiento.Moneda = encMovimiento.Moneda;
                         EncMovimiento.Aprobada = false;
                         EncMovimiento.AprobadaSuperior = false;
+                        EncMovimiento.idCondPago = encMovimiento.idCondPago ;
+                        EncMovimiento.idDiasValidos = encMovimiento.idDiasValidos;
+                        EncMovimiento.idGarantia = encMovimiento.idGarantia;
+                        EncMovimiento.idTiemposEntregas = encMovimiento.idTiemposEntregas;
                         db.EncMovimiento.Add(EncMovimiento);
                         db.SaveChanges();
 
@@ -1377,6 +1406,10 @@ namespace WATickets.Controllers
                                 EncMovimientoEntrega.Comentarios = "Esta es la entrega de los productos por garantia";
                                 EncMovimientoEntrega.Aprobada = false;
                                 EncMovimientoEntrega.AprobadaSuperior = false;
+                                EncMovimientoEntrega.idCondPago = 0;
+                                EncMovimientoEntrega.idDiasValidos = 0;
+                                EncMovimientoEntrega.idGarantia = 0;
+                                EncMovimientoEntrega.idTiemposEntregas = 0;
                                 db.EncMovimiento.Add(EncMovimientoEntrega);
                                 db.SaveChanges();
 

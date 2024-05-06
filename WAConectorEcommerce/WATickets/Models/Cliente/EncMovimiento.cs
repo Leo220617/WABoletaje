@@ -28,5 +28,10 @@ namespace WATickets.Models.Cliente
         public string Moneda { get; set; }
         public bool Aprobada { get; set; }
         public bool AprobadaSuperior { get; set; }
+        public int idCondPago { get; set; }
+        public int idGarantia { get; set; }
+        public int idTiemposEntregas { get; set; }
+        public int idDiasValidos { get; set; }
+
     }
 }

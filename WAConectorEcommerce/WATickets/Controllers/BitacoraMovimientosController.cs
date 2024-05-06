@@ -65,8 +65,33 @@ namespace WATickets.Controllers
                 {
                     Bitacora = Bitacora.Where(a => a.idTecnico == filtro.Codigo2).ToList();
                 }
+                //Si me estan filtrando por Status de la llamada
+                if (filtro.Codigo4 != 0)
+                {
+                    filtro.FechaInicial = filtro.FechaInicial.AddMonths(-1);
+                    filtro.FechaFinal = filtro.FechaFinal.AddMonths(1);
+                    var Llamadas = db.LlamadasServicios.Select(a => new { a.id,a.FechaCreacion,a.Status, a.DocEntry }).Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && a.Status != filtro.Codigo4).ToList();
+                    var ListadoReparacionesEnCero = Bitacora.Where(a => a.idLlamada == 0).ToList();
 
-               
+                    foreach (var item in ListadoReparacionesEnCero)
+                    {
+                        Bitacora.Remove(item);
+
+                    }
+
+
+                    foreach (var item in Llamadas)
+                    {
+
+                        var EncReparacionSacar = Bitacora.Where(a => a.idLlamada == item.DocEntry).FirstOrDefault();
+                        if (EncReparacionSacar != null)
+                        {
+                            Bitacora.Remove(EncReparacionSacar);
+                        }
+                    }
+
+                }
+
 
                 return Request.CreateResponse(HttpStatusCode.OK, Bitacora);
 
@@ -229,6 +254,10 @@ namespace WATickets.Controllers
                                     {
                                         db.Entry(BT).State = EntityState.Modified;
                                         BT.DocEntry = idEntry;
+                                        if(BT.Status == "0")
+                                        {
+                                            BT.Status = "3";
+                                        }
                                        // BT.ProcesadaSAP = true;
                                         db.SaveChanges();
 
@@ -317,7 +346,7 @@ namespace WATickets.Controllers
                         }
                     }
 
-                    if(BT.Status == "0" && bts.Status != "0")
+                    if((BT.Status == "0" && bts.Status != "0")) 
                     {
                         return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ha ocurrido un error al enviar a SAP ("+errorSAP+") , por lo tanto debe volver a intentarlo");
 
