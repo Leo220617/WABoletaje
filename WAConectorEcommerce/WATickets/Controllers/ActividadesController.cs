@@ -154,7 +154,7 @@ namespace WATickets.Controllers
                         activity.Details = Actividad.Detalle.Length > 100 ? Actividad.Detalle.Substring(0,99) : Actividad.Detalle;
                         activity.Notes = Actividad.Detalle;
                         activity.CardCode = Llamada.CardCode;
-                        activity.SalesEmployee = Actividad.UsuarioCreador;
+                        activity.SalesEmployee = db.Login.Where(a => a.id == Actividad.idLogin).FirstOrDefault() == null ? 0 : db.Login.Where(a => a.id == Actividad.idLogin).FirstOrDefault().EmpleadoSAP;
                         activity.HandledBy = Actividad.UsuarioCreador;
 
 
@@ -343,7 +343,7 @@ namespace WATickets.Controllers
                         activity.Details = Actividad.Detalle.Length > 100 ? Actividad.Detalle.Substring(0, 99) : Actividad.Detalle;
                         activity.Notes = Actividad.Detalle;
                         activity.CardCode = Llamada.CardCode;
-                        activity.SalesEmployee = Actividad.UsuarioCreador;
+                        activity.SalesEmployee = 5; // db.Login.Where(a => a.id == Actividad.idLogin).FirstOrDefault() == null ? 0 : db.Login.Where(a => a.id == Actividad.idLogin).FirstOrDefault().EmpleadoSAP;//Actividad.UsuarioCreador;
                         activity.HandledBy = Actividad.UsuarioCreador;
 
 

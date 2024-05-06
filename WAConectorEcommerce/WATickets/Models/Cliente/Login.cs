@@ -34,6 +34,6 @@ namespace WATickets.Models.Cliente
         public int NumeroDimension { get; set; }
 
         public string NormaReparto { get; set; }
-
+        public int EmpleadoSAP { get; set; }
     }
 }

@@ -143,6 +143,7 @@ namespace WATickets.Controllers
                 Usuario.Telefono = usuario.Telefono;
                 Usuario.NumeroDimension = usuario.NumeroDimension;
                 Usuario.NormaReparto = usuario.NormaReparto;
+                Usuario.EmpleadoSAP = usuario.EmpleadoSAP;
                 db.Login.Add(Usuario);
                 db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.OK);
@@ -198,6 +199,10 @@ namespace WATickets.Controllers
                 if(!string.IsNullOrEmpty(usuario.CardCode))
                 {
                     Usuario.CardCode = usuario.CardCode;
+                }
+                if (usuario.EmpleadoSAP != 0 )
+                {
+                    Usuario.EmpleadoSAP = usuario.EmpleadoSAP;
                 }
                 if (!string.IsNullOrEmpty(usuario.Bodega))
                 {
