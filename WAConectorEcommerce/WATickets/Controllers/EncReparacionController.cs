@@ -55,7 +55,12 @@ namespace WATickets.Controllers
                     AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
                 })
 
-                    .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && (filtro.Codigo1 > 0 ? a.idTecnico == filtro.Codigo1 : true) && (filtro.Codigo4 > 0 ? a.idLlamada2 == filtro.Codigo4 : true)).ToList();
+                    .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) &&
+                    (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
+                    && (filtro.Codigo1 > 0 ? a.idTecnico == filtro.Codigo1 : true)
+                    && (filtro.Codigo4 > 0 ? a.idLlamada2 == filtro.Codigo4 : true)
+                    && (filtro.Codigo2 > 0 ? a.Status == (filtro.Codigo2-1) : true)
+                    ).ToList();
 
                 if (!string.IsNullOrEmpty(filtro.Texto))
                 {
@@ -508,7 +513,7 @@ namespace WATickets.Controllers
                                 db.SaveChanges();
 
 
-                                var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id && a.ProcesadaSAP == true).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
+                                var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id ).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
                                                                                                                                                        //Separamos las entradas de las salidas
                                 var bitacorasEntradas = Bitacoras.Where(a => a.TipoMovimiento == 1).ToList();
                                 var bitacorasSalidas = Bitacoras.Where(a => a.TipoMovimiento == 2).ToList();
@@ -830,7 +835,7 @@ namespace WATickets.Controllers
                             db.SaveChanges();
 
 
-                            var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id && a.ProcesadaSAP == true).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
+                            var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
                             //Separamos las entradas de las salidas
                             var bitacorasEntradas = Bitacoras.Where(a => a.TipoMovimiento == 1).ToList();
                             var bitacorasSalidas = Bitacoras.Where(a => a.TipoMovimiento == 2).ToList();
