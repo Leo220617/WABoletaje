@@ -232,7 +232,7 @@ namespace WATickets.Controllers
                                 {
                                    // count = db.BitacoraMovimientos.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).Count();
 
-                                    count = db.BitacoraMovimientosSAP.Where(a => a.idEncabezado == BT.id && a.ProcesadaSAP == true).Distinct().GroupBy(a => a.DocEntry).Count();
+                                    count = db.BitacoraMovimientosSAP.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).Distinct().GroupBy(a => a.DocEntry).Count();
 
                                     if (count > 0)
                                     {
@@ -283,6 +283,7 @@ namespace WATickets.Controllers
                                             btSAP.Cantidad = cant;
                                             btSAP.DocEntry = idEntry.ToString();
                                             btSAP.ProcesadaSAP = true;
+                                            btSAP.idLlamada = Encabezado.idLlamada;
                                             db.BitacoraMovimientosSAP.Add(btSAP);
                                             db.SaveChanges();
 

@@ -18,5 +18,6 @@ namespace WATickets.Models
         public decimal Cantidad { get; set; }
         public string DocEntry { get; set; }
         public bool ProcesadaSAP { get; set; }
+        public int idLlamada { get; set; }
     }
 }
