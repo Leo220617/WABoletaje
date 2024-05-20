@@ -605,7 +605,7 @@ namespace WATickets.Controllers
 
 
                     db.Entry(Llamada).State = EntityState.Modified;
-                    if (llamada.Status != Llamada.Status)
+                    if (llamada.Status != Llamada.Status && llamada.Status != 0)
                     {
                         Llamada.Status = llamada.Status;
 
