@@ -816,6 +816,10 @@ namespace WATickets.Controllers
                                 {
                                     var NumLlamada = Llamada.DocEntry.ToString();
                                     var EncMovimiento = db.EncMovimiento.Where(a => a.NumLlamada == NumLlamada && a.Aprobada).FirstOrDefault();
+                                    if(EncMovimiento == null)
+                                    {
+                                        EncMovimiento = db.EncMovimiento.Where(a => a.NumLlamada == NumLlamada && a.TipoMovimiento == 2).FirstOrDefault();
+                                    }
                                     if(EncMovimiento != null)
                                     {
                                         var DetalleMovimiento = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id).ToList();
