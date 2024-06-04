@@ -51,8 +51,8 @@ namespace WATickets.Controllers
                     a.BodegaFinal,
 
                     Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
-                    Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
-                    AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
+                Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
+                AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
                 })
 
                     .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) &&
