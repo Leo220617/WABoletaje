@@ -984,8 +984,8 @@ namespace WATickets.Controllers
                         client.DocObjectCode = BoObjectTypes.oQuotations;
                         client.CardCode = EncMovimiento.CardCode;
                         client.DocCurrency = EncMovimiento.Moneda; // "COL";
-                        client.DocDate = EncMovimiento.Fecha; //listo
-                        client.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
+                        client.DocDate = DateTime.Now;//EncMovimiento.Fecha; //listo
+                        client.DocDueDate = DateTime.Now.AddDays(3); //listo
                         client.DocNum = 0; //automatico
                         client.DocType = BoDocumentTypes.dDocument_Items;
                         client.HandWritten = BoYesNoEnum.tNO;
@@ -1077,8 +1077,8 @@ namespace WATickets.Controllers
                             orden.DocObjectCode = BoObjectTypes.oOrders;
                             orden.CardCode = EncMovimiento.CardCode;
                             orden.DocCurrency = EncMovimiento.Moneda; //"COL";
-                            orden.DocDate = EncMovimiento.Fecha; //listo
-                            orden.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
+                            orden.DocDate = DateTime.Now;// EncMovimiento.Fecha; //listo
+                            orden.DocDueDate = DateTime.Now.AddDays(3); //listo
                             orden.DocNum = 0; //automatico
                             orden.DocType = BoDocumentTypes.dDocument_Items;
                             orden.HandWritten = BoYesNoEnum.tNO;
@@ -1220,8 +1220,8 @@ namespace WATickets.Controllers
                             client.DocObjectCode = BoObjectTypes.oDeliveryNotes;
                             client.CardCode = EncMovimiento.CardCode;
                             client.DocCurrency = EncMovimiento.Moneda; //"COL";
-                            client.DocDate = EncMovimiento.Fecha; //listo
-                            client.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
+                            client.DocDate = DateTime.Now; //EncMovimiento.Fecha; //listo
+                            client.DocDueDate = DateTime.Now.AddDays(3); //listo
                             client.DocNum = 0; //automatico
                             client.DocType = BoDocumentTypes.dDocument_Items;
                             client.HandWritten = BoYesNoEnum.tNO;
@@ -1339,64 +1339,64 @@ namespace WATickets.Controllers
                         //Pregunto si existe algun producto con garantia, para generar entonces una entrega
                         if (db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).Count() > 0)
                         {
-                            var clientEntrega = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
-                            clientEntrega.DocObjectCode = BoObjectTypes.oDeliveryNotes;
-                            clientEntrega.CardCode = EncMovimiento.CardCode;
-                            clientEntrega.DocCurrency = EncMovimiento.Moneda; //"COL";
-                            clientEntrega.DocDate = EncMovimiento.Fecha; //listo
-                            clientEntrega.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
-                            clientEntrega.DocNum = 0; //automatico
-                            clientEntrega.DocType = BoDocumentTypes.dDocument_Items;
-                            clientEntrega.HandWritten = BoYesNoEnum.tNO;
-                            clientEntrega.NumAtCard = EncMovimiento.NumLlamada; //orderid               
-                            clientEntrega.ReserveInvoice = BoYesNoEnum.tNO;
-                            clientEntrega.Series = Parametros.SerieEntrega;//3; //3 quemado
-                            clientEntrega.Comments = "Esta es la entrega de los productos por garantia"; //direccion
-                            clientEntrega.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
-                                                                                                          //var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
-                                                                                                          //var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
-                            var Tec1 = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
-                            var Tecnico1 = db.Tecnicos.Where(a => a.idSAP == Tec1).FirstOrDefault();
-                            clientEntrega.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico);
-                            if (Tecnico1.Letra > 0)
-                            {
-                                clientEntrega.SalesPersonCode = Tecnico1.Letra;
-                            }
+                            //var clientEntrega = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
+                            //clientEntrega.DocObjectCode = BoObjectTypes.oDeliveryNotes;
+                            //clientEntrega.CardCode = EncMovimiento.CardCode;
+                            //clientEntrega.DocCurrency = EncMovimiento.Moneda; //"COL";
+                            //clientEntrega.DocDate = EncMovimiento.Fecha; //listo
+                            //clientEntrega.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
+                            //clientEntrega.DocNum = 0; //automatico
+                            //clientEntrega.DocType = BoDocumentTypes.dDocument_Items;
+                            //clientEntrega.HandWritten = BoYesNoEnum.tNO;
+                            //clientEntrega.NumAtCard = EncMovimiento.NumLlamada; //orderid               
+                            //clientEntrega.ReserveInvoice = BoYesNoEnum.tNO;
+                            //clientEntrega.Series = Parametros.SerieEntrega;//3; //3 quemado
+                            //clientEntrega.Comments = "Esta es la entrega de los productos por garantia"; //direccion
+                            //clientEntrega.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
+                            //                                                                              //var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
+                            //                                                                              //var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
+                            //var Tec1 = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
+                            //var Tecnico1 = db.Tecnicos.Where(a => a.idSAP == Tec1).FirstOrDefault();
+                            //clientEntrega.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico);
+                            //if (Tecnico1.Letra > 0)
+                            //{
+                            //    clientEntrega.SalesPersonCode = Tecnico1.Letra;
+                            //}
 
-                            clientEntrega.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
+                            //clientEntrega.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
 
                             var DetalleSAPEntrega = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).ToList();
-                            var iE = 0;
-                            foreach (var item in DetalleSAPEntrega)
-                            {
-                                clientEntrega.Lines.SetCurrentLine(iE);
-                                clientEntrega.Lines.CostingCode = "";
-                                clientEntrega.Lines.CostingCode2 = "";
-                                clientEntrega.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
-                                clientEntrega.Lines.CostingCode4 = "";
-                                clientEntrega.Lines.CostingCode5 = "";
-                                clientEntrega.Lines.Currency = EncMovimiento.Moneda; //"COL";
-                                clientEntrega.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
-                                clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
-                                clientEntrega.Lines.ItemCode = item.ItemCode;
-                                clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
-                                clientEntrega.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                                clientEntrega.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
-                                clientEntrega.Lines.TaxOnly = BoYesNoEnum.tNO;
-                                clientEntrega.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
-                                clientEntrega.Lines.Add();
+                            //var iE = 0;
+                            //foreach (var item in DetalleSAPEntrega)
+                            //{
+                            //    clientEntrega.Lines.SetCurrentLine(iE);
+                            //    clientEntrega.Lines.CostingCode = "";
+                            //    clientEntrega.Lines.CostingCode2 = "";
+                            //    clientEntrega.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
+                            //    clientEntrega.Lines.CostingCode4 = "";
+                            //    clientEntrega.Lines.CostingCode5 = "";
+                            //    clientEntrega.Lines.Currency = EncMovimiento.Moneda; //"COL";
+                            //    clientEntrega.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
+                            //    clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                            //    clientEntrega.Lines.ItemCode = item.ItemCode;
+                            //    clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                            //    clientEntrega.Lines.Quantity = Convert.ToDouble(item.Cantidad);
+                            //    clientEntrega.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+                            //    clientEntrega.Lines.TaxOnly = BoYesNoEnum.tNO;
+                            //    clientEntrega.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
+                            //    clientEntrega.Lines.Add();
 
 
-                                iE++;
-                            }
+                            //    iE++;
+                            //}
 
-                            var respuestaE = clientEntrega.Add();
-
+                            //var respuestaE = clientEntrega.Add();
+                            var respuestaE = 0;
                             if (respuestaE == 0)
                             {
 
                                 var EncMovimientoEntrega = EncMovimiento;
-                                EncMovimientoEntrega.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                EncMovimientoEntrega.DocEntry = 0; //Convert.ToInt32(Conexion.Company.GetNewObjectKey());
                                 EncMovimientoEntrega.TipoMovimiento = 2;
                                 EncMovimientoEntrega.Descuento = 0;
                                 EncMovimientoEntrega.Impuestos = 0;
@@ -1435,45 +1435,45 @@ namespace WATickets.Controllers
 
 
 
-                                var idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
-                                var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
-                                if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
-                                {
-                                    if (client2.Expenses.Count > 0)
-                                    {
-                                        client2.Expenses.Add();
-                                    }
-                                    client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Delivery;
-                                    client2.Expenses.DocumentNumber = idEntry;
-                                    client2.Expenses.DocEntry = idEntry;
+                                //var idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                //var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
+                                //if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
+                                //{
+                                //    if (client2.Expenses.Count > 0)
+                                //    {
+                                //        client2.Expenses.Add();
+                                //    }
+                                //    client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Delivery;
+                                //    client2.Expenses.DocumentNumber = idEntry;
+                                //    client2.Expenses.DocEntry = idEntry;
 
-                                    if (client2.Expenses.Count == 0)
-                                    {
-                                        client2.Expenses.Add();
-                                    }
-                                    client2.Expenses.Add();
-                                    var respuesta2 = client2.Update();
-                                    if (respuesta2 == 0)
-                                    {
-                                        Conexion.Desconectar();
-                                    }
-                                    else
-                                    {
-                                        BitacoraErrores be = new BitacoraErrores();
+                                //    if (client2.Expenses.Count == 0)
+                                //    {
+                                //        client2.Expenses.Add();
+                                //    }
+                                //    client2.Expenses.Add();
+                                //    var respuesta2 = client2.Update();
+                                //    if (respuesta2 == 0)
+                                //    {
+                                //        Conexion.Desconectar();
+                                //    }
+                                //    else
+                                //    {
+                                //        BitacoraErrores be = new BitacoraErrores();
 
-                                        be.Descripcion = Conexion.Company.GetLastErrorDescription();
-                                        be.StackTrace = "Llamada de Servicio - Actualizar";
-                                        be.Fecha = DateTime.Now;
+                                //        be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                //        be.StackTrace = "Llamada de Servicio - Actualizar";
+                                //        be.Fecha = DateTime.Now;
 
-                                        db.BitacoraErrores.Add(be);
-                                        db.SaveChanges();
-                                        Conexion.Desconectar();
-                                        throw new Exception(be.Descripcion);
+                                //        db.BitacoraErrores.Add(be);
+                                //        db.SaveChanges();
+                                //        Conexion.Desconectar();
+                                //        throw new Exception(be.Descripcion);
 
-                                    }
-                                }
+                                //    }
+                                //}
 
-                                Conexion.Desconectar();
+                                //Conexion.Desconectar();
 
 
 
