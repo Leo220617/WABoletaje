@@ -51,11 +51,16 @@ namespace WATickets.Controllers
                     a.BodegaFinal,
 
                     Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
-                    Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
-                    AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
+                Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
+                AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
                 })
 
-                    .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && (filtro.Codigo1 > 0 ? a.idTecnico == filtro.Codigo1 : true) && (filtro.Codigo4 > 0 ? a.idLlamada2 == filtro.Codigo4 : true)).ToList();
+                    .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) &&
+                    (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
+                    && (filtro.Codigo1 > 0 ? a.idTecnico == filtro.Codigo1 : true)
+                    && (filtro.Codigo4 > 0 ? a.idLlamada2 == filtro.Codigo4 : true)
+                    && (filtro.Codigo2 > 0 ? a.Status == (filtro.Codigo2-1) : true)
+                    ).ToList();
 
                 if (!string.IsNullOrEmpty(filtro.Texto))
                 {
@@ -364,6 +369,10 @@ namespace WATickets.Controllers
                                     encMovimiento.Moneda = OfertaAprobada.Moneda;
                                     encMovimiento.Aprobada = false;
                                     encMovimiento.AprobadaSuperior = false;
+                                    encMovimiento.idCondPago = 0;
+                                    encMovimiento.idDiasValidos = 0;
+                                    encMovimiento.idGarantia = 0;
+                                    encMovimiento.idTiemposEntregas = 0;
                                     db.EncMovimiento.Add(encMovimiento);
                                     db.SaveChanges();
 
@@ -432,6 +441,10 @@ namespace WATickets.Controllers
                                         encMovimiento.Moneda = OfertaAprobada.Moneda;
                                         encMovimiento.Aprobada = false;
                                         encMovimiento.AprobadaSuperior = false;
+                                        encMovimiento.idCondPago = 0;
+                                        encMovimiento.idDiasValidos = 0;
+                                        encMovimiento.idGarantia = 0;
+                                        encMovimiento.idTiemposEntregas = 0;
                                         db.EncMovimiento.Add(encMovimiento);
                                         db.SaveChanges();
 
@@ -492,11 +505,15 @@ namespace WATickets.Controllers
                                 encMovimiento.Moneda = "COL";
                                 encMovimiento.Aprobada = false;
                                 encMovimiento.AprobadaSuperior = false;
+                                encMovimiento.idCondPago = 0;
+                                encMovimiento.idDiasValidos = 0;
+                                encMovimiento.idGarantia = 0;
+                                encMovimiento.idTiemposEntregas = 0;
                                 db.EncMovimiento.Add(encMovimiento);
                                 db.SaveChanges();
 
 
-                                var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id && a.ProcesadaSAP == true).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
+                                var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id ).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
                                                                                                                                                        //Separamos las entradas de las salidas
                                 var bitacorasEntradas = Bitacoras.Where(a => a.TipoMovimiento == 1).ToList();
                                 var bitacorasSalidas = Bitacoras.Where(a => a.TipoMovimiento == 2).ToList();
@@ -527,7 +544,7 @@ namespace WATickets.Controllers
                                                 detMovimiento.ItemCode = itemCode;
                                                 detMovimiento.ItemName = itemName;
                                                 detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
-                                                detMovimiento.Cantidad = item2.Cantidad;
+                                                detMovimiento.Cantidad = item2.Cantidad - item2.CantidadFaltante;
                                                 detMovimiento.PorDescuento = 0;
                                                 detMovimiento.Descuento = 0;
                                                 detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
@@ -575,7 +592,7 @@ namespace WATickets.Controllers
                                         else //si si existe
                                         {
                                             db.Entry(Item).State = EntityState.Modified;
-                                            Item.Cantidad -= item2.Cantidad;
+                                            Item.Cantidad -= item2.Cantidad - item2.CantidadFaltante;
                                             Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
                                             Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
                                             db.SaveChanges();
@@ -715,6 +732,8 @@ namespace WATickets.Controllers
                                 dbt.Cantidad = item.Cantidad;
                                 dbt.ItemCode = item.ItemCode;
                                 dbt.idError = item.idError;
+                                dbt.CantidadEnviar = 0;
+                                dbt.CantidadFaltante = item.Cantidad;
                                 db.DetBitacoraMovimientos.Add(dbt);
                                 db.SaveChanges();
 
@@ -808,11 +827,15 @@ namespace WATickets.Controllers
                             encMovimiento.Moneda = "COL";
                             encMovimiento.Aprobada = false;
                             encMovimiento.AprobadaSuperior = false;
+                            encMovimiento.idCondPago = 0;
+                            encMovimiento.idDiasValidos = 0;
+                            encMovimiento.idGarantia = 0;
+                            encMovimiento.idTiemposEntregas = 0;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 
 
-                            var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id && a.ProcesadaSAP == true).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
+                            var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
                             //Separamos las entradas de las salidas
                             var bitacorasEntradas = Bitacoras.Where(a => a.TipoMovimiento == 1).ToList();
                             var bitacorasSalidas = Bitacoras.Where(a => a.TipoMovimiento == 2).ToList();
@@ -844,7 +867,7 @@ namespace WATickets.Controllers
                                             detMovimiento.ItemCode = itemCode;
                                             detMovimiento.ItemName = itemName;
                                             detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
-                                            detMovimiento.Cantidad = item2.Cantidad;
+                                            detMovimiento.Cantidad = item2.Cantidad - item2.CantidadFaltante;
                                             detMovimiento.PorDescuento = 0;
                                             detMovimiento.Descuento = 0;
                                             detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
@@ -892,7 +915,7 @@ namespace WATickets.Controllers
                                     else //si si existe
                                     {
                                         db.Entry(Item).State = EntityState.Modified;
-                                        Item.Cantidad -= item2.Cantidad;
+                                        Item.Cantidad -= item2.Cantidad - item2.CantidadFaltante;
                                         Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
                                         Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
                                         db.SaveChanges();
@@ -1016,6 +1039,10 @@ namespace WATickets.Controllers
                             encMovimiento.Moneda = "COL";
                             encMovimiento.Aprobada = false;
                             encMovimiento.AprobadaSuperior = false;
+                            encMovimiento.idCondPago = 0;
+                            encMovimiento.idDiasValidos = 0;
+                            encMovimiento.idGarantia = 0;
+                            encMovimiento.idTiemposEntregas = 0;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 

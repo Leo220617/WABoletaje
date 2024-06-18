@@ -17,5 +17,7 @@ namespace WATickets.Models.Cliente
         public int idError { get; set; }
         public decimal Cantidad { get; set; }
         public string ItemCode { get; set; }
+        public decimal CantidadEnviar { get; set; }
+        public decimal CantidadFaltante { get; set; }
     }
 }

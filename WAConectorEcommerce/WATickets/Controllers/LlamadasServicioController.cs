@@ -613,7 +613,7 @@ namespace WATickets.Controllers
 
 
                     db.Entry(Llamada).State = EntityState.Modified;
-                    if (llamada.Status != Llamada.Status)
+                    if (llamada.Status != Llamada.Status && llamada.Status != 0)
                     {
                         Llamada.Status = llamada.Status;
 
@@ -631,7 +631,7 @@ namespace WATickets.Controllers
 
                     }
 
-                    if (Llamada.TipoCaso != llamada.TipoCaso)
+                    if (Llamada.TipoCaso != llamada.TipoCaso && llamada.TipoCaso != 0)
                     {
                         Llamada.TipoCaso = llamada.TipoCaso;
 
@@ -822,7 +822,29 @@ namespace WATickets.Controllers
                                 var Reparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
                                 if (Reparacion != null)
                                 {
-                                    client.Resolution = string.IsNullOrEmpty(Reparacion.Comentarios) ? "Favor revisar operaciones" : Reparacion.Comentarios;
+                                    var NumLlamada = Llamada.DocEntry.ToString();
+                                    var EncMovimiento = db.EncMovimiento.Where(a => a.NumLlamada == NumLlamada && a.Aprobada).FirstOrDefault();
+                                    if(EncMovimiento == null)
+                                    {
+                                        EncMovimiento = db.EncMovimiento.Where(a => a.NumLlamada == NumLlamada && a.TipoMovimiento == 2).FirstOrDefault();
+                                    }
+                                    if(EncMovimiento != null)
+                                    {
+                                        var DetalleMovimiento = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id).ToList();
+                                        var diagnosticosComentario = "";
+                                        foreach (var item in DetalleMovimiento)
+                                        {
+                                            diagnosticosComentario += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "\n";
+                                        }
+                                        diagnosticosComentario += EncMovimiento.Comentarios + "\n";
+                                        client.Resolution = string.IsNullOrEmpty(diagnosticosComentario) ? "Favor revisar operaciones" : diagnosticosComentario;
+
+                                    }
+                                    else
+                                    {
+                                        client.Resolution = string.IsNullOrEmpty(Llamada.Comentarios) ? "Favor revisar operaciones" : Llamada.Comentarios;
+
+                                    }
 
                                 }
                                 else
