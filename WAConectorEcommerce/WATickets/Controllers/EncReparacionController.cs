@@ -31,75 +31,129 @@ namespace WATickets.Controllers
                 {
                     filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
                 }
-
-                var EncReparacion = db.EncReparacion.Select(a => new
+                if (string.IsNullOrEmpty(filtro.CardCode))
                 {
-                    a.id,
-                    idLlamada2 = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().id == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().id,
-
-                    idLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry,
-                    a.idTecnico,
-                    a.idDiagnostico,
-                    a.FechaCreacion,
-                    a.FechaModificacion,
-                    a.TipoReparacion,
-                    a.idProductoArreglar,
-                    a.Status,
-                    a.ProcesadaSAP,
-                    a.Comentarios,
-                    a.BodegaOrigen,
-                    a.BodegaFinal,
-
-                    Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
-                Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
-                AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
-                })
-
-                    .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) &&
-                    (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
-                    && (filtro.Codigo1 > 0 ? a.idTecnico == filtro.Codigo1 : true)
-                    && (filtro.Codigo4 > 0 ? a.idLlamada2 == filtro.Codigo4 : true)
-                    && (filtro.Codigo2 > 0 ? a.Status == (filtro.Codigo2-1) : true)
-                    ).ToList();
-
-                if (!string.IsNullOrEmpty(filtro.Texto))
-                {
-                    EncReparacion = EncReparacion.Where(a => a.idProductoArreglar.ToUpper().Contains(filtro.Texto.ToUpper())).ToList();
-                }
-
-                 
-
-                if (filtro.Codigo2 > 0)
-                {
-                    filtro.Codigo2--;
-                    EncReparacion = EncReparacion.Where(a => a.Status == filtro.Codigo2).ToList();
-                }
-                //Si me estan filtrando por Status de la llamada
-                if (filtro.Codigo3 != 0)
-                {
-                    var Llamadas = db.LlamadasServicios.Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && a.Status != filtro.Codigo3).ToList();
-                    var ListadoReparacionesEnCero = EncReparacion.Where(a => a.idLlamada == 0).ToList();
-
-                    foreach (var item in ListadoReparacionesEnCero)
+                    var EncReparacion = db.EncReparacion.Select(a => new
                     {
-                        EncReparacion.Remove(item);
+                        a.id,
+                        idLlamada2 = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().id == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().id,
 
+                        idLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry,
+                        a.idTecnico,
+                        a.idDiagnostico,
+                        a.FechaCreacion,
+                        a.FechaModificacion,
+                        a.TipoReparacion,
+                        a.idProductoArreglar,
+                        a.Status,
+                        a.ProcesadaSAP,
+                        a.Comentarios,
+                        a.BodegaOrigen,
+                        a.BodegaFinal,
+
+                        Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
+                        Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
+                        AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
+                    })
+
+                   .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) &&
+                   (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
+                   && (filtro.Codigo1 > 0 ? a.idTecnico == filtro.Codigo1 : true)
+                   && (filtro.Codigo4 > 0 ? a.idLlamada2 == filtro.Codigo4 : true)
+                   && (filtro.Codigo2 > 0 ? a.Status == (filtro.Codigo2 - 1) : true)
+                   ).ToList();
+
+                    
+
+
+                    if (filtro.Codigo2 > 0)
+                    {
+                        filtro.Codigo2--;
+                        EncReparacion = EncReparacion.Where(a => a.Status == filtro.Codigo2).ToList();
                     }
-
-
-                    foreach (var item in Llamadas)
+                    if(!string.IsNullOrEmpty(filtro.Texto))
                     {
-
-                        var EncReparacionSacar = EncReparacion.Where(a => a.idLlamada == item.DocEntry).FirstOrDefault();
-                        if (EncReparacionSacar != null)
+                        var valores = filtro.Texto.Split('|');
+                        foreach(var item in valores)
                         {
-                            EncReparacion.Remove(EncReparacionSacar);
+                            if(!string.IsNullOrEmpty(item))
+                            {
+                                filtro.seleccionMultiple.Add(Convert.ToInt32(item));
+
+                            }
+
                         }
+
+                        if (filtro.seleccionMultiple.Count > 0)
+                        {
+                            var llamadasQuery = db.LlamadasServicios.AsQueryable();
+
+
+                            // Filtrar por Status diferente a Codigo3
+                            var llamadas = llamadasQuery.Where(a => !filtro.seleccionMultiple.Contains(a.Status.Value)).Select(a => a.DocEntry).ToHashSet();
+                            // Filtrar por fechas si las fechas son diferentes al valor por defecto
+                            //if (filtro.FechaInicial != time)
+                            //{
+                            //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion >= filtro.FechaInicial);
+                            //}
+                            //if (filtro.FechaFinal != time)
+                            //{
+                            //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion <= filtro.FechaFinal);
+                            //}
+
+                            // Remover reparaciones con idLlamada == 0 en una sola pasada
+                            EncReparacion.RemoveAll(a => a.idLlamada == 0);
+
+                            // Remover reparaciones cuyas llamadas coinciden con las llamadas filtradas
+                            EncReparacion.RemoveAll(a => llamadas.Contains(a.idLlamada));
+                        }
+
+
                     }
 
+
+
+                    return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
                 }
-               
-                return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
+                else
+                {
+                    var DocEntry = 0;
+                    try
+                    {
+                        DocEntry = Convert.ToInt32(filtro.CardCode);
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    var EncReparacion = db.EncReparacion.Select(a => new
+                    {
+                        a.id,
+                        idLlamada2 = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().id == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().id,
+
+                        idLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry,
+                        a.idTecnico,
+                        a.idDiagnostico,
+                        a.FechaCreacion,
+                        a.FechaModificacion,
+                        a.TipoReparacion,
+                        a.idProductoArreglar,
+                        a.Status,
+                        a.ProcesadaSAP,
+                        a.Comentarios,
+                        a.BodegaOrigen,
+                        a.BodegaFinal,
+
+                        Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
+                        Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
+                        AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
+                    })
+
+                 .Where(a => (!string.IsNullOrEmpty(filtro.CardCode) ? a.idLlamada.Value == DocEntry : true)
+                 ).ToList();
+                    return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
+                }
+                   
 
             }
             catch (Exception ex)

@@ -92,16 +92,77 @@ namespace WATickets.Controllers
                     filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
                 }
 
-                var Llamada = db.LlamadasServicios.Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true) && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true))
-                 .ToList();
-
-                if (!string.IsNullOrEmpty(filtro.Texto))
+                if (!filtro.FiltroEspecial)
                 {
-                    Llamada = Llamada.Where(a => a.Asunto.ToUpper().Contains(filtro.Texto.ToUpper())).ToList();
+                    var Llamada = db.LlamadasServicios
+                   .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
+                   && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
+                   && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true)
+                   && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true))
+                .ToList();
+
+                    if (!string.IsNullOrEmpty(filtro.Texto))
+                    {
+                        var DocEntry = 0;
+                        try
+                        {
+                            DocEntry = Convert.ToInt32(filtro.Texto);
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+
+                          Llamada = Llamada
+                         .Where(a => (DocEntry != 0 ? a.DocEntry == DocEntry : true)
+                         && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
+                         ).ToList();
+                        
+                    }
+
+
+                    return Request.CreateResponse(HttpStatusCode.OK, Llamada);
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(filtro.Texto) || !string.IsNullOrEmpty(filtro.CardCode))
+                    {
+                        var DocEntry = 0;
+                        try
+                        {
+                            DocEntry = Convert.ToInt32(filtro.Texto); 
+                        }
+                        catch (Exception)
+                        {
+                             
+                        }
+                      
+                        var Llamada = db.LlamadasServicios
+                         .Where(a => (DocEntry != 0 ? a.DocEntry == DocEntry : true)
+                         && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
+                         ) .ToList();
+
+
+
+
+                        return Request.CreateResponse(HttpStatusCode.OK, Llamada);
+                    }
+                    else
+                    {
+                        var Llamada = db.LlamadasServicios
+                           .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
+                           && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) 
+                           ) .ToList();
+
+
+
+
+                        return Request.CreateResponse(HttpStatusCode.OK, Llamada);
+                    }
+
+
                 }
 
-
-                return Request.CreateResponse(HttpStatusCode.OK, Llamada);
 
             }
             catch (Exception ex)
@@ -517,7 +578,7 @@ namespace WATickets.Controllers
                                     db.SaveChanges();
                                 }
                             }
-                               
+
 
                             if (Llamada.DocEntry != 0 && Llamada.DocEntry != null)
                             {
@@ -816,11 +877,11 @@ namespace WATickets.Controllers
                                 {
                                     var NumLlamada = Llamada.DocEntry.ToString();
                                     var EncMovimiento = db.EncMovimiento.Where(a => a.NumLlamada == NumLlamada && a.Aprobada).FirstOrDefault();
-                                    if(EncMovimiento == null)
+                                    if (EncMovimiento == null)
                                     {
                                         EncMovimiento = db.EncMovimiento.Where(a => a.NumLlamada == NumLlamada && a.TipoMovimiento == 2).FirstOrDefault();
                                     }
-                                    if(EncMovimiento != null)
+                                    if (EncMovimiento != null)
                                     {
                                         var DetalleMovimiento = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id).ToList();
                                         var diagnosticosComentario = "";
@@ -1031,7 +1092,7 @@ namespace WATickets.Controllers
 
                             try
                             {
-                                if(Llamada.DocEntry == 0)
+                                if (Llamada.DocEntry == 0)
                                 {
                                     Llamada.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
 
@@ -1095,7 +1156,7 @@ namespace WATickets.Controllers
                                 db.BitacoraErrores.Add(be);
                                 db.SaveChanges();
                             }
-                            if(Llamada.DocEntry != 0)
+                            if (Llamada.DocEntry != 0)
                             {
                                 Llamada.ProcesadaSAP = true;
 
