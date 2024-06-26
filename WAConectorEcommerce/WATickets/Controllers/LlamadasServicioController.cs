@@ -86,7 +86,7 @@ namespace WATickets.Controllers
             try
             {
                 var time = new DateTime();
-
+                var Llamada = new List<LlamadasServicios>();
                 if (filtro.FechaFinal != time)
                 {
                     filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
@@ -94,12 +94,44 @@ namespace WATickets.Controllers
 
                 if (!filtro.FiltroEspecial)
                 {
-                    var Llamada = db.LlamadasServicios
-                   .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
-                   && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
-                   && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true)
-                   && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true))
-                .ToList();
+                  
+                    if (!string.IsNullOrEmpty(filtro.CardName))
+                    {
+                        var valores = filtro.CardName.Split('|');
+                        foreach (var item in valores)
+                        {
+                            if (!string.IsNullOrEmpty(item))
+                            {
+                                filtro.seleccionMultiple.Add(Convert.ToInt32(item));
+
+                            }
+
+                        }
+
+                        if (filtro.seleccionMultiple.Count > 0)
+                        {
+                             Llamada = db.LlamadasServicios
+                             .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
+                             && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
+                             && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true)
+                             && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true) && filtro.seleccionMultiple.Contains(a.Status.Value))
+
+                          .ToList();
+                            
+
+                        }
+
+
+                    }
+                    else
+                    {
+                          Llamada = db.LlamadasServicios
+                         .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
+                         && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
+                         && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true)
+                         && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true))
+                      .ToList();
+                    }
 
                     if (!string.IsNullOrEmpty(filtro.Texto))
                     {
@@ -113,11 +145,11 @@ namespace WATickets.Controllers
 
                         }
 
-                          Llamada = Llamada
-                         .Where(a => (DocEntry != 0 ? a.DocEntry == DocEntry : true)
-                         && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
-                         ).ToList();
-                        
+                        Llamada = db.LlamadasServicios
+                       .Where(a => (DocEntry != 0 ? a.DocEntry == DocEntry : true)
+                       && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
+                       ).ToList();
+
                     }
 
 
@@ -130,17 +162,17 @@ namespace WATickets.Controllers
                         var DocEntry = 0;
                         try
                         {
-                            DocEntry = Convert.ToInt32(filtro.Texto); 
+                            DocEntry = Convert.ToInt32(filtro.Texto);
                         }
                         catch (Exception)
                         {
-                             
+
                         }
-                      
-                        var Llamada = db.LlamadasServicios
+
+                          Llamada = db.LlamadasServicios
                          .Where(a => (DocEntry != 0 ? a.DocEntry == DocEntry : true)
                          && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
-                         ) .ToList();
+                         ).ToList();
 
 
 
@@ -149,14 +181,40 @@ namespace WATickets.Controllers
                     }
                     else
                     {
-                        var Llamada = db.LlamadasServicios
-                           .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
-                           && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) 
-                           ) .ToList();
+                        
+
+                        if (!string.IsNullOrEmpty(filtro.CardName))
+                        {
+                            var valores = filtro.CardName.Split('|');
+                            foreach (var item in valores)
+                            {
+                                if (!string.IsNullOrEmpty(item))
+                                {
+                                    filtro.seleccionMultiple.Add(Convert.ToInt32(item));
+
+                                }
+
+                            }
+
+                            if (filtro.seleccionMultiple.Count > 0)
+                            {
+                                Llamada = db.LlamadasServicios
+                          .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
+                          && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && filtro.seleccionMultiple.Contains(a.Status.Value)
+                          ).ToList();
+                                
+
+                            }
 
 
-
-
+                        }
+                        else
+                        {
+                            Llamada = db.LlamadasServicios
+                          .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
+                          && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
+                          ).ToList();
+                        }
                         return Request.CreateResponse(HttpStatusCode.OK, Llamada);
                     }
 

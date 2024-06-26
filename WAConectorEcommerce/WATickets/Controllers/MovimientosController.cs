@@ -697,7 +697,7 @@ namespace WATickets.Controllers
                     //    }
 
                     //}
-                    if (!string.IsNullOrEmpty(filtro.Texto))
+                    if (!string.IsNullOrEmpty(filtro.Texto) || !string.IsNullOrEmpty(filtro.CardCode))
                     {
 
 
