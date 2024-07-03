@@ -115,7 +115,7 @@ namespace WATickets.Controllers
                         System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(Soporte.base64), Soporte.id.ToString() + ".png");
                         adjuntos.Add(att2);
 
-                        var resp = G.SendV2("soporte@dydconsultorescr.com", "", "", CorreoEnvio.RecepcionEmail, "Soporte Boletaje", "Soporte Boletaje", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Contrato de servicio</h1> <p> En el presente correo se notifica el soporte tecnico reportado en la aplicacion con el id # "+Soporte.id+", favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+                        var resp = G.SendV2("soporte@dydconsultorescr.com", "", "", CorreoEnvio.RecepcionEmail, "Soporte Boletaje", "Soporte Boletaje # " + Soporte.id, "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Contrato de servicio</h1> <p> En el presente correo se notifica el soporte tecnico reportado en la aplicacion con el id # "+Soporte.id+", favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
 
                         if (!resp)
                         {
