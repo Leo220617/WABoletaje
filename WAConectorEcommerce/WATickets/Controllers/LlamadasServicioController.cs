@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -522,6 +523,28 @@ namespace WATickets.Controllers
                         db.SaveChanges();
                     }
 
+                    try
+                    {
+                        LogModificaciones log = new LogModificaciones();
+                        log.idLlamada = Llamada.id;
+                        log.idUsuario = Convert.ToInt32(((ClaimsIdentity)User.Identity).Claims.Where(d => d.Type == ClaimTypes.Name).Select(s1 => s1.Value).FirstOrDefault());
+                        log.Accion = "Usuario con el id " + log.idUsuario + " ha creado la llamada a la hora respectiva";
+                        log.Fecha = DateTime.Now;
+                        db.LogModificaciones.Add(log);
+                        db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+
+                        BitacoraErrores be = new BitacoraErrores();
+
+                        be.Descripcion = ex.Message;
+                        be.StackTrace = ex.StackTrace;
+                        be.Fecha = DateTime.Now;
+
+                        db.BitacoraErrores.Add(be);
+                        db.SaveChanges();
+                    }
 
                     try
                     {
@@ -726,7 +749,34 @@ namespace WATickets.Controllers
                     db.Entry(Llamada).State = EntityState.Modified;
                     if (llamada.Status != Llamada.Status && llamada.Status != 0)
                     {
+                        try
+                        {
+                            var StatusConvertido = Llamada.Status.ToString();
+                            var StatusInicial = db.Status.Where(a => a.idSAP == StatusConvertido).FirstOrDefault() != null ? db.Status.Where(a => a.idSAP == StatusConvertido).FirstOrDefault().Nombre : "" ;
+                            StatusConvertido = llamada.Status.ToString();
+                            var StatusFinal = db.Status.Where(a => a.idSAP == StatusConvertido).FirstOrDefault() != null ? db.Status.Where(a => a.idSAP == StatusConvertido).FirstOrDefault().Nombre : "";
+                            LogModificaciones log = new LogModificaciones();
+                            log.idLlamada = Llamada.id;
+                            log.idUsuario = Convert.ToInt32(((ClaimsIdentity)User.Identity).Claims.Where(d => d.Type == ClaimTypes.Name).Select(s1 => s1.Value).FirstOrDefault());
+                            log.Accion = "Usuario con el id " + log.idUsuario + " ha modificado la llamada del Status " + StatusInicial + " al Status "+ StatusFinal +" a la hora respectiva";
+                            log.Fecha = DateTime.Now;
+                            db.LogModificaciones.Add(log);
+                            db.SaveChanges();
+                        }
+                        catch (Exception ex)
+                        {
+
+                            BitacoraErrores be = new BitacoraErrores();
+
+                            be.Descripcion = ex.Message;
+                            be.StackTrace = ex.StackTrace;
+                            be.Fecha = DateTime.Now;
+
+                            db.BitacoraErrores.Add(be);
+                            db.SaveChanges();
+                        }
                         Llamada.Status = llamada.Status;
+
 
 
                     }
@@ -853,8 +903,10 @@ namespace WATickets.Controllers
                     var enc2 = db.EncReparacion.Where(a => a.idLlamada == llamada.id).FirstOrDefault();
                     if (llamada.AdjuntosIdentificacion != null)
                     {
+                        List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
                         foreach (var item in llamada.AdjuntosIdentificacion)
                         {
+                           
                             AdjuntosIdentificacion adjunto = new AdjuntosIdentificacion();
                             adjunto.idEncabezado = enc2.id;
 
@@ -862,6 +914,21 @@ namespace WATickets.Controllers
                             adjunto.base64 = hex;
                             db.AdjuntosIdentificacion.Add(adjunto);
                             db.SaveChanges();
+
+                            System.Net.Mail.Attachment att2 = new System.Net.Mail.Attachment(new MemoryStream(adjunto.base64),  adjunto.id +".png");
+                            adjuntos.Add(att2);
+                        }
+
+                        if(llamada.Status == -1)
+                        {
+                            var CorreoEnvio = db.CorreoEnvio.FirstOrDefault();
+                            
+                            var resp = G.SendV2(Llamada.EmailPersonaContacto, "", G.ObtenerConfig("CorreoEmpresa"), CorreoEnvio.RecepcionEmail, "Contrato de Servicio", "Contrato de Servicio para el cliente", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Contrato de servicio</h1> <p> En el presente correo se le hace constatar que el equipo se ha entregado correctamente del contrato de servicio, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+
+                            if (!resp)
+                            {
+                                throw new Exception("No se ha podido enviar el correo con la liquidación");
+                            }
                         }
                     }
 

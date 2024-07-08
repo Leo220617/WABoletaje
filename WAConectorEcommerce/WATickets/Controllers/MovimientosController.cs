@@ -1152,27 +1152,36 @@ namespace WATickets.Controllers
 
                             db.DetMovimiento.Add(Det);
                             db.SaveChanges();
-                            if (!item.ItemName.ToUpper().Contains("mano de obra".ToUpper()))
+                            try
                             {
-                                var Prod = db.ProductosHijos.Where(a => a.codSAP == item.ItemCode).FirstOrDefault();
-                                if (Prod != null)
+                                if (!item.ItemName.ToUpper().Contains("mano de obra".ToUpper()))
                                 {
-                                    var idLLamada = Convert.ToInt32(EncMovimiento.NumLlamada);
-                                    var llamada = db.LlamadasServicios.Where(a => a.DocEntry == idLLamada).FirstOrDefault();
-                                    var ProdPadre = db.ProductosPadres.Where(a => a.codSAP == llamada.ItemCode).FirstOrDefault();
-                                    var ExisteEnPadre = db.PadresHijosProductos.Where(a => a.idProductoPadre == ProdPadre.id && a.idProductoHijo == Prod.id).FirstOrDefault();
-
-                                    if (ExisteEnPadre == null)
+                                    var Prod = db.ProductosHijos.Where(a => a.codSAP == item.ItemCode).FirstOrDefault();
+                                    if (Prod != null)
                                     {
-                                        ExisteEnPadre = new PadresHijosProductos();
-                                        ExisteEnPadre.idProductoHijo = Prod.id;
-                                        ExisteEnPadre.idProductoPadre = ProdPadre.id;
-                                        ExisteEnPadre.Cantidad = item.Cantidad;
-                                        db.PadresHijosProductos.Add(ExisteEnPadre);
-                                        db.SaveChanges();
+                                        var idLLamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                                        var llamada = db.LlamadasServicios.Where(a => a.DocEntry == idLLamada).FirstOrDefault();
+                                        var ProdPadre = db.ProductosPadres.Where(a => a.codSAP == llamada.ItemCode).FirstOrDefault();
+                                        var ExisteEnPadre = db.PadresHijosProductos.Where(a => a.idProductoPadre == ProdPadre.id && a.idProductoHijo == Prod.id).FirstOrDefault();
+
+                                        if (ExisteEnPadre == null)
+                                        {
+                                            ExisteEnPadre = new PadresHijosProductos();
+                                            ExisteEnPadre.idProductoHijo = Prod.id;
+                                            ExisteEnPadre.idProductoPadre = ProdPadre.id;
+                                            ExisteEnPadre.Cantidad = item.Cantidad;
+                                            db.PadresHijosProductos.Add(ExisteEnPadre);
+                                            db.SaveChanges();
+                                        }
                                     }
                                 }
                             }
+                            catch (Exception ex)
+                            {
+
+                                 
+                            }
+                            
 
 
                         }
@@ -1291,6 +1300,7 @@ namespace WATickets.Controllers
                             db.BitacoraErrores.Add(be);
                             db.SaveChanges();
                             Conexion.Desconectar();
+
                         }
 
 
@@ -1438,6 +1448,7 @@ namespace WATickets.Controllers
                                 db.BitacoraErrores.Add(be);
                                 db.SaveChanges();
                                 Conexion.Desconectar();
+                               
                             }
                         }
 

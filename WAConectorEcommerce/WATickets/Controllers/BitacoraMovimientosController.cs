@@ -375,7 +375,7 @@ namespace WATickets.Controllers
                                 db.BitacoraErrores.Add(be);
                                 db.SaveChanges();
                                 Conexion.Desconectar();
-
+                                throw new Exception("Error al generar el traslado en SAP " + be.Descripcion);
                             }
                         }
                         catch (Exception ex1)
@@ -392,6 +392,7 @@ namespace WATickets.Controllers
 
                             db.BitacoraErrores.Add(be);
                             db.SaveChanges();
+                            throw new Exception("Error al generar el traslado " + be.Descripcion);
 
                         }
                     }
