@@ -370,7 +370,8 @@ namespace WATickets.Controllers
 
 
                     HtmlToPdf converter = new HtmlToPdf();
-
+                    // Set options
+                    converter.Options.MaxPageLoadTime = 120; // Set timeout to 120 seconds
                     // set converter options
                     converter.Options.PdfPageSize = PdfPageSize.A4;
                     converter.Options.PdfPageOrientation = PdfPageOrientation.Portrait;
