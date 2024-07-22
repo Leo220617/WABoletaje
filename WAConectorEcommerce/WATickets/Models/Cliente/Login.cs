@@ -35,5 +35,6 @@ namespace WATickets.Models.Cliente
 
         public string NormaReparto { get; set; }
         public int EmpleadoSAP { get; set; }
+        public string PIN { get; set; }
     }
 }

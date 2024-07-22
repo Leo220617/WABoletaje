@@ -51,5 +51,47 @@ namespace WATickets.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+
+        [HttpPost]
+        public HttpResponseMessage Post([FromBody] LogModificaciones log)
+        {
+            try
+            {
+
+
+                var Log = db.LogModificaciones.Where(a => a.id == log.id).FirstOrDefault();
+
+                if (Log == null)
+                {
+                    Log = new LogModificaciones();
+                    Log.idLlamada = log.idLlamada;
+                    Log.idUsuario = log.idUsuario;
+                    Log.Accion = log.Accion;
+                    Log.Fecha = DateTime.Now;
+                    db.LogModificaciones.Add(Log);
+                    db.SaveChanges();
+
+                }
+                else
+                {
+                    throw new Exception("Este LOG  YA existe");
+                }
+
+
+                return Request.CreateResponse(HttpStatusCode.OK, Log);
+            }
+            catch (Exception ex)
+            {
+                BitacoraErrores be = new BitacoraErrores();
+
+                be.Descripcion = ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+        }
     }
 }

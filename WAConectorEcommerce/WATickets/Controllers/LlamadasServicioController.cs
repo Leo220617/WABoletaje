@@ -115,7 +115,7 @@ namespace WATickets.Controllers
                              .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
                              && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
                              && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true)
-                             && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true) && filtro.seleccionMultiple.Contains(a.Status.Value))
+                             && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true) && a.PIN == filtro.PIN && filtro.seleccionMultiple.Contains(a.Status.Value))
 
                           .ToList();
                             
@@ -130,7 +130,7 @@ namespace WATickets.Controllers
                          .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
                          && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
                          && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true)
-                         && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true))
+                         && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true) && a.PIN == filtro.PIN)
                       .ToList();
                     }
 
@@ -202,6 +202,7 @@ namespace WATickets.Controllers
                                 Llamada = db.LlamadasServicios
                           .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
                           && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && filtro.seleccionMultiple.Contains(a.Status.Value)
+                          
                           ).ToList();
                                 
 
@@ -213,7 +214,7 @@ namespace WATickets.Controllers
                         {
                             Llamada = db.LlamadasServicios
                           .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
-                          && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
+                          && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)  
                           ).ToList();
                         }
                         return Request.CreateResponse(HttpStatusCode.OK, Llamada);
@@ -439,9 +440,15 @@ namespace WATickets.Controllers
                 {
                     throw new Exception("El objeto llamada viene null");
                 }
-
+                var FechaInicio = DateTime.Now.Date;
+                var FechaFinal = DateTime.Now.AddDays(1).AddSeconds(-1);
                 var Parametros = db.Parametros.FirstOrDefault();
-                var Llamada = db.LlamadasServicios.Where(a => a.id == llamada.id).FirstOrDefault();
+                var Llamada = db.LlamadasServicios.Where(a => a.id == llamada.id 
+                || (a.CardCode == llamada.CardCode 
+                && a.ItemCode == llamada.ItemCode 
+                && a.SerieFabricante == llamada.SerieFabricante
+                && a.FechaCreacion >= FechaInicio && a.FechaCreacion <= FechaFinal
+                )).FirstOrDefault();
 
                 if (Llamada == null)
                 {
@@ -471,6 +478,7 @@ namespace WATickets.Controllers
                     Llamada.PersonaContacto = llamada.PersonaContacto;
                     Llamada.EmailPersonaContacto = llamada.EmailPersonaContacto;
                     Llamada.NumeroPersonaContacto = llamada.NumeroPersonaContacto;
+                    Llamada.PIN = false;
                     db.LlamadasServicios.Add(Llamada);
                     db.SaveChanges();
 
@@ -748,7 +756,7 @@ namespace WATickets.Controllers
 
 
                     db.Entry(Llamada).State = EntityState.Modified;
-                    if (llamada.Status != Llamada.Status && llamada.Status != 0)
+                    if (llamada.Status != Llamada.Status && llamada.Status != 0 && llamada.Status != null)
                     {
                         try
                         {
@@ -813,14 +821,14 @@ namespace WATickets.Controllers
 
                     }
 
-                    if (llamada.SucRecibo != Llamada.SucRecibo)
+                    if ( llamada.SucRecibo != null && llamada.SucRecibo != Llamada.SucRecibo)
                     {
                         var SucReb = llamada.SucRecibo.Value.ToString();
                         Llamada.SucRecibo = llamada.SucRecibo.Value;
 
                     }
 
-                    if (llamada.SucRetiro != Llamada.SucRetiro)
+                    if ( llamada.SucRetiro != null && llamada.SucRetiro != Llamada.SucRetiro)
                     {
                         var SucRet = llamada.SucRetiro.Value.ToString();
                         Llamada.SucRetiro = llamada.SucRetiro;
@@ -834,26 +842,26 @@ namespace WATickets.Controllers
                     }
 
 
-                    if (llamada.TratadoPor != Llamada.TratadoPor)
+                    if (llamada.TratadoPor != null && llamada.TratadoPor != Llamada.TratadoPor)
                     {
                         Llamada.TratadoPor = llamada.TratadoPor;
 
                     }
 
-                    if (Llamada.Garantia != llamada.Garantia)
+                    if (llamada.Garantia != null && Llamada.Garantia != llamada.Garantia)
                     {
                         Llamada.Garantia = llamada.Garantia;
 
 
                     }
 
-                    if (Llamada.Horas != llamada.Horas)
+                    if (llamada.Horas != null && (llamada.Horas > 0 && Llamada.Horas >= 0) && Llamada.Horas != llamada.Horas)
                     {
                         Llamada.Horas = llamada.Horas;
 
                     }
 
-                    if (Llamada.Tecnico != llamada.Tecnico)
+                    if (llamada.Tecnico != null && Llamada.Tecnico != llamada.Tecnico)
                     {
                         Llamada.Tecnico = llamada.Tecnico;
 
@@ -885,19 +893,24 @@ namespace WATickets.Controllers
 
                     }
 
-                    if (Llamada.PersonaContacto != llamada.PersonaContacto)
+                    if (!string.IsNullOrEmpty(llamada.PersonaContacto) && Llamada.PersonaContacto != llamada.PersonaContacto)
                     {
                         Llamada.PersonaContacto = llamada.PersonaContacto;
                     }
 
-                    if (Llamada.EmailPersonaContacto != llamada.EmailPersonaContacto)
+                    if (!string.IsNullOrEmpty(llamada.EmailPersonaContacto) && Llamada.EmailPersonaContacto != llamada.EmailPersonaContacto)
                     {
                         Llamada.EmailPersonaContacto = llamada.EmailPersonaContacto;
                     }
 
-                    if (Llamada.NumeroPersonaContacto != llamada.NumeroPersonaContacto)
+                    if (!string.IsNullOrEmpty(llamada.NumeroPersonaContacto) && Llamada.NumeroPersonaContacto != llamada.NumeroPersonaContacto)
                     {
                         Llamada.NumeroPersonaContacto = llamada.NumeroPersonaContacto;
+                    }
+
+                    if(llamada.PIN != null)
+                    {
+                        Llamada.PIN = llamada.PIN;
                     }
                     Llamada.ProcesadaSAP = false;
                     db.SaveChanges();

@@ -21,6 +21,7 @@ namespace WATickets.Models
         public DateTime FechaInicial { get; set; }
         public DateTime FechaFinal { get; set; }
         public bool FiltroEspecial { get; set; }
+        public bool PIN { get; set; }
         public List<int> seleccionMultiple { get; set; }
     }
 }

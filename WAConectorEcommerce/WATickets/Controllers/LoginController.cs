@@ -105,6 +105,7 @@ namespace WATickets.Controllers
                     de.CodigoVendedor = Usuario.CardCode;
                     de.token = token;
                     de.Bodega = Usuario.Bodega;
+                    de.PIN = Usuario.PIN;
                     de.Seguridad = SeguridadModulos;
 
                     return Request.CreateResponse(HttpStatusCode.OK, de);
@@ -144,6 +145,7 @@ namespace WATickets.Controllers
                 Usuario.NumeroDimension = usuario.NumeroDimension;
                 Usuario.NormaReparto = usuario.NormaReparto;
                 Usuario.EmpleadoSAP = usuario.EmpleadoSAP;
+                Usuario.PIN = usuario.PIN;
                 db.Login.Add(Usuario);
                 db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.OK);
@@ -222,6 +224,10 @@ namespace WATickets.Controllers
                 Usuario.NumeroDimension = usuario.NumeroDimension;
                 Usuario.NormaReparto = usuario.NormaReparto;
 
+                if(!string.IsNullOrEmpty(usuario.PIN))
+                {
+                    Usuario.PIN = usuario.PIN;
+                }
 
                 db.SaveChanges();
 
@@ -321,6 +327,7 @@ namespace WATickets.Controllers
         public string CodigoVendedor { get; set; }
         public string token { get; set; }
         public string Bodega { get; set; }
+        public string PIN { get; set; }
         public List<SeguridadRolesModulos> Seguridad { get; set; }
     }
 }
