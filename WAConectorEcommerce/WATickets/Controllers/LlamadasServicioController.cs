@@ -1029,12 +1029,12 @@ namespace WATickets.Controllers
                                             diagnosticosComentario += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "\n";
                                         }
                                         diagnosticosComentario += EncMovimiento.Comentarios + "\n";
-                                        client.Resolution = string.IsNullOrEmpty(diagnosticosComentario) ? "Favor revisar operaciones" : diagnosticosComentario;
+                                        client.Resolution = string.IsNullOrEmpty(diagnosticosComentario.Replace("\n", "").Replace("\r", "").Trim()) ? "Favor revisar operaciones" : diagnosticosComentario;
 
                                     }
                                     else
                                     {
-                                        client.Resolution = string.IsNullOrEmpty(Llamada.Comentarios) ? "Favor revisar operaciones" : Llamada.Comentarios;
+                                        client.Resolution = string.IsNullOrEmpty(Llamada.Comentarios.Replace("\n", "").Replace("\r", "").Trim()) ? "Favor revisar operaciones" : Llamada.Comentarios;
 
                                     }
 
