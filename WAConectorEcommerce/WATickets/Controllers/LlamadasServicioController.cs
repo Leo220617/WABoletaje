@@ -124,17 +124,7 @@ namespace WATickets.Controllers
 
 
                     }
-                    else
-                    {
-                          Llamada = db.LlamadasServicios
-                         .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
-                         && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
-                         && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true)
-                         && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true) && a.PIN == filtro.PIN)
-                      .ToList();
-                    }
-
-                    if (!string.IsNullOrEmpty(filtro.Texto))
+                    else if (!string.IsNullOrEmpty(filtro.Texto) || !string.IsNullOrEmpty(filtro.CardCode))
                     {
                         var DocEntry = 0;
                         try
@@ -152,6 +142,17 @@ namespace WATickets.Controllers
                        ).ToList();
 
                     }
+                    else
+                    {
+                          Llamada = db.LlamadasServicios
+                         .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
+                         && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
+                         && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true)
+                         && (filtro.Codigo2 != 0 ? a.Status.Value == filtro.Codigo2 : true) && a.PIN == filtro.PIN)
+                      .ToList();
+                    }
+
+                   
 
 
                     return Request.CreateResponse(HttpStatusCode.OK, Llamada);
