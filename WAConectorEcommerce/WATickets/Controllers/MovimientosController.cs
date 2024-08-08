@@ -701,7 +701,33 @@ namespace WATickets.Controllers
                     {
 
 
-                        encMovimientos = encMovimientos
+                        encMovimientos = db.EncMovimiento.Select(a => new
+                        {
+                            a.id,
+                            a.DocEntry,
+                            a.CardCode,
+                            a.CardName,
+                            a.NumLlamada,
+                            a.Fecha,
+                            a.TipoMovimiento,
+                            a.Comentarios,
+                            a.CreadoPor,
+                            a.Subtotal,
+                            a.PorDescuento,
+                            a.Descuento,
+                            a.Impuestos,
+                            a.TotalComprobante,
+                            a.Moneda,
+                            a.AprobadaSuperior,
+                            a.idCondPago,
+                            a.idDiasValidos,
+                            a.idGarantia,
+                            a.idTiemposEntregas,
+                            Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
+
+                        }
+
+                       )
                        .Where(a => (!string.IsNullOrEmpty(filtro.Texto) ? a.NumLlamada == filtro.Texto : true)
                        && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
                        ).ToList();
