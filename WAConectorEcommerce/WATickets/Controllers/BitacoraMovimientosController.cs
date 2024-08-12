@@ -31,69 +31,118 @@ namespace WATickets.Controllers
                 {
                     filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
                 }
-
-                var Bitacora = db.BitacoraMovimientos.Select(a => new {
-
-
-                    a.id ,
-                    idLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? a.idLlamada : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry,
-                    a.idTecnico,
-                    a.idEncabezado ,
-                    a.DocEntry ,
-                    a.Fecha ,
-                    a.TipoMovimiento ,
-                    a.BodegaInicial ,
-                    a.BodegaFinal ,
-                    a.Status ,
-                    a.ProcesadaSAP ,
-                    Detalle = db.DetBitacoraMovimientos.Where(b => b.idEncabezado == a.id).ToList()
-
-                }).Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)).ToList();
-
-                if(filtro.Codigo1 > 0)
+                if (string.IsNullOrEmpty(filtro.CardCode))
                 {
-                    Bitacora = Bitacora.Where(a => a.idEncabezado == filtro.Codigo1).ToList();
-                }
-                else if (filtro.Codigo3 >= 0)
-                {
-                    string status = filtro.Codigo3.ToString();
-                    Bitacora = Bitacora.Where(a => a.Status == status).ToList();
-                }
+                    var Bitacora = db.BitacoraMovimientos.Select(a => new {
 
 
-                if (filtro.Codigo2 > 0)
-                {
-                    Bitacora = Bitacora.Where(a => a.idTecnico == filtro.Codigo2).ToList();
-                }
-                //Si me estan filtrando por Status de la llamada
-                if (filtro.Codigo4 != 0)
-                {
-                    filtro.FechaInicial = filtro.FechaInicial.AddMonths(-1);
-                    filtro.FechaFinal = filtro.FechaFinal.AddMonths(1);
-                    var Llamadas = db.LlamadasServicios.Select(a => new { a.id,a.FechaCreacion,a.Status, a.DocEntry }).Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && a.Status != filtro.Codigo4).ToList();
-                    var ListadoReparacionesEnCero = Bitacora.Where(a => a.idLlamada == 0).ToList();
+                        a.id,
+                        idLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? a.idLlamada : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry,
+                        a.idTecnico,
+                        a.idEncabezado,
+                        a.DocEntry,
+                        a.Fecha,
+                        a.TipoMovimiento,
+                        a.BodegaInicial,
+                        a.BodegaFinal,
+                        a.Status,
+                        a.ProcesadaSAP,
+                        Detalle = db.DetBitacoraMovimientos.Where(b => b.idEncabezado == a.id).ToList()
 
-                    foreach (var item in ListadoReparacionesEnCero)
+                    }).Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)).ToList();
+
+                    if (filtro.Codigo1 > 0)
                     {
-                        Bitacora.Remove(item);
-
+                        Bitacora = Bitacora.Where(a => a.idEncabezado == filtro.Codigo1).ToList();
+                    }
+                    else if (filtro.Codigo3 >= 0)
+                    {
+                        string status = filtro.Codigo3.ToString();
+                        Bitacora = Bitacora.Where(a => a.Status == status).ToList();
                     }
 
 
-                    foreach (var item in Llamadas)
+                    if (filtro.Codigo2 > 0)
                     {
-
-                        var EncReparacionSacar = Bitacora.Where(a => a.idLlamada == item.DocEntry).FirstOrDefault();
-                        if (EncReparacionSacar != null)
+                        Bitacora = Bitacora.Where(a => a.idTecnico == filtro.Codigo2).ToList();
+                    }
+                    if (!string.IsNullOrEmpty(filtro.Texto))
+                    {
+                        var valores = filtro.Texto.Split('|');
+                        foreach (var item in valores)
                         {
-                            Bitacora.Remove(EncReparacionSacar);
+                            if (!string.IsNullOrEmpty(item))
+                            {
+                                filtro.seleccionMultiple.Add(Convert.ToInt32(item));
+
+                            }
+
                         }
+
+                        if (filtro.seleccionMultiple.Count > 0)
+                        {
+                            var llamadasQuery = db.LlamadasServicios.AsQueryable();
+
+
+                            // Filtrar por Status diferente a Codigo3
+                            var llamadas = llamadasQuery.Where(a => !filtro.seleccionMultiple.Contains(a.Status.Value)).Select(a => a.DocEntry).ToHashSet();
+                            // Filtrar por fechas si las fechas son diferentes al valor por defecto
+                            //if (filtro.FechaInicial != time)
+                            //{
+                            //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion >= filtro.FechaInicial);
+                            //}
+                            //if (filtro.FechaFinal != time)
+                            //{
+                            //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion <= filtro.FechaFinal);
+                            //}
+
+                            // Remover reparaciones con idLlamada == 0 en una sola pasada
+                            Bitacora.RemoveAll(a => a.idLlamada == 0);
+
+                            // Remover reparaciones cuyas llamadas coinciden con las llamadas filtradas
+                            Bitacora.RemoveAll(a => llamadas.Contains(a.idLlamada));
+                        }
+
+
                     }
+                  
+
+
+                    return Request.CreateResponse(HttpStatusCode.OK, Bitacora);
+                }
+                else
+                {
+                    var DocEntry = 0;
+                    try
+                    {
+                        DocEntry = Convert.ToInt32(filtro.CardCode);
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    var Bitacora = db.BitacoraMovimientos.Select(a => new {
+
+
+                        a.id,
+                        idLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? a.idLlamada : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().DocEntry,
+                        a.idTecnico,
+                        a.idEncabezado,
+                        a.DocEntry,
+                        a.Fecha,
+                        a.TipoMovimiento,
+                        a.BodegaInicial,
+                        a.BodegaFinal,
+                        a.Status,
+                        a.ProcesadaSAP,
+                        Detalle = db.DetBitacoraMovimientos.Where(b => b.idEncabezado == a.id).ToList()
+
+                    }).Where(a => (!string.IsNullOrEmpty(filtro.CardCode) ? a.idLlamada.Value == DocEntry : true) ).ToList();
+                    return Request.CreateResponse(HttpStatusCode.OK, Bitacora);
 
                 }
 
 
-                return Request.CreateResponse(HttpStatusCode.OK, Bitacora);
 
             }
             catch (Exception ex)
@@ -326,7 +375,7 @@ namespace WATickets.Controllers
                                 db.BitacoraErrores.Add(be);
                                 db.SaveChanges();
                                 Conexion.Desconectar();
-
+                                throw new Exception("Error al generar el traslado en SAP " + be.Descripcion);
                             }
                         }
                         catch (Exception ex1)
@@ -343,6 +392,7 @@ namespace WATickets.Controllers
 
                             db.BitacoraErrores.Add(be);
                             db.SaveChanges();
+                            throw new Exception("Error al generar el traslado " + be.Descripcion);
 
                         }
                     }

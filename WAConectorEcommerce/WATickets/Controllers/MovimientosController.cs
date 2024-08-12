@@ -244,9 +244,9 @@ namespace WATickets.Controllers
                             SQL = SQLANTES + " and ItemCode = '" + Llamada.ItemCode + "'";
 
                             Cn = new SqlConnection(conexion);
-                             Cmd = new SqlCommand(SQL, Cn);
-                             Da = new SqlDataAdapter(Cmd);
-                             Ds = new DataSet();
+                            Cmd = new SqlCommand(SQL, Cn);
+                            Da = new SqlDataAdapter(Cmd);
+                            Ds = new DataSet();
                             Cn.Open();
                             Da.Fill(Ds, "Encabezado");
                             var NombreProducto = "";
@@ -266,7 +266,7 @@ namespace WATickets.Controllers
 
                             bodyH = bodyH.Replace("@ContactoReferencia", Llamada.PersonaContacto);
                             bodyH = bodyH.Replace("@Referencia", "");
-                            
+
                             bodyH = bodyH.Replace("@NombreUsuario", "");
                             bodyH = bodyH.Replace("@TelefonoUsuario", "");
                             bodyH = bodyH.Replace("@CorreoVentas", "");
@@ -284,14 +284,14 @@ namespace WATickets.Controllers
 
                                 if (z == 0)
                                 {
-                                    inyectado = G.ObtenerConfig("Empresa") == "G" ? Html.InyectadoOfertaGermantec.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@Desc", Math.Round(item.PorDescuento, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round((item.PrecioUnitario * item.Cantidad), 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString()) : Html.InyectadoOfertaAlsara.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName ).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@Desc", Math.Round(item.PorDescuento, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round((item.PrecioUnitario * item.Cantidad), 2).ToString("N", formato)).Replace("@Disponible",  (TieneStock == 0 ? "***" : "")).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
+                                    inyectado = G.ObtenerConfig("Empresa") == "G" ? Html.InyectadoOfertaGermantec.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@Desc", Math.Round(item.PorDescuento, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round((item.PrecioUnitario * item.Cantidad), 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString()) : Html.InyectadoOfertaAlsara.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@Desc", Math.Round(item.PorDescuento, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round((item.PrecioUnitario * item.Cantidad), 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top5", top1.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
                                 }
                                 else
                                 {
                                     top1 += 20;
 
-                                    inyectado += G.ObtenerConfig("Empresa") == "G" ? Html.InyectadoOfertaGermantec.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@Desc", Math.Round(item.PorDescuento, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round((item.PrecioUnitario * item.Cantidad), 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString()) : Html.InyectadoOfertaAlsara.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName  ).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@Desc", Math.Round(item.PorDescuento, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round((item.PrecioUnitario * item.Cantidad), 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
+                                    inyectado += G.ObtenerConfig("Empresa") == "G" ? Html.InyectadoOfertaGermantec.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@Desc", Math.Round(item.PorDescuento, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round((item.PrecioUnitario * item.Cantidad), 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString()) : Html.InyectadoOfertaAlsara.Replace("@NumLinea", (z + 1).ToString()).Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@Desc", Math.Round(item.PorDescuento, 2).ToString()).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round((item.PrecioUnitario * item.Cantidad), 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("top1", top1.ToString()).Replace("top2", top1.ToString()).Replace("top3", top1.ToString()).Replace("top4", top1.ToString()).Replace("top5", top1.ToString()).Replace("top6", top1.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                 }
@@ -444,7 +444,7 @@ namespace WATickets.Controllers
 
                                 if (z == 0)
                                 {
-                                    inyectado = G.ObtenerConfig("Empresa") == "G" ? Html.InyectadoGermantec.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString()) : Html.InyectadoAlsara.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName  ).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+                                    inyectado = G.ObtenerConfig("Empresa") == "G" ? Html.InyectadoGermantec.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString()) : Html.InyectadoAlsara.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                 }
@@ -452,7 +452,7 @@ namespace WATickets.Controllers
                                 {
                                     top1 += 23;
                                     top2 += 23;
-                                    inyectado += G.ObtenerConfig("Empresa") == "G" ? Html.InyectadoGermantec.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString()) : Html.InyectadoAlsara.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName  ).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
+                                    inyectado += G.ObtenerConfig("Empresa") == "G" ? Html.InyectadoGermantec.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString()) : Html.InyectadoAlsara.Replace("@ItemCode", item.ItemCode).Replace("@ItemName", item.ItemName).Replace("@Cantidad", Math.Round(item.Cantidad, 2).ToString("N", formato)).Replace("@PrecioUnitario", Moneda + Math.Round(item.PrecioUnitario, 2).ToString("N", formato)).Replace("@TotalLinea", Moneda + Math.Round(item.TotalLinea, 2).ToString("N", formato)).Replace("@Disponible", (TieneStock == 0 ? "***" : "")).Replace("@Top1", top1.ToString()).Replace("@Top1.1", top1.ToString()).Replace("@Top1.2", top1.ToString()).Replace("@Top1.3", top1.ToString()).Replace("@Top2", top2.ToString());
                                     diagnosticos += db.Errores.Where(a => a.id == item.idError).FirstOrDefault() == null ? "" : db.Errores.Where(a => a.id == item.idError).FirstOrDefault().Diagnostico + "<br/>";
 
                                 }
@@ -517,11 +517,11 @@ namespace WATickets.Controllers
 
                             var bytes = doc.Save();
                             doc.Close();
-                           
-                            System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Presupuesto_Reparacion_"+ NumLlamada.ToString() + ".pdf");
+
+                            System.Net.Mail.Attachment att3 = new System.Net.Mail.Attachment(new MemoryStream(bytes), "Presupuesto_Reparacion_" + NumLlamada.ToString() + ".pdf");
                             adjuntos.Add(att3);
 
-                            
+
                             var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
                             var Adjuntos = db.Adjuntos.Where(a => a.idEncabezado == EncReparacion.id).ToList();
                             var ui = 1;
@@ -593,73 +593,328 @@ namespace WATickets.Controllers
                 {
                     filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
                 }
+                if (!filtro.FiltroEspecial)
+                {
+                    var encMovimientos = db.EncMovimiento.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true))
+                   .Select(a => new
+                   {
+                       a.id,
+                       a.DocEntry,
+                       a.CardCode,
+                       a.CardName,
+                       a.NumLlamada,
+                       a.Fecha,
+                       a.TipoMovimiento,
+                       a.Comentarios,
+                       a.CreadoPor,
+                       a.Subtotal,
+                       a.PorDescuento,
+                       a.Descuento,
+                       a.Impuestos,
+                       a.TotalComprobante,
+                       a.Moneda,
+                       a.AprobadaSuperior,
+                       a.idCondPago,
+                       a.idDiasValidos,
+                       a.idGarantia,
+                       a.idTiemposEntregas,
+                       Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
 
-                var encMovimientos = db.EncMovimiento.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true))
-                    .Select(a => new
+                   }
+
+                       ).ToList();
+
+                    if (filtro.Codigo1 > 0)
                     {
-                        a.id,
-                        a.DocEntry,
-                        a.CardCode,
-                        a.CardName,
-                        a.NumLlamada,
-                        a.Fecha,
-                        a.TipoMovimiento,
-                        a.Comentarios,
-                        a.CreadoPor,
-                        a.Subtotal,
-                        a.PorDescuento,
-                        a.Descuento,
-                        a.Impuestos,
-                        a.TotalComprobante,
-                        a.Moneda,
-                        a.AprobadaSuperior,
-                        a.idCondPago,
-                        a.idDiasValidos,
-                        a.idGarantia,
-                        a.idTiemposEntregas,
-                        Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
+                        encMovimientos = encMovimientos.Where(a => a.TipoMovimiento == filtro.Codigo1).ToList();
 
                     }
-
-                        ).ToList();
-
-                if (filtro.Codigo1 > 0)
-                {
-                    encMovimientos = encMovimientos.Where(a => a.TipoMovimiento == filtro.Codigo1).ToList();
-
-                }
-
-                //Si me estan filtrando por Status de la llamada
-                if (filtro.Codigo2 != 0)
-                {
-                    var Llamadas = db.LlamadasServicios.Where(a => a.Status != filtro.Codigo2).ToList();
-                    var ListadoReparacionesEnCero = encMovimientos.Where(a => a.NumLlamada == "0").ToList();
-
-                    foreach (var item in ListadoReparacionesEnCero)
+                    if (!string.IsNullOrEmpty(filtro.CardName))
                     {
-                        encMovimientos.Remove(item);
-
-                    }
-
-
-                    foreach (var item in Llamadas)
-                    {
-                        var DocEntry = item.DocEntry.ToString();
-                        var EncReparacionSacar = encMovimientos.Where(a => a.NumLlamada == DocEntry).ToList();
-                        if (EncReparacionSacar != null)
+                        var valores = filtro.CardName.Split('|');
+                        foreach (var item in valores)
                         {
-                            foreach (var item2 in EncReparacionSacar)
+                            if (!string.IsNullOrEmpty(item))
                             {
-                                encMovimientos.Remove(item2);
+                                filtro.seleccionMultiple.Add(Convert.ToInt32(item));
 
                             }
 
                         }
-                    }
 
+                        if (filtro.seleccionMultiple.Count > 0)
+                        {
+                            var llamadasQuery = db.LlamadasServicios.AsQueryable();
+
+
+                            // Filtrar por Status diferente a Codigo3
+                            var llamadas = llamadasQuery.Where(a => !filtro.seleccionMultiple.Contains(a.Status.Value)).Select(a => a.DocEntry).ToHashSet();
+                            // Filtrar por fechas si las fechas son diferentes al valor por defecto
+                            if (filtro.FechaInicial != time)
+                            {
+                                llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion >= filtro.FechaInicial);
+                            }
+                            if (filtro.FechaFinal != time)
+                            {
+                                llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion <= filtro.FechaFinal);
+                            }
+
+                            // Remover reparaciones con idLlamada == 0 en una sola pasada
+                            encMovimientos.RemoveAll(a => a.NumLlamada == "0");
+
+                            // Remover reparaciones cuyas llamadas coinciden con las llamadas filtradas
+                            encMovimientos.RemoveAll(a => llamadas.Contains(Convert.ToInt32(a.NumLlamada)));
+                        }
+
+
+                    }
+                    //Si me estan filtrando por Status de la llamada
+                    //if (filtro.Codigo2 != 0)
+                    //{
+                    //    var Llamadas = db.LlamadasServicios.Where(a => a.Status != filtro.Codigo2).ToList();
+                    //    var ListadoReparacionesEnCero = encMovimientos.Where(a => a.NumLlamada == "0").ToList();
+
+                    //    foreach (var item in ListadoReparacionesEnCero)
+                    //    {
+                    //        encMovimientos.Remove(item);
+
+                    //    }
+
+
+                    //    foreach (var item in Llamadas)
+                    //    {
+                    //        var DocEntry = item.DocEntry.ToString();
+                    //        var EncReparacionSacar = encMovimientos.Where(a => a.NumLlamada == DocEntry).ToList();
+                    //        if (EncReparacionSacar != null)
+                    //        {
+                    //            foreach (var item2 in EncReparacionSacar)
+                    //            {
+                    //                encMovimientos.Remove(item2);
+
+                    //            }
+
+                    //        }
+                    //    }
+
+                    //}
+                    if (!string.IsNullOrEmpty(filtro.Texto) || !string.IsNullOrEmpty(filtro.CardCode))
+                    {
+
+
+                        encMovimientos = db.EncMovimiento.Select(a => new
+                        {
+                            a.id,
+                            a.DocEntry,
+                            a.CardCode,
+                            a.CardName,
+                            a.NumLlamada,
+                            a.Fecha,
+                            a.TipoMovimiento,
+                            a.Comentarios,
+                            a.CreadoPor,
+                            a.Subtotal,
+                            a.PorDescuento,
+                            a.Descuento,
+                            a.Impuestos,
+                            a.TotalComprobante,
+                            a.Moneda,
+                            a.AprobadaSuperior,
+                            a.idCondPago,
+                            a.idDiasValidos,
+                            a.idGarantia,
+                            a.idTiemposEntregas,
+                            Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
+
+                        }
+
+                       )
+                       .Where(a => (!string.IsNullOrEmpty(filtro.Texto) ? a.NumLlamada == filtro.Texto : true)
+                       && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
+                       ).ToList();
+
+                    }
+                    return Request.CreateResponse(HttpStatusCode.OK, encMovimientos);
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(filtro.Texto) || !string.IsNullOrEmpty(filtro.CardCode))
+                    {
+
+
+                        var encMovimientos = db.EncMovimiento
+                         .Where(a => (!string.IsNullOrEmpty(filtro.Texto) ? a.NumLlamada == filtro.Texto : true)
+                         && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
+                         ).Select(a => new
+                         {
+                             a.id,
+                             a.DocEntry,
+                             a.CardCode,
+                             a.CardName,
+                             a.NumLlamada,
+                             a.Fecha,
+                             a.TipoMovimiento,
+                             a.Comentarios,
+                             a.CreadoPor,
+                             a.Subtotal,
+                             a.PorDescuento,
+                             a.Descuento,
+                             a.Impuestos,
+                             a.TotalComprobante,
+                             a.Moneda,
+                             a.AprobadaSuperior,
+                             a.idCondPago,
+                             a.idDiasValidos,
+                             a.idGarantia,
+                             a.idTiemposEntregas,
+                             Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
+
+                         }).ToList();
+
+
+
+
+                        return Request.CreateResponse(HttpStatusCode.OK, encMovimientos);
+                    }
+                    else
+                    {
+
+
+
+                        if (!string.IsNullOrEmpty(filtro.CardName))
+                        {
+                            var valores = filtro.CardName.Split('|');
+                            foreach (var item in valores)
+                            {
+                                if (!string.IsNullOrEmpty(item))
+                                {
+                                    filtro.seleccionMultiple.Add(Convert.ToInt32(item));
+
+                                }
+
+                            }
+
+                            if (filtro.seleccionMultiple.Count > 0)
+                            {
+                                var llamadasQuery = db.LlamadasServicios.AsQueryable();
+
+
+                                // Filtrar por Status diferente a Codigo3
+                                var llamadas = llamadasQuery.Where(a => !filtro.seleccionMultiple.Contains(a.Status.Value)).Select(a => a.DocEntry.ToString()).ToHashSet();
+                                // Filtrar por fechas si las fechas son diferentes al valor por defecto
+                                //if (filtro.FechaInicial != time)
+                                //{
+                                //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion >= filtro.FechaInicial);
+                                //}
+                                //if (filtro.FechaFinal != time)
+                                //{
+                                //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion <= filtro.FechaFinal);
+                                //}
+
+
+                                var encMovimientos = db.EncMovimiento.Where(a => !llamadas.Contains( a.NumLlamada ) && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true))
+                           .Select(a => new
+                           {
+                               a.id,
+                               a.DocEntry,
+                               a.CardCode,
+                               a.CardName,
+                               a.NumLlamada,
+                               a.Fecha,
+                               a.TipoMovimiento,
+                               a.Comentarios,
+                               a.CreadoPor,
+                               a.Subtotal,
+                               a.PorDescuento,
+                               a.Descuento,
+                               a.Impuestos,
+                               a.TotalComprobante,
+                               a.Moneda,
+                               a.AprobadaSuperior,
+                               a.idCondPago,
+                               a.idDiasValidos,
+                               a.idGarantia,
+                               a.idTiemposEntregas,
+                               Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
+
+                           }
+
+                               ).ToList();
+                                return Request.CreateResponse(HttpStatusCode.OK, encMovimientos.ToList());
+
+                            }
+                            else
+                            {
+                                                    var encMovimientos = db.EncMovimiento.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true))
+                                     .Select(a => new
+                                     {
+                                         a.id,
+                                         a.DocEntry,
+                                         a.CardCode,
+                                         a.CardName,
+                                         a.NumLlamada,
+                                         a.Fecha,
+                                         a.TipoMovimiento,
+                                         a.Comentarios,
+                                         a.CreadoPor,
+                                         a.Subtotal,
+                                         a.PorDescuento,
+                                         a.Descuento,
+                                         a.Impuestos,
+                                         a.TotalComprobante,
+                                         a.Moneda,
+                                         a.AprobadaSuperior,
+                                         a.idCondPago,
+                                         a.idDiasValidos,
+                                         a.idGarantia,
+                                         a.idTiemposEntregas,
+                                         Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
+
+                                     }
+
+                                         ).ToList();
+                                return Request.CreateResponse(HttpStatusCode.OK, encMovimientos.ToList());
+                            }
+
+
+                        }
+                        else
+                        {
+                            var encMovimientos = db.EncMovimiento.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true))
+                              .Select(a => new
+                              {
+                                  a.id,
+                                  a.DocEntry,
+                                  a.CardCode,
+                                  a.CardName,
+                                  a.NumLlamada,
+                                  a.Fecha,
+                                  a.TipoMovimiento,
+                                  a.Comentarios,
+                                  a.CreadoPor,
+                                  a.Subtotal,
+                                  a.PorDescuento,
+                                  a.Descuento,
+                                  a.Impuestos,
+                                  a.TotalComprobante,
+                                  a.Moneda,
+                                  a.AprobadaSuperior,
+                                  a.idCondPago,
+                                  a.idDiasValidos,
+                                  a.idGarantia,
+                                  a.idTiemposEntregas,
+                                  Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
+
+                              }
+
+                                  ).ToList();
+                            return Request.CreateResponse(HttpStatusCode.OK, encMovimientos.ToList());
+                        }
+
+                        
+                    }
                 }
 
-                return Request.CreateResponse(HttpStatusCode.OK, encMovimientos);
+
 
             }
             catch (Exception ex)
@@ -769,7 +1024,7 @@ namespace WATickets.Controllers
                         /// 
                         var Detalles = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id).ToList();
 
-                        foreach(var item in Detalles)
+                        foreach (var item in Detalles)
                         {
                             try
                             {
@@ -778,19 +1033,19 @@ namespace WATickets.Controllers
                             catch (Exception)
                             {
 
-                               
+
                             }
                         }
-                            
+
 
                         foreach (var item in Detalles)
                         {
-                             
+
                             db.DetMovimiento.Remove(item);
                             db.SaveChanges();
                         }
 
-                        
+
 
                         foreach (var item in encMovimiento.Detalle)
                         {
@@ -879,7 +1134,7 @@ namespace WATickets.Controllers
                         EncMovimiento.Moneda = encMovimiento.Moneda;
                         EncMovimiento.Aprobada = false;
                         EncMovimiento.AprobadaSuperior = false;
-                        EncMovimiento.idCondPago = encMovimiento.idCondPago ;
+                        EncMovimiento.idCondPago = encMovimiento.idCondPago;
                         EncMovimiento.idDiasValidos = encMovimiento.idDiasValidos;
                         EncMovimiento.idGarantia = encMovimiento.idGarantia;
                         EncMovimiento.idTiemposEntregas = encMovimiento.idTiemposEntregas;
@@ -923,27 +1178,36 @@ namespace WATickets.Controllers
 
                             db.DetMovimiento.Add(Det);
                             db.SaveChanges();
-                            if (!item.ItemName.ToUpper().Contains("mano de obra".ToUpper()))
+                            try
                             {
-                                var Prod = db.ProductosHijos.Where(a => a.codSAP == item.ItemCode).FirstOrDefault();
-                                if (Prod != null)
+                                if (!item.ItemName.ToUpper().Contains("mano de obra".ToUpper()))
                                 {
-                                    var idLLamada = Convert.ToInt32(EncMovimiento.NumLlamada);
-                                    var llamada = db.LlamadasServicios.Where(a => a.DocEntry == idLLamada).FirstOrDefault();
-                                    var ProdPadre = db.ProductosPadres.Where(a => a.codSAP == llamada.ItemCode).FirstOrDefault();
-                                    var ExisteEnPadre = db.PadresHijosProductos.Where(a => a.idProductoPadre == ProdPadre.id && a.idProductoHijo == Prod.id).FirstOrDefault();
-
-                                    if (ExisteEnPadre == null)
+                                    var Prod = db.ProductosHijos.Where(a => a.codSAP == item.ItemCode).FirstOrDefault();
+                                    if (Prod != null)
                                     {
-                                        ExisteEnPadre = new PadresHijosProductos();
-                                        ExisteEnPadre.idProductoHijo = Prod.id;
-                                        ExisteEnPadre.idProductoPadre = ProdPadre.id;
-                                        ExisteEnPadre.Cantidad = item.Cantidad;
-                                        db.PadresHijosProductos.Add(ExisteEnPadre);
-                                        db.SaveChanges();
+                                        var idLLamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                                        var llamada = db.LlamadasServicios.Where(a => a.DocEntry == idLLamada).FirstOrDefault();
+                                        var ProdPadre = db.ProductosPadres.Where(a => a.codSAP == llamada.ItemCode).FirstOrDefault();
+                                        var ExisteEnPadre = db.PadresHijosProductos.Where(a => a.idProductoPadre == ProdPadre.id && a.idProductoHijo == Prod.id).FirstOrDefault();
+
+                                        if (ExisteEnPadre == null)
+                                        {
+                                            ExisteEnPadre = new PadresHijosProductos();
+                                            ExisteEnPadre.idProductoHijo = Prod.id;
+                                            ExisteEnPadre.idProductoPadre = ProdPadre.id;
+                                            ExisteEnPadre.Cantidad = item.Cantidad;
+                                            db.PadresHijosProductos.Add(ExisteEnPadre);
+                                            db.SaveChanges();
+                                        }
                                     }
                                 }
                             }
+                            catch (Exception ex)
+                            {
+
+                                 
+                            }
+                            
 
 
                         }
@@ -1062,6 +1326,7 @@ namespace WATickets.Controllers
                             db.BitacoraErrores.Add(be);
                             db.SaveChanges();
                             Conexion.Desconectar();
+
                         }
 
 
@@ -1163,8 +1428,8 @@ namespace WATickets.Controllers
                                     client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Order;
                                     client2.Expenses.DocumentNumber = DocNum;
                                     client2.Expenses.DocEntry = idEntry;
-                                    
-                                     
+
+
 
                                     if (client2.Expenses.Count == 1 || client2.Expenses.Count == 0)
                                     {
@@ -1209,6 +1474,7 @@ namespace WATickets.Controllers
                                 db.BitacoraErrores.Add(be);
                                 db.SaveChanges();
                                 Conexion.Desconectar();
+                               
                             }
                         }
 
@@ -1586,7 +1852,7 @@ namespace WATickets.Controllers
 
                     db.Entry(EncMovimiento).State = EntityState.Modified;
                     EncMovimiento.AprobadaSuperior = true;
-                     
+
                     db.SaveChanges();
                     t.Commit();
                 }
