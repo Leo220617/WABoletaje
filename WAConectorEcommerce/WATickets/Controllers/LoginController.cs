@@ -107,7 +107,7 @@ namespace WATickets.Controllers
                     de.Bodega = Usuario.Bodega;
                     de.PIN = Usuario.PIN;
                     de.Seguridad = SeguridadModulos;
-
+                    de.idTecnico = db.Tecnicos.Where(a => a.Nombre.ToLower().Contains(Usuario.Nombre.ToLower())).FirstOrDefault() == null ? Usuario.CardCode : db.Tecnicos.Where(a => a.Nombre.ToLower().Contains(Usuario.Nombre.ToLower())).FirstOrDefault().idSAP;
                     return Request.CreateResponse(HttpStatusCode.OK, de);
 
                 }
@@ -328,6 +328,7 @@ namespace WATickets.Controllers
         public string token { get; set; }
         public string Bodega { get; set; }
         public string PIN { get; set; }
+        public string idTecnico { get; set; }
         public List<SeguridadRolesModulos> Seguridad { get; set; }
     }
 }

@@ -603,6 +603,7 @@ namespace WATickets.Controllers
                             try
                             {
                                 Llamada.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                throw new Exception("");
                             }
                             catch (Exception)
 
