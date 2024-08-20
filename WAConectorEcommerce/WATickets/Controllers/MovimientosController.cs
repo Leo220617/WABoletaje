@@ -628,6 +628,7 @@ namespace WATickets.Controllers
                            a.idDiasValidos,
                            a.idGarantia,
                            a.idTiemposEntregas,
+                           a.Aprobada,
                            Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                        })
                             .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -657,6 +658,7 @@ namespace WATickets.Controllers
                                 a.idDiasValidos,
                                 a.idGarantia,
                                 a.idTiemposEntregas,
+                                a.Aprobada,
                                 a.Detalle
                             })
                             .ToList();
@@ -772,6 +774,7 @@ namespace WATickets.Controllers
                            a.idDiasValidos,
                            a.idGarantia,
                            a.idTiemposEntregas,
+                           a.Aprobada,
                            Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                        })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -801,6 +804,7 @@ namespace WATickets.Controllers
         a.idDiasValidos,
         a.idGarantia,
         a.idTiemposEntregas,
+        a.Aprobada,
         a.Detalle
     })
     .ToList();
@@ -848,6 +852,7 @@ namespace WATickets.Controllers
                              a.idDiasValidos,
                              a.idGarantia,
                              a.idTiemposEntregas,
+                             a.Aprobada,
                              Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                          })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -876,6 +881,7 @@ namespace WATickets.Controllers
         a.idDiasValidos,
         a.idGarantia,
         a.idTiemposEntregas,
+        a.Aprobada,
         a.Detalle
     })
     .ToList(); ;
@@ -953,6 +959,7 @@ namespace WATickets.Controllers
                                    a.idDiasValidos,
                                    a.idGarantia,
                                    a.idTiemposEntregas,
+                                   a.Aprobada,
                                    Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                                })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -981,6 +988,7 @@ namespace WATickets.Controllers
         a.idDiasValidos,
         a.idGarantia,
         a.idTiemposEntregas,
+        a.Aprobada,
         a.Detalle
     })
     .ToList();
@@ -1021,6 +1029,7 @@ namespace WATickets.Controllers
                          a.idDiasValidos,
                          a.idGarantia,
                          a.idTiemposEntregas,
+                         a.Aprobada,
                          Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                      })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -1049,6 +1058,7 @@ namespace WATickets.Controllers
         a.idDiasValidos,
         a.idGarantia,
         a.idTiemposEntregas,
+        a.Aprobada,
         a.Detalle
     })
     .ToList();
@@ -1091,6 +1101,7 @@ namespace WATickets.Controllers
                                       a.idDiasValidos,
                                       a.idGarantia,
                                       a.idTiemposEntregas,
+                                      a.Aprobada,
                                       Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                                   })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -1119,6 +1130,7 @@ namespace WATickets.Controllers
         a.idDiasValidos,
         a.idGarantia,
         a.idTiemposEntregas,
+        a.Aprobada,
         a.Detalle
     })
     .ToList();

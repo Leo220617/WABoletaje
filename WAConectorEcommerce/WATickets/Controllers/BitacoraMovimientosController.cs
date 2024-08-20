@@ -47,6 +47,7 @@ namespace WATickets.Controllers
                         a.BodegaFinal,
                         a.Status,
                         a.ProcesadaSAP,
+                        StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
                         Detalle = db.DetBitacoraMovimientos.Where(b => b.idEncabezado == a.id).ToList()
 
                     }).Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)).ToList();
@@ -135,6 +136,7 @@ namespace WATickets.Controllers
                         a.BodegaFinal,
                         a.Status,
                         a.ProcesadaSAP,
+                        StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
                         Detalle = db.DetBitacoraMovimientos.Where(b => b.idEncabezado == a.id).ToList()
 
                     }).Where(a => (!string.IsNullOrEmpty(filtro.CardCode) ? a.idLlamada.Value == DocEntry : true) ).ToList();
