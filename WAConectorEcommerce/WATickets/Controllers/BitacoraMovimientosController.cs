@@ -283,7 +283,7 @@ namespace WATickets.Controllers
                                 try
                                 {
                                      idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
-                                   // throw new Exception("");
+                                    throw new Exception("");
                                 }
                                 catch (Exception ex)
                                 {

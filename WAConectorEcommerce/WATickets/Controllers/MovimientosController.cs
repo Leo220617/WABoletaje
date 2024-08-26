@@ -1738,6 +1738,7 @@ namespace WATickets.Controllers
                                 try
                                 {
                                     DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                    throw new Exception("");
                                 }
                                 catch (Exception)
                                 {
