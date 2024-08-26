@@ -775,10 +775,10 @@ namespace WATickets.Controllers
                             var valorLlamada = Llamada.DocEntry.Value.ToString();
                             var OfertaAprobada = db.EncMovimiento.Where(a => a.NumLlamada == valorLlamada && (a.TipoMovimiento == 1 || a.TipoMovimiento == 3) && a.Aprobada == true).FirstOrDefault();
 
-                            if (OfertaAprobada != null)
+                            if (OfertaAprobada != null) // hay una oferta aprobada
                             {
                                 var EntregasAnteriores = db.EncMovimiento.Where(a => a.NumLlamada == valorLlamada && (a.TipoMovimiento == 2)).ToList();
-                                if (EntregasAnteriores.Count() <= 0)
+                                if (EntregasAnteriores.Count() <= 0) // No hay entregas anteriores
                                 {
                                     EncMovimiento encMovimiento = new EncMovimiento();
                                     encMovimiento.CardCode = OfertaAprobada.CardCode;
@@ -952,7 +952,7 @@ namespace WATickets.Controllers
                                         db.SaveChanges();
                                     }
                                 }
-                                else
+                                else // Si hay entregas anteriores
                                 {
 
                                     var DetalleEntregasAnteriores = new List<DetMovimiento>();
@@ -1026,7 +1026,7 @@ namespace WATickets.Controllers
                                         db.SaveChanges();
                                     }
 
-
+                                    //Aqui se puede hacer el colocho
                                     var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
                                                                                                                                  //Separamos las entradas de las salidas
                                     var bitacorasEntradas = Bitacoras.Where(a => a.TipoMovimiento == 1).ToList();
@@ -1047,42 +1047,52 @@ namespace WATickets.Controllers
                                             var EntregasPrevias = db.EncMovimiento.Where(a => a.NumLlamada == encMovimiento.NumLlamada && a.Comentarios.ToUpper().Contains("entrega de los productos por garantia".ToUpper())).FirstOrDefault();
                                             var DetEntregasprevias = EntregasPrevias == null ? new List<DetMovimiento>() : db.DetMovimiento.Where(a => a.idEncabezado == EntregasPrevias.id).ToList();
 
-                                            if (Item == null) //Si no existe el articulo en el detalle
+                                            if (Item == null) //Si no existe el articulo en el detalle del movimiento o entrega
                                             {
                                                 var ExisteEntrega = DetEntregasprevias.Where(a => a.ItemCode == itemCode).FirstOrDefault() == null;
                                                 if (ExisteEntrega)
                                                 {
-                                                    DetMovimiento detMovimiento = new DetMovimiento();
-                                                    detMovimiento.idEncabezado = encMovimiento.id;
-                                                    detMovimiento.NumLinea = 1;
-                                                    detMovimiento.ItemCode = itemCode;
-                                                    detMovimiento.ItemName = itemName;
-                                                    detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
-                                                    detMovimiento.Cantidad = item2.Cantidad - item2.CantidadFaltante;
-                                                    detMovimiento.PorDescuento = 0;
-                                                    detMovimiento.Descuento = 0;
-                                                    detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
-                                                    detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
-                                                    detMovimiento.idError = item2.idError;
-                                                    detMovimiento.Garantia = false;
-                                                    detMovimiento.Opcional = false;
-                                                    db.DetMovimiento.Add(detMovimiento);
-                                                    db.SaveChanges();
+                                                    var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                                    if (DetBitacoraMovimientosSAP != null)
+                                                    {
+                                                        DetMovimiento detMovimiento = new DetMovimiento();
+                                                        detMovimiento.idEncabezado = encMovimiento.id;
+                                                        detMovimiento.NumLinea = 1;
+                                                        detMovimiento.ItemCode = itemCode;
+                                                        detMovimiento.ItemName = itemName;
+                                                        detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                        detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
+                                                        detMovimiento.PorDescuento = 0;
+                                                        detMovimiento.Descuento = 0;
+                                                        detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                        detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
+                                                        detMovimiento.idError = item2.idError;
+                                                        detMovimiento.Garantia = false;
+                                                        detMovimiento.Opcional = false;
+                                                        db.DetMovimiento.Add(detMovimiento);
+                                                        db.SaveChanges();
+                                                    }
+
                                                 }
 
                                             }
                                             else //si si existe
                                             {
-                                                db.Entry(Item).State = EntityState.Modified;
-                                                Item.Cantidad += item2.Cantidad;
-                                                Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
-                                                Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
-                                                if (Item.idError == 0 || Item.idError == null)
+                                                var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                                if (DetBitacoraMovimientosSAP != null)
                                                 {
-                                                    Item.idError = item2.idError;
+                                                    db.Entry(Item).State = EntityState.Modified;
+                                                    Item.Cantidad += DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad;
+                                                    Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                    Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
+                                                    if (Item.idError == 0 || Item.idError == null)
+                                                    {
+                                                        Item.idError = item2.idError;
+                                                    }
+
+                                                    db.SaveChanges();
                                                 }
 
-                                                db.SaveChanges();
                                             }
                                         }
 
@@ -1105,11 +1115,16 @@ namespace WATickets.Controllers
                                             }
                                             else //si si existe
                                             {
-                                                db.Entry(Item).State = EntityState.Modified;
-                                                Item.Cantidad -= item2.Cantidad - item2.CantidadFaltante;
-                                                Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
-                                                Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
-                                                db.SaveChanges();
+                                                var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                                if (DetBitacoraMovimientosSAP != null)
+                                                {
+                                                    db.Entry(Item).State = EntityState.Modified;
+                                                    Item.Cantidad -= DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
+                                                    Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                    Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
+                                                    db.SaveChanges();
+                                                }
+
                                             }
                                         }
 
@@ -1410,18 +1425,23 @@ namespace WATickets.Controllers
 
                             foreach (var item in coleccion.DetReparacion.Where(a => !a.ItemCode.ToLower().Contains("mano de obra")))
                             {
+                                //Evita que se dupliquen items en la solicitud
+                                var Repetido = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == bts.id && a.idProducto == item.idProducto && a.ItemCode == item.ItemCode).FirstOrDefault();
 
-
-                                DetBitacoraMovimientos dbt = new DetBitacoraMovimientos();
-                                dbt.idEncabezado = bts.id;
-                                dbt.idProducto = item.idProducto;
-                                dbt.Cantidad = item.Cantidad;
-                                dbt.ItemCode = item.ItemCode;
-                                dbt.idError = item.idError;
-                                dbt.CantidadEnviar = 0;
-                                dbt.CantidadFaltante = item.Cantidad;
-                                db.DetBitacoraMovimientos.Add(dbt);
-                                db.SaveChanges();
+                                if(Repetido == null)
+                                {
+                                    DetBitacoraMovimientos dbt = new DetBitacoraMovimientos();
+                                    dbt.idEncabezado = bts.id;
+                                    dbt.idProducto = item.idProducto;
+                                    dbt.Cantidad = item.Cantidad;
+                                    dbt.ItemCode = item.ItemCode;
+                                    dbt.idError = item.idError;
+                                    dbt.CantidadEnviar = 0;
+                                    dbt.CantidadFaltante = item.Cantidad;
+                                    db.DetBitacoraMovimientos.Add(dbt);
+                                    db.SaveChanges();
+                                }
+                                
 
 
                             }
