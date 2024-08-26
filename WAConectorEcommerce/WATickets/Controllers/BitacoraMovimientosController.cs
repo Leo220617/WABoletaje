@@ -1,7 +1,9 @@
 ﻿using SAPbobsCOM;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -259,7 +261,7 @@ namespace WATickets.Controllers
                             client.UserFields.Fields.Item("U_TiendaDest").Value = BT.TipoMovimiento == 1 ? BT.BodegaInicial : BT.BodegaFinal;
                             client.UserFields.Fields.Item("U_DYD_Boleta").Value = db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault() == null ? Encabezado.idLlamada.ToString() : db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault().DocEntry.ToString();
 
-                            client.JournalMemo = "Traslados - " + Llamada.CardCode;
+                            client.JournalMemo = "Traslados - " + Llamada.CardCode + " - " + BT.id;
 
                             var i = 0;
                             var Det = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).ToList();
@@ -276,7 +278,50 @@ namespace WATickets.Controllers
                             if (respuesta == 0)
                             {
                                 //Ligar el traslado a la llamada de servicio
-                                var idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+
+                                var idEntry = 0;
+                                try
+                                {
+                                     idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                   // throw new Exception("");
+                                }
+                                catch (Exception ex)
+                                {
+                                    try
+                                    {
+                                        var Parametros = db.Parametros.FirstOrDefault();
+                                        var conexion = g.DevuelveCadena(db); 
+                                        var valorAFiltrar = "Traslados - " + Llamada.CardCode + " - " + BT.id;
+                                        var filtroSQL = "JrnlMemo like '%" + valorAFiltrar + "%'";
+                                        var SQL = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "OWTR").Replace("@CampoWhere = @reemplazo",filtroSQL);
+
+                                        SqlConnection Cn = new SqlConnection(conexion);
+                                        SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                        SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                        DataSet Ds = new DataSet();
+                                        Cn.Open();
+                                        Da.Fill(Ds, "DocNum1");
+                                        idEntry = Convert.ToInt32(Ds.Tables["DocNum1"].Rows[0]["DocEntry"]);
+
+                                        Cn.Close();
+                                    }
+                                    catch (Exception ex1)
+                                    {
+                                        BitacoraErrores be = new BitacoraErrores();
+
+                                        be.Descripcion = "Error en el traslado #" + BT.id + " , al conseguir el docEntry -> " + ex1.Message;
+                                        be.StackTrace = ex1.StackTrace;
+                                        be.Fecha = DateTime.Now;
+
+                                        db.BitacoraErrores.Add(be);
+                                        db.SaveChanges();
+
+                                    }
+
+                                }
+                                
+
+
                                 var count = -1;
                                 var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
                                 if (client2.GetByKey(Llamada.DocEntry.Value))

@@ -74,6 +74,77 @@ namespace WATickets.Controllers
                         db.SaveChanges();
                     }
 
+                    var Parametros = db.Parametros.FirstOrDefault();
+                    if (Parametros.SetearAprobado)
+                    {
+                        var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLlamada).FirstOrDefault();
+                        var EncReparacion = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
+                        BitacoraMovimientos bts = new BitacoraMovimientos();
+                        bts.idLlamada = EncReparacion.idLlamada;
+                        bts.idEncabezado = EncReparacion.id;
+                        bts.DocEntry = 0;
+                        bts.Fecha = DateTime.Now;
+                        bts.TipoMovimiento = 1;
+
+
+                        bts.BodegaInicial = Parametros.BodegaInicial;
+                        bts.BodegaFinal = Parametros.BodegaFinal; 
+                        bts.idTecnico = EncReparacion.idTecnico;
+                        bts.Status = "0";
+                        bts.ProcesadaSAP = false;
+                        db.BitacoraMovimientos.Add(bts);
+                        db.SaveChanges();
+
+                        foreach (var item in DetalleReparaciones.Where(a => !a.ItemCode.ToLower().Contains("mano de obra")))
+                        {
+                            DetBitacoraMovimientos dbt = new DetBitacoraMovimientos();
+                            dbt.idEncabezado = bts.id;
+                            var ProductoHijo = db.ProductosHijos.Where(a => a.codSAP == item.ItemCode).FirstOrDefault();
+                            dbt.idProducto = ProductoHijo != null ? ProductoHijo.id : 0;
+                            dbt.Cantidad = item.Cantidad;
+                            dbt.ItemCode = item.ItemCode + " | " + ProductoHijo.Nombre;
+                            dbt.idError = item.idError;
+                            dbt.CantidadEnviar = 0;
+                            dbt.CantidadFaltante = item.Cantidad;
+                            db.DetBitacoraMovimientos.Add(dbt);
+                            db.SaveChanges();
+
+                             
+                        }
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(Parametros.StatusLlamadaAprobado))
+                            {
+                                db.Entry(Llamada).State = EntityState.Modified;
+                                Llamada.Status = Convert.ToInt32(Parametros.StatusLlamadaAprobado);
+                                db.SaveChanges();
+                                LlamadasServicioViewModel llamada = new LlamadasServicioViewModel();
+                                llamada.id = Llamada.id;
+                                llamada.Status = Llamada.Status;
+                                llamada.TipoCaso = Llamada.TipoCaso;
+                                llamada.FechaSISO = Llamada.FechaSISO;
+                                llamada.LugarReparacion = Llamada.LugarReparacion;
+                                llamada.PIN = Llamada.PIN;
+                                LlamadasServicioController llamadasServicioController = new LlamadasServicioController();
+                                llamadasServicioController.Put(llamada);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            BitacoraErrores be = new BitacoraErrores();
+
+                            be.Descripcion = ex.Message;
+                            be.StackTrace = ex.StackTrace;
+                            be.Fecha = DateTime.Now;
+                            db.BitacoraErrores.Add(be);
+                            db.SaveChanges();
+
+                        }
+                       
+
+
+                    }
+
                 }
                 else
                 {
@@ -830,7 +901,8 @@ namespace WATickets.Controllers
                              a.NumLlamada,
                              Llamada = db.LlamadasServicios
                 .Where(z => z.DocEntry.ToString() == a.NumLlamada)
-                .Select(z => new {
+                .Select(z => new
+                {
                     z.id,
                     z.EmailPersonaContacto,
                     z.Status,
@@ -856,7 +928,8 @@ namespace WATickets.Controllers
                              Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                          })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
-    .Select(a => new {
+    .Select(a => new
+    {
         a.id,
         a.DocEntry,
         a.CardCode,
@@ -937,7 +1010,8 @@ namespace WATickets.Controllers
                                    a.NumLlamada,
                                    Llamada = db.LlamadasServicios
                     .Where(z => z.DocEntry.ToString() == a.NumLlamada)
-                    .Select(z => new {
+                    .Select(z => new
+                    {
                         z.id,
                         z.EmailPersonaContacto,
                         z.Status,
@@ -963,7 +1037,8 @@ namespace WATickets.Controllers
                                    Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                                })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
-    .Select(a => new {
+    .Select(a => new
+    {
         a.id,
         a.DocEntry,
         a.CardCode,
@@ -1007,7 +1082,8 @@ namespace WATickets.Controllers
                          a.NumLlamada,
                          Llamada = db.LlamadasServicios
                     .Where(z => z.DocEntry.ToString() == a.NumLlamada)
-                    .Select(z => new {
+                    .Select(z => new
+                    {
                         z.id,
                         z.EmailPersonaContacto,
                         z.Status,
@@ -1033,7 +1109,8 @@ namespace WATickets.Controllers
                          Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                      })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
-    .Select(a => new {
+    .Select(a => new
+    {
         a.id,
         a.DocEntry,
         a.CardCode,
@@ -1079,7 +1156,8 @@ namespace WATickets.Controllers
                                       a.NumLlamada,
                                       Llamada = db.LlamadasServicios
                     .Where(z => z.DocEntry.ToString() == a.NumLlamada)
-                    .Select(z => new {
+                    .Select(z => new
+                    {
                         z.id,
                         z.EmailPersonaContacto,
                         z.Status,
@@ -1105,7 +1183,8 @@ namespace WATickets.Controllers
                                       Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                                   })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
-    .Select(a => new {
+    .Select(a => new
+    {
         a.id,
         a.DocEntry,
         a.CardCode,
@@ -1480,7 +1559,7 @@ namespace WATickets.Controllers
                         client.DocNum = 0; //automatico
                         client.DocType = BoDocumentTypes.dDocument_Items;
                         client.HandWritten = BoYesNoEnum.tNO;
-                        client.NumAtCard = EncMovimiento.NumLlamada; //orderid               
+                        client.NumAtCard = EncMovimiento.id.ToString(); //orderid               
                         client.ReserveInvoice = BoYesNoEnum.tNO;
                         client.Series = Parametros.SerieOferta; //11; //11 quemado
                         client.Comments = g.TruncarString(EncMovimiento.Comentarios, 200); //direccion
@@ -1530,7 +1609,47 @@ namespace WATickets.Controllers
                         {
                             var enc = db.EncMovimiento.Where(a => a.id == id).FirstOrDefault();
                             db.Entry(enc).State = EntityState.Modified;
-                            enc.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                            try
+                            {
+                                enc.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                throw new Exception("");
+
+                            }
+                            catch (Exception)
+                            {
+                                try
+                                {
+                                   
+                                    var conexion = g.DevuelveCadena(db);
+                                    var valorAFiltrar = EncMovimiento.id.ToString();
+                                    var filtroSQL = "NumAtCard like '%" + valorAFiltrar + "%'";
+                                    var SQL = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "OQUT").Replace("@CampoWhere = @reemplazo", filtroSQL);
+
+                                    SqlConnection Cn = new SqlConnection(conexion);
+                                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                    DataSet Ds = new DataSet();
+                                    Cn.Open();
+                                    Da.Fill(Ds, "DocNum1");
+                                    enc.DocEntry = Convert.ToInt32(Ds.Tables["DocNum1"].Rows[0]["DocEntry"]);
+
+                                    Cn.Close();
+                                }
+                                catch (Exception ex1)
+                                {
+                                    BitacoraErrores be = new BitacoraErrores();
+
+                                    be.Descripcion = "Error en la oferta #" + EncMovimiento.id + " , al conseguir el docEntry -> " + ex1.Message;
+                                    be.StackTrace = ex1.StackTrace;
+                                    be.Fecha = DateTime.Now;
+
+                                    db.BitacoraErrores.Add(be);
+                                    db.SaveChanges();
+
+                                }
+
+                            }
+                          
                             db.SaveChanges();
                             Conexion.Desconectar();
                         }
@@ -1568,7 +1687,7 @@ namespace WATickets.Controllers
                             orden.DocNum = 0; //automatico
                             orden.DocType = BoDocumentTypes.dDocument_Items;
                             orden.HandWritten = BoYesNoEnum.tNO;
-                            orden.NumAtCard = EncMovimiento.NumLlamada; //orderid               
+                            orden.NumAtCard = EncMovimiento.id.ToString(); //orderid               
                             orden.ReserveInvoice = BoYesNoEnum.tNO;
                             orden.Series = Parametros.SeriesOrdenVenta;//3; //3 quemado
                             orden.Comments = g.TruncarString(EncMovimiento.Comentarios, 200); //direccion
@@ -1615,11 +1734,50 @@ namespace WATickets.Controllers
                             if (respuestaO == 0)
                             {
 
-                                var DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                var DocEntry = 0;//Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                try
+                                {
+                                    DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                }
+                                catch (Exception)
+                                {
+                                    try
+                                    {
+
+                                        var conexion2 = g.DevuelveCadena(db);
+                                        var valorAFiltrar = EncMovimiento.id.ToString();
+                                        var filtroSQL = "NumAtCard like '%" + valorAFiltrar + "%'";
+                                        var SQL2 = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "ORDR").Replace("@CampoWhere = @reemplazo", filtroSQL);
+
+                                        SqlConnection Cn2 = new SqlConnection(conexion2);
+                                        SqlCommand Cmd2 = new SqlCommand(SQL2, Cn2);
+                                        SqlDataAdapter Da2 = new SqlDataAdapter(Cmd2);
+                                        DataSet Ds2 = new DataSet();
+                                        Cn2.Open();
+                                        Da2.Fill(Ds2, "DocNum1");
+                                        DocEntry = Convert.ToInt32(Ds2.Tables["DocNum1"].Rows[0]["DocEntry"]);
+
+                                        Cn2.Close();
+                                    }
+                                    catch (Exception ex1)
+                                    {
+                                        BitacoraErrores be = new BitacoraErrores();
+
+                                        be.Descripcion = "Error en la orden #" + EncMovimiento.id + " , al conseguir el docEntry -> " + ex1.Message;
+                                        be.StackTrace = ex1.StackTrace;
+                                        be.Fecha = DateTime.Now;
+
+                                        db.BitacoraErrores.Add(be);
+                                        db.SaveChanges();
+
+                                    }
+
+                                }
                                 var DocNum = 0;
 
                                 db.Entry(EncMovimiento).State = EntityState.Modified;
                                 EncMovimiento.DocEntry = DocEntry;
+
                                 db.SaveChanges();
 
                                 var conexion = g.DevuelveCadena(db);
@@ -1712,7 +1870,7 @@ namespace WATickets.Controllers
                             client.DocNum = 0; //automatico
                             client.DocType = BoDocumentTypes.dDocument_Items;
                             client.HandWritten = BoYesNoEnum.tNO;
-                            client.NumAtCard = EncMovimiento.NumLlamada; //orderid               
+                            client.NumAtCard = EncMovimiento.id.ToString(); //orderid               
                             client.ReserveInvoice = BoYesNoEnum.tNO;
                             client.Series = Parametros.SerieEntrega;//3; //3 quemado
                             client.Comments = g.TruncarString(EncMovimiento.Comentarios, 200); //direccion
@@ -1758,7 +1916,46 @@ namespace WATickets.Controllers
                             if (respuesta == 0)
                             {
                                 db.Entry(EncMovimiento).State = EntityState.Modified;
-                                EncMovimiento.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                               
+                                try
+                                {
+                                    EncMovimiento.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                    throw new Exception("");
+                                }
+                                catch (Exception)
+                                {
+                                    try
+                                    {
+
+                                        var conexion = g.DevuelveCadena(db);
+                                        var valorAFiltrar = EncMovimiento.id.ToString();
+                                        var filtroSQL = "NumAtCard like '%" + valorAFiltrar + "%'";
+                                        var SQL = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "ODLN").Replace("@CampoWhere = @reemplazo", filtroSQL);
+
+                                        SqlConnection Cn = new SqlConnection(conexion);
+                                        SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                        SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                        DataSet Ds = new DataSet();
+                                        Cn.Open();
+                                        Da.Fill(Ds, "DocNum1");
+                                        EncMovimiento.DocEntry = Convert.ToInt32(Ds.Tables["DocNum1"].Rows[0]["DocEntry"]);
+
+                                        Cn.Close();
+                                    }
+                                    catch (Exception ex1)
+                                    {
+                                        BitacoraErrores be = new BitacoraErrores();
+
+                                        be.Descripcion = "Error en la entrega #" + EncMovimiento.id + " , al conseguir el docEntry -> " + ex1.Message;
+                                        be.StackTrace = ex1.StackTrace;
+                                        be.Fecha = DateTime.Now;
+
+                                        db.BitacoraErrores.Add(be);
+                                        db.SaveChanges();
+
+                                    }
+
+                                }
                                 db.SaveChanges();
                                 var idEntry = EncMovimiento.DocEntry;//Convert.ToInt32(Conexion.Company.GetNewObjectKey());
                                 var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
@@ -1880,7 +2077,7 @@ namespace WATickets.Controllers
                             //}
 
                             //var respuestaE = clientEntrega.Add();
-                            var respuestaE =  0;
+                            var respuestaE = 0;
                             if (respuestaE == 0)
                             {
 
