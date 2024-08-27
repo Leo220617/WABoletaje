@@ -1622,7 +1622,7 @@ namespace WATickets.Controllers
 
                                     var conexion = g.DevuelveCadena(db);
                                     var valorAFiltrar = EncMovimiento.id.ToString();
-                                    var filtroSQL = "NumAtCard = '" + valorAFiltrar + "'";
+                                    var filtroSQL = "NumAtCard = '" + valorAFiltrar + "' order by DocEntry desc";
                                     var SQL = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "OQUT").Replace("@CampoWhere = @reemplazo", filtroSQL);
 
                                     SqlConnection Cn = new SqlConnection(conexion);
@@ -1747,7 +1747,7 @@ namespace WATickets.Controllers
 
                                         var conexion2 = g.DevuelveCadena(db);
                                         var valorAFiltrar = EncMovimiento.id.ToString();
-                                        var filtroSQL = "NumAtCard = '" + valorAFiltrar + "'";
+                                        var filtroSQL = "NumAtCard = '" + valorAFiltrar + "' order by DocEntry desc";
                                         var SQL2 = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "ORDR").Replace("@CampoWhere = @reemplazo", filtroSQL);
 
                                         SqlConnection Cn2 = new SqlConnection(conexion2);
@@ -1930,7 +1930,7 @@ namespace WATickets.Controllers
 
                                         var conexion = g.DevuelveCadena(db);
                                         var valorAFiltrar = EncMovimiento.id.ToString();
-                                        var filtroSQL = "NumAtCard = '" + valorAFiltrar + "'";
+                                        var filtroSQL = "NumAtCard = '" + valorAFiltrar + "' order by DocEntry desc";
                                         var SQL = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "ODLN").Replace("@CampoWhere = @reemplazo", filtroSQL);
 
                                         SqlConnection Cn = new SqlConnection(conexion);
