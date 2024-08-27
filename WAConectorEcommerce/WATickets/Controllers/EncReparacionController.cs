@@ -830,6 +830,17 @@ namespace WATickets.Controllers
                                     var bitacorasEntradas = Bitacoras.Where(a => a.TipoMovimiento == 1).ToList();
                                     var bitacorasSalidas = Bitacoras.Where(a => a.TipoMovimiento == 2).ToList();
 
+
+                                    if(bitacorasEntradas.Where(a => a.Status != "2").Count() > 0) //Si hay movimientos en solicitudes elimina la de la oferta
+                                    {
+                                        var DetMovimientos = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).ToList();
+                                        foreach(var itemMovimiento in DetMovimientos)
+                                        {
+                                            db.DetMovimiento.Remove(itemMovimiento);
+                                            db.SaveChanges();
+                                        }
+                                    }
+
                                     //Recorremos todas las entradas lo que sumaria la cantidad y generaria campos en detmovimientos
                                     foreach (var item in bitacorasEntradas)
                                     {
@@ -927,6 +938,7 @@ namespace WATickets.Controllers
                                         }
 
                                     }
+
                                     var MovimientosEnCero = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id && a.Cantidad <= 0).ToList();
                                     foreach (var item in MovimientosEnCero)
                                     {

@@ -88,7 +88,7 @@ namespace WATickets.Controllers
 
 
                         bts.BodegaInicial = Parametros.BodegaInicial;
-                        bts.BodegaFinal = Parametros.BodegaFinal; 
+                        bts.BodegaFinal = Parametros.BodegaFinal;
                         bts.idTecnico = EncReparacion.idTecnico;
                         bts.Status = "0";
                         bts.ProcesadaSAP = false;
@@ -109,7 +109,7 @@ namespace WATickets.Controllers
                             db.DetBitacoraMovimientos.Add(dbt);
                             db.SaveChanges();
 
-                             
+
                         }
                         try
                         {
@@ -140,7 +140,7 @@ namespace WATickets.Controllers
                             db.SaveChanges();
 
                         }
-                       
+
 
 
                     }
@@ -1619,10 +1619,10 @@ namespace WATickets.Controllers
                             {
                                 try
                                 {
-                                   
+
                                     var conexion = g.DevuelveCadena(db);
                                     var valorAFiltrar = EncMovimiento.id.ToString();
-                                    var filtroSQL = "NumAtCard like '%" + valorAFiltrar + "%'";
+                                    var filtroSQL = "NumAtCard = '" + valorAFiltrar + "'";
                                     var SQL = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "OQUT").Replace("@CampoWhere = @reemplazo", filtroSQL);
 
                                     SqlConnection Cn = new SqlConnection(conexion);
@@ -1649,7 +1649,7 @@ namespace WATickets.Controllers
                                 }
 
                             }
-                          
+
                             db.SaveChanges();
                             Conexion.Desconectar();
                         }
@@ -1747,7 +1747,7 @@ namespace WATickets.Controllers
 
                                         var conexion2 = g.DevuelveCadena(db);
                                         var valorAFiltrar = EncMovimiento.id.ToString();
-                                        var filtroSQL = "NumAtCard like '%" + valorAFiltrar + "%'";
+                                        var filtroSQL = "NumAtCard = '" + valorAFiltrar + "'";
                                         var SQL2 = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "ORDR").Replace("@CampoWhere = @reemplazo", filtroSQL);
 
                                         SqlConnection Cn2 = new SqlConnection(conexion2);
@@ -1917,7 +1917,7 @@ namespace WATickets.Controllers
                             if (respuesta == 0)
                             {
                                 db.Entry(EncMovimiento).State = EntityState.Modified;
-                               
+
                                 try
                                 {
                                     EncMovimiento.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
@@ -1930,7 +1930,7 @@ namespace WATickets.Controllers
 
                                         var conexion = g.DevuelveCadena(db);
                                         var valorAFiltrar = EncMovimiento.id.ToString();
-                                        var filtroSQL = "NumAtCard like '%" + valorAFiltrar + "%'";
+                                        var filtroSQL = "NumAtCard = '" + valorAFiltrar + "'";
                                         var SQL = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "ODLN").Replace("@CampoWhere = @reemplazo", filtroSQL);
 
                                         SqlConnection Cn = new SqlConnection(conexion);
@@ -1959,12 +1959,28 @@ namespace WATickets.Controllers
                                 }
                                 db.SaveChanges();
                                 var idEntry = EncMovimiento.DocEntry;//Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                var count = -1;
                                 var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
                                 if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
                                 {
+                                    var idLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                                    var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == idLlamada).FirstOrDefault();
+                                    //Que no existan bitacoraMovimientos aprobados 
+                                    count = db.BitacoraMovimientosSAP.Where(a => a.idLlamada == Llamada.id && a.ProcesadaSAP == true).Distinct().GroupBy(a => a.DocEntry).Count();
+                                    // Que no exista otra entrega asociada
+                                    count += db.EncMovimiento.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.id != EncMovimiento.id && a.TipoMovimiento == 2 && a.DocEntry > 0).Count();
+                                    var bandera = false;
+                                    if (count > 0)
+                                    {
+                                        bandera = true;
+                                    }
                                     if (client2.Expenses.Count > 0)
                                     {
-                                        client2.Expenses.Add();
+                                        if (bandera == true)
+                                        {
+                                            client2.Expenses.Add();
+
+                                        }
                                     }
                                     client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Delivery;
 
@@ -2026,61 +2042,185 @@ namespace WATickets.Controllers
                         //Pregunto si existe algun producto con garantia, para generar entonces una entrega
                         if (db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).Count() > 0)
                         {
-                            //var clientEntrega = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
-                            //clientEntrega.DocObjectCode = BoObjectTypes.oDeliveryNotes;
-                            //clientEntrega.CardCode = EncMovimiento.CardCode;
-                            //clientEntrega.DocCurrency = EncMovimiento.Moneda; //"COL";
-                            //clientEntrega.DocDate = EncMovimiento.Fecha; //listo
-                            //clientEntrega.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
-                            //clientEntrega.DocNum = 0; //automatico
-                            //clientEntrega.DocType = BoDocumentTypes.dDocument_Items;
-                            //clientEntrega.HandWritten = BoYesNoEnum.tNO;
-                            //clientEntrega.NumAtCard = EncMovimiento.NumLlamada; //orderid               
-                            //clientEntrega.ReserveInvoice = BoYesNoEnum.tNO;
-                            //clientEntrega.Series = Parametros.SerieEntrega;//3; //3 quemado
-                            //clientEntrega.Comments = "Esta es la entrega de los productos por garantia"; //direccion
-                            //clientEntrega.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
-                            //                                                                              //var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
-                            //                                                                              //var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
-                            //var Tec1 = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
-                            //var Tecnico1 = db.Tecnicos.Where(a => a.idSAP == Tec1).FirstOrDefault();
-                            //clientEntrega.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico);
-                            //if (Tecnico1.Letra > 0)
-                            //{
-                            //    clientEntrega.SalesPersonCode = Tecnico1.Letra;
-                            //}
-
-                            //clientEntrega.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
-
-                            var DetalleSAPEntrega = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).ToList();
-                            //var iE = 0;
-                            //foreach (var item in DetalleSAPEntrega)
-                            //{
-                            //    clientEntrega.Lines.SetCurrentLine(iE);
-                            //    clientEntrega.Lines.CostingCode = "";
-                            //    clientEntrega.Lines.CostingCode2 = "";
-                            //    clientEntrega.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
-                            //    clientEntrega.Lines.CostingCode4 = "";
-                            //    clientEntrega.Lines.CostingCode5 = "";
-                            //    clientEntrega.Lines.Currency = EncMovimiento.Moneda; //"COL";
-                            //    clientEntrega.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
-                            //    clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
-                            //    clientEntrega.Lines.ItemCode = item.ItemCode;
-                            //    clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
-                            //    clientEntrega.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            //    clientEntrega.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
-                            //    clientEntrega.Lines.TaxOnly = BoYesNoEnum.tNO;
-                            //    clientEntrega.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
-                            //    clientEntrega.Lines.Add();
-
-
-                            //    iE++;
-                            //}
-
-                            //var respuestaE = clientEntrega.Add();
-                            var respuestaE = 0;
-                            if (respuestaE == 0)
+                            if (DetalleSAP.Where(a => !a.ItemName.ToLower().Contains("mano de obra")).Count() <= 0)
                             {
+                                var clientEntrega = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
+                                clientEntrega.DocObjectCode = BoObjectTypes.oDeliveryNotes;
+                                clientEntrega.CardCode = EncMovimiento.CardCode;
+                                clientEntrega.DocCurrency = EncMovimiento.Moneda; //"COL";
+                                clientEntrega.DocDate = EncMovimiento.Fecha; //listo
+                                clientEntrega.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
+                                clientEntrega.DocNum = 0; //automatico
+                                clientEntrega.DocType = BoDocumentTypes.dDocument_Items;
+                                clientEntrega.HandWritten = BoYesNoEnum.tNO;
+                                clientEntrega.NumAtCard = EncMovimiento.id.ToString(); //orderid               
+                                clientEntrega.ReserveInvoice = BoYesNoEnum.tNO;
+                                clientEntrega.Series = Parametros.SerieEntrega;//3; //3 quemado
+                                clientEntrega.Comments = "Esta es la entrega de los productos por garantia"; //direccion
+                                clientEntrega.DiscountPercent = Convert.ToDouble(EncMovimiento.PorDescuento); //direccion
+                                                                                                              //var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
+                                                                                                              //var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
+                                var Tec1 = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
+                                var Tecnico1 = db.Tecnicos.Where(a => a.idSAP == Tec1).FirstOrDefault();
+                                clientEntrega.DocumentsOwner = Convert.ToInt32(Llamada2.Tecnico);
+                                if (Tecnico1.Letra > 0)
+                                {
+                                    clientEntrega.SalesPersonCode = Tecnico1.Letra;
+                                }
+
+                                clientEntrega.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
+                                var DetalleSAPEntrega = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).ToList();
+                                var iE = 0;
+                                foreach (var item in DetalleSAPEntrega)
+                                {
+                                    clientEntrega.Lines.SetCurrentLine(iE);
+                                    clientEntrega.Lines.CostingCode = "";
+                                    clientEntrega.Lines.CostingCode2 = "";
+                                    clientEntrega.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
+                                    clientEntrega.Lines.CostingCode4 = "";
+                                    clientEntrega.Lines.CostingCode5 = "";
+                                    clientEntrega.Lines.Currency = EncMovimiento.Moneda; //"COL";
+                                    clientEntrega.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
+                                    clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                                    clientEntrega.Lines.ItemCode = item.ItemCode;
+                                    clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
+                                    clientEntrega.Lines.Quantity = Convert.ToDouble(item.Cantidad);
+                                    clientEntrega.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+                                    clientEntrega.Lines.TaxOnly = BoYesNoEnum.tNO;
+                                    clientEntrega.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
+                                    clientEntrega.Lines.Add();
+
+
+                                    iE++;
+                                }
+
+                                var respuestaE = clientEntrega.Add();
+                                if (respuestaE == 0)
+                                {
+                                    var idEntry = 0; //Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                    try
+                                    {
+                                        idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                        throw new Exception("");
+                                    }
+                                    catch (Exception)
+                                    {
+                                        try
+                                        {
+
+                                            var conexion = g.DevuelveCadena(db);
+                                            var valorAFiltrar = EncMovimiento.id.ToString();
+                                            var filtroSQL = "NumAtCard = '" + valorAFiltrar + "' order by DocEntry desc";
+                                            var SQL = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "ODLN").Replace("@CampoWhere = @reemplazo", filtroSQL);
+
+                                            SqlConnection Cn = new SqlConnection(conexion);
+                                            SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                            SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                            DataSet Ds = new DataSet();
+                                            Cn.Open();
+                                            Da.Fill(Ds, "DocNum1");
+                                            idEntry = Convert.ToInt32(Ds.Tables["DocNum1"].Rows[0]["DocEntry"]);
+
+                                            Cn.Close();
+                                        }
+                                        catch (Exception ex1)
+                                        {
+                                            BitacoraErrores be = new BitacoraErrores();
+
+                                            be.Descripcion = "Error en la entrega #" + EncMovimiento.id + " , al conseguir el docEntry -> " + ex1.Message;
+                                            be.StackTrace = ex1.StackTrace;
+                                            be.Fecha = DateTime.Now;
+
+                                            db.BitacoraErrores.Add(be);
+                                            db.SaveChanges();
+
+                                        }
+
+                                    }
+
+                                    var count = -1;
+                                    var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
+                                    if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
+                                    {
+                                        var idLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                                        var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == idLlamada).FirstOrDefault();
+                                        //Que no existan bitacoraMovimientos aprobados 
+                                        count = db.BitacoraMovimientosSAP.Where(a => a.idLlamada == Llamada.id && a.ProcesadaSAP == true).Distinct().GroupBy(a => a.DocEntry).Count();
+                                        // Que no exista otra entrega asociada
+                                        count += db.EncMovimiento.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.id != EncMovimiento.id && a.TipoMovimiento == 2 && a.DocEntry > 0).Count();
+                                        var bandera = false;
+                                        if(count > 0)
+                                        {
+                                            bandera = true;
+                                        }
+
+                                        var CantidadExpenses = 0;
+                                        if (client2.Expenses.Count > 0)
+                                        {
+                                            if(bandera == true)
+                                            {
+                                                client2.Expenses.Add();
+
+                                            }
+                                        }
+                                        client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Delivery;
+                                        client2.Expenses.DocumentNumber = idEntry;
+                                        client2.Expenses.DocEntry = idEntry;
+
+                                        if (client2.Expenses.Count == 0 )
+                                        {
+                                            client2.Expenses.Add();
+                                        }
+                                        CantidadExpenses = client2.Expenses.Count;
+                                        client2.Expenses.Add();
+                                        var respuesta2 = client2.Update();
+                                        if (respuesta2 == 0)
+                                        {
+                                            db.Entry(EncMovimiento).State = EntityState.Modified;
+                                            EncMovimiento.DocEntry = idEntry;
+                                            db.SaveChanges();
+                                            Conexion.Desconectar();
+                                        }
+                                        else
+                                        {
+                                            BitacoraErrores be = new BitacoraErrores();
+
+                                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                            be.StackTrace = "Entrega Garantia - Actualizar " + idEntry + " Cantidad Expenses: " + CantidadExpenses + " count " + count;
+                                            be.Fecha = DateTime.Now;
+
+                                            db.BitacoraErrores.Add(be);
+                                            db.SaveChanges();
+                                            Conexion.Desconectar();
+                                            throw new Exception(be.Descripcion);
+
+                                        }
+                                    }
+
+                                    Conexion.Desconectar();
+
+
+
+
+
+
+                                }
+                                else
+                                {
+                                    BitacoraErrores be = new BitacoraErrores();
+
+                                    be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                    be.StackTrace = "Movimientos";
+                                    be.Fecha = DateTime.Now;
+
+                                    db.BitacoraErrores.Add(be);
+                                    db.SaveChanges();
+                                    Conexion.Desconectar();
+                                }
+                            }
+                            else
+                            {
+                                var DetalleSAPEntrega = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == true).ToList();
 
                                 var EncMovimientoEntrega = EncMovimiento;
                                 EncMovimientoEntrega.DocEntry = 0; //Convert.ToInt32(Conexion.Company.GetNewObjectKey());
@@ -2118,68 +2258,13 @@ namespace WATickets.Controllers
 
                                     db.SaveChanges();
                                 }
-
-
-
-
-                                //var idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
-                                //var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
-                                //if (client2.GetByKey(Convert.ToInt32(EncMovimiento.NumLlamada)))
-                                //{
-                                //    if (client2.Expenses.Count > 0)
-                                //    {
-                                //        client2.Expenses.Add();
-                                //    }
-                                //    client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Delivery;
-                                //    client2.Expenses.DocumentNumber = idEntry;
-                                //    client2.Expenses.DocEntry = idEntry;
-
-                                //    if (client2.Expenses.Count == 0)
-                                //    {
-                                //        client2.Expenses.Add();
-                                //    }
-                                //    client2.Expenses.Add();
-                                //    var respuesta2 = client2.Update();
-                                //    if (respuesta2 == 0)
-                                //    {
-                                //        Conexion.Desconectar();
-                                //    }
-                                //    else
-                                //    {
-                                //        BitacoraErrores be = new BitacoraErrores();
-
-                                //        be.Descripcion = Conexion.Company.GetLastErrorDescription();
-                                //        be.StackTrace = "Llamada de Servicio - Actualizar";
-                                //        be.Fecha = DateTime.Now;
-
-                                //        db.BitacoraErrores.Add(be);
-                                //        db.SaveChanges();
-                                //        Conexion.Desconectar();
-                                //        throw new Exception(be.Descripcion);
-
-                                //    }
-                                //}
-
-                                //Conexion.Desconectar();
-
-
-
-
-
-
                             }
-                            else
-                            {
-                                BitacoraErrores be = new BitacoraErrores();
 
-                                be.Descripcion = Conexion.Company.GetLastErrorDescription();
-                                be.StackTrace = "Movimientos";
-                                be.Fecha = DateTime.Now;
 
-                                db.BitacoraErrores.Add(be);
-                                db.SaveChanges();
-                                Conexion.Desconectar();
-                            }
+
+
+
+
                         }
 
                     }
