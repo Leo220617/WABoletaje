@@ -603,6 +603,7 @@ namespace WATickets.Controllers
                             try
                             {
                                 Llamada.DocEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                throw new Exception("");
                             }
                             catch (Exception)
 
@@ -924,6 +925,21 @@ namespace WATickets.Controllers
                     Llamada.ProcesadaSAP = false;
                     db.SaveChanges();
                     var enc2 = db.EncReparacion.Where(a => a.idLlamada == llamada.id).FirstOrDefault();
+
+                    if(llamada.Adjuntos != null)
+                    {
+                        foreach (var item in llamada.Adjuntos)
+                        {
+                            Adjuntos adjunto = new Adjuntos();
+                            adjunto.idEncabezado = enc2.id;
+
+                            byte[] hex = Convert.FromBase64String(item.base64.Replace("data:image/jpeg;base64,", "").Replace("data:image/png;base64,", ""));
+                            adjunto.base64 = hex;
+                            db.Adjuntos.Add(adjunto);
+                            db.SaveChanges();
+                        }
+                    }
+
                     if (llamada.AdjuntosIdentificacion != null)
                     {
                         List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();

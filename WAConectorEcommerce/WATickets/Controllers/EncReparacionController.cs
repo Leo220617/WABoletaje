@@ -22,6 +22,322 @@ namespace WATickets.Controllers
     {
         ModelCliente db = new ModelCliente();
 
+    //    public async Task<HttpResponseMessage> Get([FromUri] Filtros filtro)
+    //    {
+    //        try
+    //        {
+    //            var time = new DateTime();
+    //            if (filtro.FechaFinal != time)
+    //            {
+    //                filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
+    //            }
+    //            var EncReparacion = db.EncReparacion.Take(1)
+    //.Select(a => new
+    //{
+    //    a.id,
+    //    Llamada = db.LlamadasServicios
+    //                .Where(b => b.id == a.idLlamada)
+    //                .Select(b => new
+    //                {
+    //                    b.id,
+    //                    b.DocEntry,
+    //                    b.SerieFabricante,
+    //                    b.FechaSISO,
+    //                    b.Status,
+    //                    b.TipoCaso
+
+    //                })
+    //                .FirstOrDefault(),
+    //    a.idTecnico,
+    //    a.idDiagnostico,
+    //    a.FechaCreacion,
+    //    a.FechaModificacion,
+    //    a.TipoReparacion,
+    //    a.idProductoArreglar,
+    //    a.Status,
+    //    a.ProcesadaSAP,
+    //    a.Comentarios,
+    //    a.BodegaOrigen,
+    //    a.BodegaFinal,
+    //    Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
+    //    Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
+    //    AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
+    //})
+    //.AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
+    //.Select(a => new
+    //{
+    //    a.id,
+    //    idLlamada2 = a.Llamada?.id ?? 0,
+    //    idLlamada = a.Llamada?.DocEntry ?? 0,
+    //    a.idTecnico,
+    //    a.idDiagnostico,
+    //    a.FechaCreacion,
+    //    a.FechaModificacion,
+    //    a.TipoReparacion,
+    //    a.idProductoArreglar,
+    //    SerieFabricante = a.Llamada?.SerieFabricante ?? "",
+    //    a.Status,
+    //    a.ProcesadaSAP,
+    //    a.Comentarios,
+    //    a.BodegaOrigen,
+    //    a.BodegaFinal,
+    //    FechaSISO = a.Llamada?.FechaSISO ?? new DateTime(),
+    //    StatusLlamada = a.Llamada?.Status ?? 0,
+    //    TipoCaso = a.Llamada?.TipoCaso ?? 0,
+    //    a.Detalle,
+    //    a.Adjuntos,
+    //    a.AdjuntosIdentificacion
+    //})
+    //.Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) &&
+    //            (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) &&
+    //            (filtro.Codigo1 > 0 ? a.idTecnico == filtro.Codigo1 : true) &&
+    //            (filtro.Codigo4 > 0 ? a.idLlamada2 == filtro.Codigo4 : true) &&
+    //            (filtro.Codigo2 > 0 ? a.Status == (filtro.Codigo2 - 1) : true))
+    //.ToList();
+
+    //            if (string.IsNullOrEmpty(filtro.CardCode))
+    //            {
+
+
+    //                if (!string.IsNullOrEmpty(filtro.Texto))
+    //                {
+    //                    var valores = filtro.Texto.Split('|');
+    //                    foreach (var item in valores)
+    //                    {
+    //                        if (!string.IsNullOrEmpty(item))
+    //                        {
+    //                            filtro.seleccionMultiple.Add(Convert.ToInt32(item));
+
+    //                        }
+
+    //                    }
+
+    //                    if (filtro.seleccionMultiple.Count > 0)
+    //                    {
+
+    //                        // Remover reparaciones con idLlamada == 0 en una sola pasada
+    //                        EncReparacion = db.EncReparacion.Select(a => new
+    //                        {
+    //                            a.id,
+    //                            Llamada = db.LlamadasServicios
+    //               .Where(b => b.id == a.idLlamada)
+    //               .Select(b => new
+    //               {
+    //                   b.id,
+    //                   b.DocEntry,
+    //                   b.SerieFabricante,
+    //                   b.FechaSISO,
+    //                   b.Status,
+    //                   b.TipoCaso
+    //               })
+    //               .FirstOrDefault(),
+    //                            a.idTecnico,
+    //                            a.idDiagnostico,
+    //                            a.FechaCreacion,
+    //                            a.FechaModificacion,
+    //                            a.TipoReparacion,
+    //                            a.idProductoArreglar,
+    //                            a.Status,
+    //                            a.ProcesadaSAP,
+    //                            a.Comentarios,
+    //                            a.BodegaOrigen,
+    //                            a.BodegaFinal,
+    //                            Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
+    //                            Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
+    //                            AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
+    //                        })
+    //                        .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
+    //                        .Select(a => new
+    //                        {
+    //                            a.id,
+    //                            idLlamada2 = a.Llamada?.id ?? 0,
+    //                            idLlamada = a.Llamada?.DocEntry ?? 0,
+    //                            a.idTecnico,
+    //                            a.idDiagnostico,
+    //                            a.FechaCreacion,
+    //                            a.FechaModificacion,
+    //                            a.TipoReparacion,
+    //                            a.idProductoArreglar,
+    //                            SerieFabricante = a.Llamada?.SerieFabricante ?? "",
+    //                            a.Status,
+    //                            a.ProcesadaSAP,
+    //                            a.Comentarios,
+    //                            a.BodegaOrigen,
+    //                            a.BodegaFinal,
+    //                            FechaSISO = a.Llamada?.FechaSISO ?? new DateTime(),
+    //                            StatusLlamada = a.Llamada?.Status ?? 0,
+    //                            TipoCaso = a.Llamada?.TipoCaso ?? 0,
+    //                            a.Detalle,
+    //                            a.Adjuntos,
+    //                            a.AdjuntosIdentificacion
+    //                        })
+
+    //                           .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) &&
+    //                           (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
+    //                           && (filtro.Codigo1 > 0 ? a.idTecnico == filtro.Codigo1 : true)
+    //                           && (filtro.Codigo4 > 0 ? a.idLlamada2 == filtro.Codigo4 : true)
+    //                           && (filtro.Codigo2 > 0 ? a.Status == (filtro.Codigo2 - 1) : true)
+    //                           && a.idLlamada != 0
+    //                           && filtro.seleccionMultiple.Contains(a.StatusLlamada)
+    //                           ).ToList();
+
+    //                    }
+
+
+    //                }
+    //                else
+    //                {
+    //                    EncReparacion = db.EncReparacion.Select(a => new
+    //                    {
+    //                        a.id,
+    //                        Llamada = db.LlamadasServicios
+    //               .Where(b => b.id == a.idLlamada)
+    //               .Select(b => new
+    //               {
+    //                   b.id,
+    //                   b.DocEntry,
+    //                   b.SerieFabricante,
+    //                   b.FechaSISO,
+    //                   b.Status,
+    //                   b.TipoCaso
+    //               })
+    //               .FirstOrDefault(),
+    //                        a.idTecnico,
+    //                        a.idDiagnostico,
+    //                        a.FechaCreacion,
+    //                        a.FechaModificacion,
+    //                        a.TipoReparacion,
+    //                        a.idProductoArreglar,
+    //                        a.Status,
+    //                        a.ProcesadaSAP,
+    //                        a.Comentarios,
+    //                        a.BodegaOrigen,
+    //                        a.BodegaFinal,
+    //                        Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
+    //                        Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
+    //                        AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
+    //                    })
+    //                        .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
+    //                        .Select(a => new
+    //                        {
+    //                            a.id,
+    //                            idLlamada2 = a.Llamada?.id ?? 0,
+    //                            idLlamada = a.Llamada?.DocEntry ?? 0,
+    //                            a.idTecnico,
+    //                            a.idDiagnostico,
+    //                            a.FechaCreacion,
+    //                            a.FechaModificacion,
+    //                            a.TipoReparacion,
+    //                            a.idProductoArreglar,
+    //                            SerieFabricante = a.Llamada?.SerieFabricante ?? "",
+    //                            a.Status,
+    //                            a.ProcesadaSAP,
+    //                            a.Comentarios,
+    //                            a.BodegaOrigen,
+    //                            a.BodegaFinal,
+    //                            FechaSISO = a.Llamada?.FechaSISO ?? new DateTime(),
+    //                            StatusLlamada = a.Llamada?.Status ?? 0,
+    //                            TipoCaso = a.Llamada?.TipoCaso ?? 0,
+    //                            a.Detalle,
+    //                            a.Adjuntos,
+    //                            a.AdjuntosIdentificacion
+    //                        }).Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true) &&
+    //              (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
+    //              && (filtro.Codigo1 > 0 ? a.idTecnico == filtro.Codigo1 : true)
+    //              && (filtro.Codigo4 > 0 ? a.idLlamada2 == filtro.Codigo4 : true)
+    //              && (filtro.Codigo2 > 0 ? a.Status == (filtro.Codigo2 - 1) : true)
+    //              ).ToList();
+    //                }
+
+
+
+    //                return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
+    //            }
+    //            else
+    //            {
+    //                var DocEntry = 0;
+    //                try
+    //                {
+    //                    DocEntry = Convert.ToInt32(filtro.CardCode);
+    //                }
+    //                catch (Exception)
+    //                {
+
+    //                }
+    //                EncReparacion = db.EncReparacion.Select(a => new
+    //                {
+    //                    a.id,
+    //                    Llamada = db.LlamadasServicios
+    //               .Where(b => b.id == a.idLlamada)
+    //               .Select(b => new
+    //               {
+    //                   b.id,
+    //                   b.DocEntry,
+    //                   b.SerieFabricante,
+    //                   b.FechaSISO,
+    //                   b.Status,
+    //                   b.TipoCaso
+    //               })
+    //               .FirstOrDefault(),
+    //                    a.idTecnico,
+    //                    a.idDiagnostico,
+    //                    a.FechaCreacion,
+    //                    a.FechaModificacion,
+    //                    a.TipoReparacion,
+    //                    a.idProductoArreglar,
+    //                    a.Status,
+    //                    a.ProcesadaSAP,
+    //                    a.Comentarios,
+    //                    a.BodegaOrigen,
+    //                    a.BodegaFinal,
+    //                    Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
+    //                    Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
+    //                    AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
+    //                })
+    //                        .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
+    //                        .Select(a => new
+    //                        {
+    //                            a.id,
+    //                            idLlamada2 = a.Llamada?.id ?? 0,
+    //                            idLlamada = a.Llamada?.DocEntry ?? 0,
+    //                            a.idTecnico,
+    //                            a.idDiagnostico,
+    //                            a.FechaCreacion,
+    //                            a.FechaModificacion,
+    //                            a.TipoReparacion,
+    //                            a.idProductoArreglar,
+    //                            SerieFabricante = a.Llamada?.SerieFabricante ?? "",
+    //                            a.Status,
+    //                            a.ProcesadaSAP,
+    //                            a.Comentarios,
+    //                            a.BodegaOrigen,
+    //                            a.BodegaFinal,
+    //                            FechaSISO = a.Llamada?.FechaSISO ?? new DateTime(),
+    //                            StatusLlamada = a.Llamada?.Status ?? 0,
+    //                            TipoCaso = a.Llamada?.TipoCaso ?? 0,
+    //                            a.Detalle,
+    //                            a.Adjuntos,
+    //                            a.AdjuntosIdentificacion
+    //                        }).Where(a => (!string.IsNullOrEmpty(filtro.CardCode) ? a.idLlamada == DocEntry : true)).ToList();
+    //                return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
+    //            }
+
+
+    //        }
+    //        catch (Exception ex)
+    //        {
+                
+    //            BitacoraErrores be = new BitacoraErrores();
+
+    //            be.Descripcion = ex.Message;
+    //            be.StackTrace = ex.StackTrace;
+    //            be.Fecha = DateTime.Now;
+    //            db.BitacoraErrores.Add(be);
+    //            db.SaveChanges();
+    //            return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+    //        }
+    //    }
+
         public async Task<HttpResponseMessage> Get([FromUri] Filtros filtro)
         {
             try
@@ -51,6 +367,7 @@ namespace WATickets.Controllers
                     a.BodegaFinal,
                     FechaSISO = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO.Value,
                     StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
+                    TipoCaso = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso,
                     Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
                     Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
                     AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
@@ -66,7 +383,7 @@ namespace WATickets.Controllers
                 if (string.IsNullOrEmpty(filtro.CardCode))
                 {
 
-                 
+
                     if (!string.IsNullOrEmpty(filtro.Texto))
                     {
                         var valores = filtro.Texto.Split('|');
@@ -82,7 +399,7 @@ namespace WATickets.Controllers
 
                         if (filtro.seleccionMultiple.Count > 0)
                         {
-             
+
                             // Remover reparaciones con idLlamada == 0 en una sola pasada
                             EncReparacion = db.EncReparacion.Select(a => new
                             {
@@ -104,6 +421,7 @@ namespace WATickets.Controllers
                                 a.BodegaFinal,
                                 FechaSISO = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO.Value,
                                 StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
+                                TipoCaso = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso,
                                 Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
                                 Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
                                 AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
@@ -117,7 +435,7 @@ namespace WATickets.Controllers
                                && a.idLlamada != 0
                                && filtro.seleccionMultiple.Contains(a.StatusLlamada.Value)
                                ).ToList();
-                             
+
                         }
 
 
@@ -144,6 +462,7 @@ namespace WATickets.Controllers
                             a.BodegaFinal,
                             FechaSISO = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO.Value,
                             StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
+                            TipoCaso = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso,
                             Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
                             Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
                             AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
@@ -192,6 +511,7 @@ namespace WATickets.Controllers
                         a.BodegaFinal,
                         FechaSISO = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO.Value,
                         StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
+                        TipoCaso = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso,
                         Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
                         Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
                         AdjuntosIdentificacion = db.AdjuntosIdentificacion.Where(b => b.idEncabezado == a.id).ToList()
@@ -206,6 +526,7 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+              
                 BitacoraErrores be = new BitacoraErrores();
 
                 be.Descripcion = ex.Message;
@@ -216,6 +537,9 @@ namespace WATickets.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+
+
+
 
 
 
@@ -451,10 +775,10 @@ namespace WATickets.Controllers
                             var valorLlamada = Llamada.DocEntry.Value.ToString();
                             var OfertaAprobada = db.EncMovimiento.Where(a => a.NumLlamada == valorLlamada && (a.TipoMovimiento == 1 || a.TipoMovimiento == 3) && a.Aprobada == true).FirstOrDefault();
 
-                            if (OfertaAprobada != null)
+                            if (OfertaAprobada != null) // hay una oferta aprobada
                             {
                                 var EntregasAnteriores = db.EncMovimiento.Where(a => a.NumLlamada == valorLlamada && (a.TipoMovimiento == 2)).ToList();
-                                if (EntregasAnteriores.Count() <= 0)
+                                if (EntregasAnteriores.Count() <= 0) // No hay entregas anteriores
                                 {
                                     EncMovimiento encMovimiento = new EncMovimiento();
                                     encMovimiento.CardCode = OfertaAprobada.CardCode;
@@ -500,9 +824,137 @@ namespace WATickets.Controllers
                                         db.DetMovimiento.Add(detMovimiento);
                                         db.SaveChanges();
                                     }
+
+                                    var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
+                                                                                                                                 //Separamos las entradas de las salidas
+                                    var bitacorasEntradas = Bitacoras.Where(a => a.TipoMovimiento == 1).ToList();
+                                    var bitacorasSalidas = Bitacoras.Where(a => a.TipoMovimiento == 2).ToList();
+
+                                    //Recorremos todas las entradas lo que sumaria la cantidad y generaria campos en detmovimientos
+                                    foreach (var item in bitacorasEntradas)
+                                    {
+                                        //Traemos todo el detalle de las entradas
+                                        var DetallesEntradas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
+                                        //Recorremos todos los detalles de las entradas que traen los productos seleccionados
+                                        foreach (var item2 in DetallesEntradas)
+
+                                        {
+                                            var itemCode = item2.ItemCode.Split('|')[0].ToString().Trim();
+                                            var itemName = item2.ItemCode.Split('|')[1].ToString().Trim();
+                                            var Item = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id && a.ItemCode == itemCode).FirstOrDefault();
+                                            var EntregasPrevias = db.EncMovimiento.Where(a => a.NumLlamada == encMovimiento.NumLlamada && a.Comentarios.ToUpper().Contains("entrega de los productos por garantia".ToUpper())).FirstOrDefault();
+                                            var DetEntregasprevias = EntregasPrevias == null ? new List<DetMovimiento>() : db.DetMovimiento.Where(a => a.idEncabezado == EntregasPrevias.id).ToList();
+
+                                            if (Item == null) //Si no existe el articulo en el detalle del movimiento o entrega
+                                            {
+                                                var ExisteEntrega = DetEntregasprevias.Where(a => a.ItemCode == itemCode).FirstOrDefault() == null;
+                                                if (ExisteEntrega)
+                                                {
+                                                    var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                                    if (DetBitacoraMovimientosSAP != null)
+                                                    {
+                                                        DetMovimiento detMovimiento = new DetMovimiento();
+                                                        detMovimiento.idEncabezado = encMovimiento.id;
+                                                        detMovimiento.NumLinea = 1;
+                                                        detMovimiento.ItemCode = itemCode;
+                                                        detMovimiento.ItemName = itemName;
+                                                        detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                        detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
+                                                        detMovimiento.PorDescuento = 0;
+                                                        detMovimiento.Descuento = 0;
+                                                        detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                        detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
+                                                        detMovimiento.idError = item2.idError;
+                                                        detMovimiento.Garantia = false;
+                                                        detMovimiento.Opcional = false;
+                                                        db.DetMovimiento.Add(detMovimiento);
+                                                        db.SaveChanges();
+                                                    }
+
+                                                }
+
+                                            }
+                                            else //si si existe
+                                            {
+                                                var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                                if (DetBitacoraMovimientosSAP != null)
+                                                {
+                                                    db.Entry(Item).State = EntityState.Modified;
+                                                    Item.Cantidad += DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad;
+                                                    Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                    Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
+                                                    if (Item.idError == 0 || Item.idError == null)
+                                                    {
+                                                        Item.idError = item2.idError;
+                                                    }
+
+                                                    db.SaveChanges();
+                                                }
+
+                                            }
+                                        }
+
+                                    }
+
+                                    //Recorremos todas las salidas lo que restaria la cantidad
+                                    foreach (var item in bitacorasSalidas)
+                                    {
+                                        //Traemos todo el detalle de las salidas
+                                        var DetallesSalidas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
+                                        //Recorremos todos los detalles de las salidas que traen los productos seleccionados
+                                        foreach (var item2 in DetallesSalidas)
+                                        {
+                                            var itemCode = item2.ItemCode.Split('|')[0].ToString().Trim();
+                                            var itemName = item2.ItemCode.Split('|')[1].ToString().Trim();
+                                            var Item = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id && a.ItemCode == itemCode).FirstOrDefault();
+                                            if (Item == null) //Si no existe el articulo en el detalle
+                                            {
+
+                                            }
+                                            else //si si existe
+                                            {
+                                                var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                                if (DetBitacoraMovimientosSAP != null)
+                                                {
+                                                    db.Entry(Item).State = EntityState.Modified;
+                                                    Item.Cantidad -= DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
+                                                    Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                    Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
+                                                    db.SaveChanges();
+                                                }
+
+                                            }
+                                        }
+
+                                    }
+                                    var MovimientosEnCero = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id && a.Cantidad <= 0).ToList();
+                                    foreach (var item in MovimientosEnCero)
+                                    {
+                                        db.DetMovimiento.Remove(item);
+                                        db.SaveChanges();
+                                    }
+
+                                    var CantidadMovimientos = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).Count();
+
+                                    if (CantidadMovimientos == 0)
+                                    {
+                                        db.EncMovimiento.Remove(encMovimiento);
+                                        db.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                        var MovimientosDetalles = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).ToList();
+                                        db.Entry(encMovimiento).State = EntityState.Modified;
+                                        encMovimiento.Subtotal = MovimientosDetalles.Sum(a => a.Cantidad * a.PrecioUnitario);
+                                        encMovimiento.Descuento = MovimientosDetalles.Sum(a => a.Descuento);
+                                        encMovimiento.Impuestos = MovimientosDetalles.Sum(a => a.Impuestos);
+                                        encMovimiento.TotalComprobante = MovimientosDetalles.Sum(a => a.TotalLinea);
+                                        db.SaveChanges();
+                                    }
                                 }
-                                else
+                                else // Si hay entregas anteriores
                                 {
+
                                     var DetalleEntregasAnteriores = new List<DetMovimiento>();
                                     foreach (var item in EntregasAnteriores)
                                     {
@@ -526,52 +978,182 @@ namespace WATickets.Controllers
                                             DetalleAGenerar.Add(item);
                                         }
                                     }
-                                    if (DetalleAGenerar.Count() > 0)
-                                    {
-                                        EncMovimiento encMovimiento = new EncMovimiento();
-                                        encMovimiento.CardCode = OfertaAprobada.CardCode;
-                                        encMovimiento.CardName = OfertaAprobada.CardName;
-                                        encMovimiento.NumLlamada = OfertaAprobada.NumLlamada;
-                                        encMovimiento.Fecha = DateTime.Now;
-                                        encMovimiento.TipoMovimiento = 2;
-                                        encMovimiento.Comentarios = OfertaAprobada.Comentarios;
-                                        encMovimiento.DocEntry = 0;
-                                        encMovimiento.CreadoPor = OfertaAprobada.CreadoPor;
-                                        encMovimiento.Subtotal = OfertaAprobada.Subtotal;
-                                        encMovimiento.PorDescuento = OfertaAprobada.PorDescuento;
-                                        encMovimiento.Descuento = OfertaAprobada.Descuento;
-                                        encMovimiento.Impuestos = OfertaAprobada.Impuestos;
-                                        encMovimiento.TotalComprobante = OfertaAprobada.TotalComprobante;
-                                        encMovimiento.Moneda = OfertaAprobada.Moneda;
-                                        encMovimiento.Aprobada = false;
-                                        encMovimiento.AprobadaSuperior = false;
-                                        encMovimiento.idCondPago = 0;
-                                        encMovimiento.idDiasValidos = 0;
-                                        encMovimiento.idGarantia = 0;
-                                        encMovimiento.idTiemposEntregas = 0;
-                                        db.EncMovimiento.Add(encMovimiento);
-                                        db.SaveChanges();
 
-                                        foreach (var item in DetalleAGenerar)
-                                        {
-                                            DetMovimiento detMovimiento = new DetMovimiento();
-                                            detMovimiento.idEncabezado = encMovimiento.id;
-                                            detMovimiento.NumLinea = 1;
-                                            detMovimiento.ItemCode = item.ItemCode;
-                                            detMovimiento.ItemName = item.ItemName;
-                                            detMovimiento.PrecioUnitario = item.PrecioUnitario;
-                                            detMovimiento.Cantidad = item.Cantidad;
-                                            detMovimiento.PorDescuento = item.PorDescuento;
-                                            detMovimiento.Descuento = item.Descuento;
-                                            detMovimiento.Impuestos = item.Impuestos;
-                                            detMovimiento.TotalLinea = item.TotalLinea;
-                                            detMovimiento.idError = item.idError;
-                                            detMovimiento.Garantia = item.Garantia;
-                                            detMovimiento.Opcional = item.Opcional;
-                                            db.DetMovimiento.Add(detMovimiento);
-                                            db.SaveChanges();
-                                        }
+
+                                    //if (DetalleAGenerar.Count() > 0)
+                                    //{
+                                    EncMovimiento encMovimiento = new EncMovimiento();
+                                    encMovimiento.CardCode = OfertaAprobada.CardCode;
+                                    encMovimiento.CardName = OfertaAprobada.CardName;
+                                    encMovimiento.NumLlamada = OfertaAprobada.NumLlamada;
+                                    encMovimiento.Fecha = DateTime.Now;
+                                    encMovimiento.TipoMovimiento = 2;
+                                    encMovimiento.Comentarios = OfertaAprobada.Comentarios;
+                                    encMovimiento.DocEntry = 0;
+                                    encMovimiento.CreadoPor = OfertaAprobada.CreadoPor;
+                                    encMovimiento.Subtotal = OfertaAprobada.Subtotal;
+                                    encMovimiento.PorDescuento = OfertaAprobada.PorDescuento;
+                                    encMovimiento.Descuento = OfertaAprobada.Descuento;
+                                    encMovimiento.Impuestos = OfertaAprobada.Impuestos;
+                                    encMovimiento.TotalComprobante = OfertaAprobada.TotalComprobante;
+                                    encMovimiento.Moneda = OfertaAprobada.Moneda;
+                                    encMovimiento.Aprobada = false;
+                                    encMovimiento.AprobadaSuperior = false;
+                                    encMovimiento.idCondPago = 0;
+                                    encMovimiento.idDiasValidos = 0;
+                                    encMovimiento.idGarantia = 0;
+                                    encMovimiento.idTiemposEntregas = 0;
+                                    db.EncMovimiento.Add(encMovimiento);
+                                    db.SaveChanges();
+
+                                    foreach (var item in DetalleAGenerar)
+                                    {
+                                        DetMovimiento detMovimiento = new DetMovimiento();
+                                        detMovimiento.idEncabezado = encMovimiento.id;
+                                        detMovimiento.NumLinea = 1;
+                                        detMovimiento.ItemCode = item.ItemCode;
+                                        detMovimiento.ItemName = item.ItemName;
+                                        detMovimiento.PrecioUnitario = item.PrecioUnitario;
+                                        detMovimiento.Cantidad = item.Cantidad;
+                                        detMovimiento.PorDescuento = item.PorDescuento;
+                                        detMovimiento.Descuento = item.Descuento;
+                                        detMovimiento.Impuestos = item.Impuestos;
+                                        detMovimiento.TotalLinea = item.TotalLinea;
+                                        detMovimiento.idError = item.idError;
+                                        detMovimiento.Garantia = item.Garantia;
+                                        detMovimiento.Opcional = item.Opcional;
+                                        db.DetMovimiento.Add(detMovimiento);
+                                        db.SaveChanges();
                                     }
+
+                                    //Aqui se puede hacer el colocho
+                                    var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
+                                                                                                                                 //Separamos las entradas de las salidas
+                                    var bitacorasEntradas = Bitacoras.Where(a => a.TipoMovimiento == 1).ToList();
+                                    var bitacorasSalidas = Bitacoras.Where(a => a.TipoMovimiento == 2).ToList();
+
+                                    //Recorremos todas las entradas lo que sumaria la cantidad y generaria campos en detmovimientos
+                                    foreach (var item in bitacorasEntradas)
+                                    {
+                                        //Traemos todo el detalle de las entradas
+                                        var DetallesEntradas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
+                                        //Recorremos todos los detalles de las entradas que traen los productos seleccionados
+                                        foreach (var item2 in DetallesEntradas)
+
+                                        {
+                                            var itemCode = item2.ItemCode.Split('|')[0].ToString().Trim();
+                                            var itemName = item2.ItemCode.Split('|')[1].ToString().Trim();
+                                            var Item = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id && a.ItemCode == itemCode).FirstOrDefault();
+                                            var EntregasPrevias = db.EncMovimiento.Where(a => a.NumLlamada == encMovimiento.NumLlamada && a.Comentarios.ToUpper().Contains("entrega de los productos por garantia".ToUpper())).FirstOrDefault();
+                                            var DetEntregasprevias = EntregasPrevias == null ? new List<DetMovimiento>() : db.DetMovimiento.Where(a => a.idEncabezado == EntregasPrevias.id).ToList();
+
+                                            if (Item == null) //Si no existe el articulo en el detalle del movimiento o entrega
+                                            {
+                                                var ExisteEntrega = DetEntregasprevias.Where(a => a.ItemCode == itemCode).FirstOrDefault() == null;
+                                                if (ExisteEntrega)
+                                                {
+                                                    var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                                    if (DetBitacoraMovimientosSAP != null)
+                                                    {
+                                                        DetMovimiento detMovimiento = new DetMovimiento();
+                                                        detMovimiento.idEncabezado = encMovimiento.id;
+                                                        detMovimiento.NumLinea = 1;
+                                                        detMovimiento.ItemCode = itemCode;
+                                                        detMovimiento.ItemName = itemName;
+                                                        detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                        detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
+                                                        detMovimiento.PorDescuento = 0;
+                                                        detMovimiento.Descuento = 0;
+                                                        detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                        detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
+                                                        detMovimiento.idError = item2.idError;
+                                                        detMovimiento.Garantia = false;
+                                                        detMovimiento.Opcional = false;
+                                                        db.DetMovimiento.Add(detMovimiento);
+                                                        db.SaveChanges();
+                                                    }
+
+                                                }
+
+                                            }
+                                            else //si si existe
+                                            {
+                                                var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                                if (DetBitacoraMovimientosSAP != null)
+                                                {
+                                                    db.Entry(Item).State = EntityState.Modified;
+                                                    Item.Cantidad += DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad;
+                                                    Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                    Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
+                                                    if (Item.idError == 0 || Item.idError == null)
+                                                    {
+                                                        Item.idError = item2.idError;
+                                                    }
+
+                                                    db.SaveChanges();
+                                                }
+
+                                            }
+                                        }
+
+                                    }
+
+                                    //Recorremos todas las salidas lo que restaria la cantidad
+                                    foreach (var item in bitacorasSalidas)
+                                    {
+                                        //Traemos todo el detalle de las salidas
+                                        var DetallesSalidas = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == item.id).ToList();
+                                        //Recorremos todos los detalles de las salidas que traen los productos seleccionados
+                                        foreach (var item2 in DetallesSalidas)
+                                        {
+                                            var itemCode = item2.ItemCode.Split('|')[0].ToString().Trim();
+                                            var itemName = item2.ItemCode.Split('|')[1].ToString().Trim();
+                                            var Item = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id && a.ItemCode == itemCode).FirstOrDefault();
+                                            if (Item == null) //Si no existe el articulo en el detalle
+                                            {
+
+                                            }
+                                            else //si si existe
+                                            {
+                                                var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                                if (DetBitacoraMovimientosSAP != null)
+                                                {
+                                                    db.Entry(Item).State = EntityState.Modified;
+                                                    Item.Cantidad -= DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
+                                                    Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                    Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
+                                                    db.SaveChanges();
+                                                }
+
+                                            }
+                                        }
+
+                                    }
+                                    var MovimientosEnCero = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id && a.Cantidad <= 0).ToList();
+                                    foreach (var item in MovimientosEnCero)
+                                    {
+                                        db.DetMovimiento.Remove(item);
+                                        db.SaveChanges();
+                                    }
+
+                                    var CantidadMovimientos = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).Count();
+
+                                    if (CantidadMovimientos == 0)
+                                    {
+                                        db.EncMovimiento.Remove(encMovimiento);
+                                        db.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                        var MovimientosDetalles = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).ToList();
+                                        db.Entry(encMovimiento).State = EntityState.Modified;
+                                        encMovimiento.Subtotal = MovimientosDetalles.Sum(a => a.Cantidad * a.PrecioUnitario);
+                                        encMovimiento.Descuento = MovimientosDetalles.Sum(a => a.Descuento);
+                                        encMovimiento.Impuestos = MovimientosDetalles.Sum(a => a.Impuestos);
+                                        encMovimiento.TotalComprobante = MovimientosDetalles.Sum(a => a.TotalLinea);
+                                        db.SaveChanges();
+                                    }
+                                    // }
 
 
                                 }
@@ -637,42 +1219,52 @@ namespace WATickets.Controllers
                                         var EntregasPrevias = db.EncMovimiento.Where(a => a.NumLlamada == encMovimiento.NumLlamada && a.Comentarios.ToUpper().Contains("entrega de los productos por garantia".ToUpper())).FirstOrDefault();
                                         var DetEntregasprevias = EntregasPrevias == null ? new List<DetMovimiento>() : db.DetMovimiento.Where(a => a.idEncabezado == EntregasPrevias.id).ToList();
 
-                                        if (Item == null) //Si no existe el articulo en el detalle
+                                        if (Item == null) //Si no existe el articulo en el detalle del movimiento o entrega
                                         {
                                             var ExisteEntrega = DetEntregasprevias.Where(a => a.ItemCode == itemCode).FirstOrDefault() == null;
                                             if (ExisteEntrega)
                                             {
-                                                DetMovimiento detMovimiento = new DetMovimiento();
-                                                detMovimiento.idEncabezado = encMovimiento.id;
-                                                detMovimiento.NumLinea = 1;
-                                                detMovimiento.ItemCode = itemCode;
-                                                detMovimiento.ItemName = itemName;
-                                                detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
-                                                detMovimiento.Cantidad = item2.Cantidad - item2.CantidadFaltante;
-                                                detMovimiento.PorDescuento = 0;
-                                                detMovimiento.Descuento = 0;
-                                                detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
-                                                detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
-                                                detMovimiento.idError = item2.idError;
-                                                detMovimiento.Garantia = false;
-                                                detMovimiento.Opcional = false;
-                                                db.DetMovimiento.Add(detMovimiento);
-                                                db.SaveChanges();
+                                                var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                                if(DetBitacoraMovimientosSAP != null)
+                                                {
+                                                    DetMovimiento detMovimiento = new DetMovimiento();
+                                                    detMovimiento.idEncabezado = encMovimiento.id;
+                                                    detMovimiento.NumLinea = 1;
+                                                    detMovimiento.ItemCode = itemCode;
+                                                    detMovimiento.ItemName = itemName;
+                                                    detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                    detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
+                                                    detMovimiento.PorDescuento = 0;
+                                                    detMovimiento.Descuento = 0;
+                                                    detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                    detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
+                                                    detMovimiento.idError = item2.idError;
+                                                    detMovimiento.Garantia = false;
+                                                    detMovimiento.Opcional = false;
+                                                    db.DetMovimiento.Add(detMovimiento);
+                                                    db.SaveChanges();
+                                                }
+                                                
                                             }
 
                                         }
                                         else //si si existe
                                         {
-                                            db.Entry(Item).State = EntityState.Modified;
-                                            Item.Cantidad += item2.Cantidad;
-                                            Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
-                                            Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
-                                            if (Item.idError == 0 || Item.idError == null)
+                                            var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                            if (DetBitacoraMovimientosSAP != null)
                                             {
-                                                Item.idError = item2.idError;
-                                            }
+                                                db.Entry(Item).State = EntityState.Modified;
+                                                Item.Cantidad += DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad;
+                                                Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
+                                                if (Item.idError == 0 || Item.idError == null)
+                                                {
+                                                    Item.idError = item2.idError;
+                                                }
 
-                                            db.SaveChanges();
+                                                db.SaveChanges();
+                                            }
+                                               
                                         }
                                     }
 
@@ -695,11 +1287,16 @@ namespace WATickets.Controllers
                                         }
                                         else //si si existe
                                         {
-                                            db.Entry(Item).State = EntityState.Modified;
-                                            Item.Cantidad -= item2.Cantidad - item2.CantidadFaltante;
-                                            Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
-                                            Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
-                                            db.SaveChanges();
+                                            var DetBitacoraMovimientosSAP = db.BitacoraMovimientosSAP.Where(a => a.idDetalle == item2.id && a.ProcesadaSAP == true).FirstOrDefault();
+                                            if (DetBitacoraMovimientosSAP != null)
+                                            {
+                                                db.Entry(Item).State = EntityState.Modified;
+                                                Item.Cantidad -= DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
+                                                Item.Impuestos = Convert.ToDecimal((Item.Cantidad * Item.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                Item.TotalLinea = (Item.Cantidad * Item.PrecioUnitario) + Item.Impuestos;
+                                                db.SaveChanges();
+                                            }
+                                                
                                         }
                                     }
 
@@ -828,18 +1425,23 @@ namespace WATickets.Controllers
 
                             foreach (var item in coleccion.DetReparacion.Where(a => !a.ItemCode.ToLower().Contains("mano de obra")))
                             {
+                                //Evita que se dupliquen items en la solicitud
+                                var Repetido = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == bts.id && a.idProducto == item.idProducto && a.ItemCode == item.ItemCode).FirstOrDefault();
 
-
-                                DetBitacoraMovimientos dbt = new DetBitacoraMovimientos();
-                                dbt.idEncabezado = bts.id;
-                                dbt.idProducto = item.idProducto;
-                                dbt.Cantidad = item.Cantidad;
-                                dbt.ItemCode = item.ItemCode;
-                                dbt.idError = item.idError;
-                                dbt.CantidadEnviar = 0;
-                                dbt.CantidadFaltante = item.Cantidad;
-                                db.DetBitacoraMovimientos.Add(dbt);
-                                db.SaveChanges();
+                                if(Repetido == null)
+                                {
+                                    DetBitacoraMovimientos dbt = new DetBitacoraMovimientos();
+                                    dbt.idEncabezado = bts.id;
+                                    dbt.idProducto = item.idProducto;
+                                    dbt.Cantidad = item.Cantidad;
+                                    dbt.ItemCode = item.ItemCode;
+                                    dbt.idError = item.idError;
+                                    dbt.CantidadEnviar = 0;
+                                    dbt.CantidadFaltante = item.Cantidad;
+                                    db.DetBitacoraMovimientos.Add(dbt);
+                                    db.SaveChanges();
+                                }
+                                
 
 
                             }
