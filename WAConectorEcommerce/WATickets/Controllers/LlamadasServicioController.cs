@@ -435,6 +435,7 @@ namespace WATickets.Controllers
         [HttpPost]
         public HttpResponseMessage Post([FromBody] LlamadasServicioViewModel llamada)
         {
+            var t = db.Database.BeginTransaction();
             try
             {
                 if (llamada == null)
@@ -683,6 +684,7 @@ namespace WATickets.Controllers
 
                             Conexion.Desconectar();
 
+                            t.Commit();
 
 
 
@@ -698,6 +700,7 @@ namespace WATickets.Controllers
                             db.BitacoraErrores.Add(be);
                             db.SaveChanges();
                             Conexion.Desconectar();
+                            throw new Exception(be.Descripcion);
                         }
 
 
@@ -715,6 +718,7 @@ namespace WATickets.Controllers
 
                         db.BitacoraErrores.Add(be);
                         db.SaveChanges();
+                        throw new Exception(ex1.Message);
                     }
 
                 }
@@ -731,6 +735,7 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                t.Rollback();
                 BitacoraErrores bit = new BitacoraErrores();
                 bit.Descripcion = ex.Message;
                 bit.StackTrace = ex.StackTrace + " Caida general";
@@ -806,7 +811,10 @@ namespace WATickets.Controllers
                     if (Llamada.TipoCaso != llamada.TipoCaso && llamada.TipoCaso != 0)
                     {
                         Llamada.TipoCaso = llamada.TipoCaso;
-
+                        if(Llamada.TipoCaso == null || Llamada.TipoCaso == 0)
+                        {
+                            throw new Exception("Llamada no puede quedar con el tipo de caso en 0");
+                        }
                     }
 
                     DateTime time = new DateTime();
@@ -1127,6 +1135,7 @@ namespace WATickets.Controllers
                                 db.BitacoraErrores.Add(be);
                                 db.SaveChanges();
                                 Conexion.Desconectar();
+                                throw new Exception(be.Descripcion);
                             }
 
 
@@ -1143,6 +1152,7 @@ namespace WATickets.Controllers
 
                         db.BitacoraErrores.Add(be);
                         db.SaveChanges();
+                        throw new Exception(ex.Message);
 
                     }
 
