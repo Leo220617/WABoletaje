@@ -808,24 +808,25 @@ namespace WATickets.Controllers
 
                     }
 
-                    if (Llamada.TipoCaso != llamada.TipoCaso && llamada.TipoCaso != 0)
+                    if (Llamada.TipoCaso != llamada.TipoCaso && llamada.TipoCaso != 0 && llamada.TipoCaso != null)
                     {
+                        var TipoCasoAnterior = Llamada.TipoCaso;
                         Llamada.TipoCaso = llamada.TipoCaso;
                         if(Llamada.TipoCaso == null || Llamada.TipoCaso == 0)
                         {
-                            throw new Exception("Llamada no puede quedar con el tipo de caso en 0");
+                            Llamada.TipoCaso = TipoCasoAnterior;
                         }
                     }
 
                     DateTime time = new DateTime();
 
-                    if (llamada.FechaSISO != time && llamada.FechaSISO != Llamada.FechaSISO)
+                    if (llamada.FechaSISO != time && llamada.FechaSISO != Llamada.FechaSISO && llamada.FechaSISO != null)
                     {
                         Llamada.FechaSISO = llamada.FechaSISO;
 
                     }
 
-                    if (llamada.LugarReparacion != Llamada.LugarReparacion)
+                    if (llamada.LugarReparacion != Llamada.LugarReparacion && llamada.LugarReparacion != null)
                     {
                         Llamada.LugarReparacion = llamada.LugarReparacion;
 
