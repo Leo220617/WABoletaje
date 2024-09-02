@@ -435,6 +435,7 @@ namespace WATickets.Controllers
         [HttpPost]
         public HttpResponseMessage Post([FromBody] LlamadasServicioViewModel llamada)
         {
+            var t = db.Database.BeginTransaction();
             try
             {
                 if (llamada == null)
@@ -683,6 +684,7 @@ namespace WATickets.Controllers
 
                             Conexion.Desconectar();
 
+                            t.Commit();
 
 
 
@@ -698,6 +700,7 @@ namespace WATickets.Controllers
                             db.BitacoraErrores.Add(be);
                             db.SaveChanges();
                             Conexion.Desconectar();
+                            throw new Exception(be.Descripcion);
                         }
 
 
@@ -723,6 +726,7 @@ namespace WATickets.Controllers
 
                         db.BitacoraErrores.Add(be);
                         db.SaveChanges();
+                        throw new Exception(ex1.Message);
                     }
 
                 }
@@ -739,6 +743,7 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                t.Rollback();
                 BitacoraErrores bit = new BitacoraErrores();
                 bit.Descripcion = ex.Message;
                 bit.StackTrace = ex.StackTrace + " Caida general";
@@ -811,21 +816,25 @@ namespace WATickets.Controllers
 
                     }
 
-                    if (Llamada.TipoCaso != llamada.TipoCaso && llamada.TipoCaso != 0)
+                    if (Llamada.TipoCaso != llamada.TipoCaso && llamada.TipoCaso != 0 && llamada.TipoCaso != null)
                     {
+                        var TipoCasoAnterior = Llamada.TipoCaso;
                         Llamada.TipoCaso = llamada.TipoCaso;
-
+                        if(Llamada.TipoCaso == null || Llamada.TipoCaso == 0)
+                        {
+                            Llamada.TipoCaso = TipoCasoAnterior;
+                        }
                     }
 
                     DateTime time = new DateTime();
 
-                    if (llamada.FechaSISO != time && llamada.FechaSISO != Llamada.FechaSISO)
+                    if (llamada.FechaSISO != time && llamada.FechaSISO != Llamada.FechaSISO && llamada.FechaSISO != null)
                     {
                         Llamada.FechaSISO = llamada.FechaSISO;
 
                     }
 
-                    if (llamada.LugarReparacion != Llamada.LugarReparacion)
+                    if (llamada.LugarReparacion != Llamada.LugarReparacion && llamada.LugarReparacion != null)
                     {
                         Llamada.LugarReparacion = llamada.LugarReparacion;
 
@@ -1135,6 +1144,7 @@ namespace WATickets.Controllers
                                 db.BitacoraErrores.Add(be);
                                 db.SaveChanges();
                                 Conexion.Desconectar();
+                                throw new Exception(be.Descripcion);
                             }
 
 
@@ -1151,6 +1161,7 @@ namespace WATickets.Controllers
 
                         db.BitacoraErrores.Add(be);
                         db.SaveChanges();
+                        throw new Exception(ex.Message);
 
                     }
 

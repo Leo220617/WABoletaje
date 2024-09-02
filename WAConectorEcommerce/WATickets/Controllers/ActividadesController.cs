@@ -30,12 +30,16 @@ namespace WATickets.Controllers
             {
 
 
-                var Actividades = db.Actividades.Where(a => (filtro.Codigo1 != 0 ? a.idLlamada == filtro.Codigo1 : true)).ToList();
+                IQueryable<Actividades> query = db.Actividades;
 
+                if (filtro.Codigo1 != 0)
+                {
+                    query = query.Where(a => a.idLlamada == filtro.Codigo1);
+                }
 
+                var actividades = await query.ToListAsync();
 
-
-                return Request.CreateResponse(HttpStatusCode.OK, Actividades);
+                return Request.CreateResponse(HttpStatusCode.OK, actividades);
 
             }
             catch (Exception ex)
