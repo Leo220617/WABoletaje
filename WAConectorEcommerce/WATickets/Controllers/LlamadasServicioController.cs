@@ -401,7 +401,8 @@ namespace WATickets.Controllers
 
                     }
 
-                    var resp = G.SendV2(correo, "", "", CorreoEnvio.RecepcionEmail, "Contrato de Servicio", "Contrato de Servicio para el cliente", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Contrato de servicio</h1> <p> En el presente correo se le hace entrega del contrato de servicio, favor no responder a este correo </p> </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
+                    var Agregado = G.ObtenerConfig("Empresa") == "G" ? Llamada.SinRepuestos == true ? "<b style='font-size: 15px;'>   Todos nuestros equipos funcionan como un conjunto con sus accesorios (manguera, pistola, lanza y boquillas de alta presión). Muchos de los fallos del equipo pueden ser ocasionados por dichos accesorios. Por esta razón la reparación solo cuenta con garantía si se entregan los accesorios porque solo así podemos garantizar que el equipo funciona correctamente. </b>" : "" : "";
+                    var resp = G.SendV2(correo, "", "", CorreoEnvio.RecepcionEmail, "Contrato de Servicio", "Contrato de Servicio para el cliente", "<!DOCTYPE html> <html> <head> <meta charset='utf-8'> <meta name='viewport' content='width=device-width, initial-scale=1'> <title></title> </head> <body> <h1>Contrato de servicio</h1> <p> En el presente correo se le hace entrega del contrato de servicio, favor no responder a este correo </p> </br> "+Agregado+" </body> </html>", CorreoEnvio.RecepcionHostName, CorreoEnvio.EnvioPort, CorreoEnvio.RecepcionUseSSL, CorreoEnvio.RecepcionEmail, CorreoEnvio.RecepcionPassword, adjuntos);
 
                     if (!resp)
                     {
@@ -481,6 +482,7 @@ namespace WATickets.Controllers
                     Llamada.EmailPersonaContacto = llamada.EmailPersonaContacto;
                     Llamada.NumeroPersonaContacto = llamada.NumeroPersonaContacto;
                     Llamada.PIN = false;
+                    Llamada.SinRepuestos = llamada.SinRepuestos;
                     db.LlamadasServicios.Add(Llamada);
                     db.SaveChanges();
 
@@ -923,6 +925,7 @@ namespace WATickets.Controllers
                     {
                         Llamada.PIN = llamada.PIN;
                     }
+                     
                     Llamada.ProcesadaSAP = false;
                     db.SaveChanges();
                     var enc2 = db.EncReparacion.Where(a => a.idLlamada == llamada.id).FirstOrDefault();
