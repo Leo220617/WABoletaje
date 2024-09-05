@@ -483,6 +483,7 @@ namespace WATickets.Controllers
                     Llamada.NumeroPersonaContacto = llamada.NumeroPersonaContacto;
                     Llamada.PIN = false;
                     Llamada.SinRepuestos = llamada.SinRepuestos;
+                    Llamada.Prioridad = llamada.Prioridad;
                     db.LlamadasServicios.Add(Llamada);
                     db.SaveChanges();
 
@@ -592,7 +593,7 @@ namespace WATickets.Controllers
                         // client.CallType = Llamada.Garantia.Value;
                         client.TechnicianCode = Llamada.Tecnico.Value;
                         //client.ProblemSubType =  
-
+                        client.Priority = Llamada.Prioridad == "L" ? BoSvcCallPriorities.scp_Low : Llamada.Prioridad == "M" ? BoSvcCallPriorities.scp_Medium : BoSvcCallPriorities.scp_High;
 
 
                         var respuesta = client.Add();
@@ -925,7 +926,11 @@ namespace WATickets.Controllers
                     {
                         Llamada.PIN = llamada.PIN;
                     }
-                     
+                    
+                    if(!string.IsNullOrEmpty(llamada.Prioridad) && Llamada.Prioridad != llamada.Prioridad)
+                    {
+                        Llamada.Prioridad = llamada.Prioridad;
+                    }
                     Llamada.ProcesadaSAP = false;
                     db.SaveChanges();
                     var enc2 = db.EncReparacion.Where(a => a.idLlamada == llamada.id).FirstOrDefault();
@@ -1001,7 +1006,7 @@ namespace WATickets.Controllers
 
                             }
 
-
+                            client.Priority = Llamada.Prioridad == "L" ? BoSvcCallPriorities.scp_Low : Llamada.Prioridad == "M" ? BoSvcCallPriorities.scp_Medium : BoSvcCallPriorities.scp_High;
                             client.UserFields.Fields.Item("U_TPCASO").Value = Llamada.TipoCaso.Value.ToString();
 
 
