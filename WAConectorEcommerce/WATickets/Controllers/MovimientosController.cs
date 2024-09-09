@@ -95,7 +95,7 @@ namespace WATickets.Controllers
                         db.BitacoraMovimientos.Add(bts);
                         db.SaveChanges();
 
-                        foreach (var item in DetalleReparaciones.Where(a => !a.ItemCode.ToLower().Contains("mano de obra")))
+                        foreach (var item in DetalleReparaciones.Where(a => !a.ItemName.ToLower().Contains("mano de obra") && !a.ItemCode.ToLower().Contains("C0-000-001")))
                         {
                             DetBitacoraMovimientos dbt = new DetBitacoraMovimientos();
                             dbt.idEncabezado = bts.id;
@@ -1589,7 +1589,7 @@ namespace WATickets.Controllers
                             client.Lines.CostingCode4 = "";
                             client.Lines.CostingCode5 = "";
                             client.Lines.Currency = EncMovimiento.Moneda;
-                            client.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
+                            client.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaInicial;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);

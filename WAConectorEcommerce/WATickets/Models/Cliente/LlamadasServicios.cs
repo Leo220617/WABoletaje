@@ -59,5 +59,7 @@ namespace WATickets.Models.Cliente
         public string EmailPersonaContacto { get; set; }
         public string NumeroPersonaContacto { get; set; }
         public bool PIN { get; set; }
+        public bool SinRepuestos { get; set; }
+        public string Prioridad { get; set; }
     }
 }
