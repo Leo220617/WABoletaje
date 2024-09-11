@@ -632,7 +632,7 @@ namespace WATickets.Controllers
                                 {
                                     BitacoraErrores be = new BitacoraErrores();
 
-                                    be.Descripcion = "Error en la llamada #" + Llamada.id + " , al conseguir el docEntry -> " + ex1.Message;
+                                    be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry + " , al conseguir el docEntry -> " + ex1.Message;
                                     be.StackTrace = ex1.StackTrace;
                                     be.Fecha = DateTime.Now;
 
@@ -666,7 +666,7 @@ namespace WATickets.Controllers
 
                                     BitacoraErrores be = new BitacoraErrores();
 
-                                    be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex2.Message;
+                                    be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry + " -> " + ex2.Message;
                                     be.StackTrace = ex2.StackTrace;
                                     be.Fecha = DateTime.Now;
 
@@ -696,7 +696,7 @@ namespace WATickets.Controllers
                         {
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + Conexion.Company.GetLastErrorDescription();
+                            be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry + " -> " + Conexion.Company.GetLastErrorDescription();
                             be.StackTrace = "Llamada de Servicio";
                             be.Fecha = DateTime.Now;
 
@@ -721,9 +721,7 @@ namespace WATickets.Controllers
                         catch (Exception)
                         {
 
-                            be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex1.Message ;
-                        }
-                        
+                        be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry +" -> " + ex1.Message;
                         be.StackTrace = ex1.StackTrace;
                         be.Fecha = DateTime.Now;
 
@@ -904,7 +902,7 @@ namespace WATickets.Controllers
 
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex3.Message;
+                            be.Descripcion = "Error en la llamada #" + Llamada.id  +" con el callID " + Llamada.DocEntry + " -> " + ex3.Message;
                             be.StackTrace = ex3.StackTrace;
                             be.Fecha = DateTime.Now;
 
@@ -998,12 +996,12 @@ namespace WATickets.Controllers
 
                             client.Status = Llamada.Status.Value;
 
-                            if (!string.IsNullOrEmpty(llamada.CardCode))
-                            {
+                            //if (!string.IsNullOrEmpty(llamada.CardCode))
+                            //{
 
                                 client.CustomerCode = Llamada.CardCode;
 
-                            }
+                            //}
 
 
 
@@ -1113,7 +1111,7 @@ namespace WATickets.Controllers
 
                                 BitacoraErrores be = new BitacoraErrores();
 
-                                be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex3.Message;
+                                be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry + " -> " + ex3.Message;
                                 be.StackTrace = ex3.StackTrace;
                                 be.Fecha = DateTime.Now;
 
@@ -1145,7 +1143,7 @@ namespace WATickets.Controllers
                             {
                                 BitacoraErrores be = new BitacoraErrores();
 
-                                be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + Conexion.Company.GetLastErrorDescription();
+                                be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry  + "-> " + Conexion.Company.GetLastErrorDescription();
                                 be.StackTrace = "Llamada de Servicio";
                                 be.Fecha = DateTime.Now;
 
@@ -1163,7 +1161,7 @@ namespace WATickets.Controllers
                     {
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex.Message;
+                        be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry + " -> " + ex.Message;
                         be.StackTrace = ex.StackTrace;
                         be.Fecha = DateTime.Now;
 
@@ -1332,7 +1330,7 @@ namespace WATickets.Controllers
 
                                 BitacoraErrores be = new BitacoraErrores();
 
-                                be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex2.Message;
+                                be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry + " -> " + ex2.Message;
                                 be.StackTrace = ex2.StackTrace;
                                 be.Fecha = DateTime.Now;
 
@@ -1355,7 +1353,7 @@ namespace WATickets.Controllers
                         {
                             BitacoraErrores be = new BitacoraErrores();
 
-                            be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + Conexion.Company.GetLastErrorDescription();
+                            be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry + " -> " + Conexion.Company.GetLastErrorDescription();
                             be.StackTrace = "Llamada de Servicio";
                             be.Fecha = DateTime.Now;
 
@@ -1373,7 +1371,7 @@ namespace WATickets.Controllers
                         Conexion.Desconectar();
                         BitacoraErrores be = new BitacoraErrores();
 
-                        be.Descripcion = "Error en la llamada #" + Llamada.id + " -> " + ex1.Message;
+                        be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry + " -> " + ex1.Message;
                         be.StackTrace = ex1.StackTrace;
                         be.Fecha = DateTime.Now;
 

@@ -292,7 +292,7 @@ namespace WATickets.Controllers
                                         var Parametros = db.Parametros.FirstOrDefault();
                                         var conexion = g.DevuelveCadena(db); 
                                         var valorAFiltrar = "Traslados - " + Llamada.CardCode + " - " + BT.id;
-                                        var filtroSQL = "JrnlMemo like '%" + valorAFiltrar + "%'";
+                                        var filtroSQL = "JrnlMemo like '%" + valorAFiltrar + "%' order by DocEntry desc";
                                         var SQL = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "OWTR").Replace("@CampoWhere = @reemplazo",filtroSQL);
 
                                         SqlConnection Cn = new SqlConnection(conexion);
@@ -328,8 +328,9 @@ namespace WATickets.Controllers
                                 {
                                    // count = db.BitacoraMovimientos.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).Count();
 
-                                    count = db.BitacoraMovimientosSAP.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).Distinct().GroupBy(a => a.DocEntry).Count();
-
+                                    count = db.BitacoraMovimientosSAP.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).GroupBy(a => a.DocEntry).Count();
+                                    G G = new G();
+                                    G.GuardarTxt("BitacoraCount.txt", "llamada " + Encabezado.idLlamada + " -> Count: " + count.ToString());
                                     if (count > 0)
                                     {
                                         client2.Expenses.Add();
@@ -363,7 +364,7 @@ namespace WATickets.Controllers
                                         Encabezado.BodegaFinal = "0";
                                         
                                         db.SaveChanges();
-                                        foreach (var item in bts.Detalle)
+                                        foreach (var item in Det) //bts.Detalle)
                                         {
                                             decimal cant = 0;
                                             var DetBitacoraMovimiento = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.idProducto == item.idProducto && a.idError == item.idError).FirstOrDefault();
