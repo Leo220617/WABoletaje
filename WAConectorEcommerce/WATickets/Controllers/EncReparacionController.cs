@@ -430,19 +430,23 @@ namespace WATickets.Controllers
                 var Parametro = db.Parametros.FirstOrDefault();
                 var Encabezado = db.EncReparacion.Where(a => a.id == coleccion.EncReparacion.id).FirstOrDefault();
                 var Llamada = db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault();
-                var ValidacionReparacionAnterior = db.EncReparacion.Select(a => new
+                if(coleccion.EstadoLlamada == 47)
                 {
-                    a.id,
-                    a.idTecnico,
-                    StatusLlamada = db.LlamadasServicios.Where(z => z.id == a.idLlamada).FirstOrDefault() == null ? 0: db.LlamadasServicios.Where(z => z.id == a.idLlamada).FirstOrDefault().Status
-                }
+                    var ValidacionReparacionAnterior = db.EncReparacion.Select(a => new
+                    {
+                        a.id,
+                        a.idTecnico,
+                        StatusLlamada = db.LlamadasServicios.Where(z => z.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(z => z.id == a.idLlamada).FirstOrDefault().Status
+                    }
                     )
                     .Where(a => a.idTecnico == Encabezado.idTecnico && a.StatusLlamada == 47 && a.id != Encabezado.id).FirstOrDefault();
 
-                if(ValidacionReparacionAnterior != null)
-                {
-                    throw new Exception("Este tecnico ya tiene asignaciones de boletas con status 'EN TALLER'");
+                    if (ValidacionReparacionAnterior != null)
+                    {
+                        throw new Exception("Este tecnico ya tiene asignaciones de boletas con status 'EN TALLER'");
+                    }
                 }
+                
                 db.Entry(Encabezado).State = EntityState.Modified;
                 Encabezado.TipoReparacion = coleccion.EncReparacion.TipoReparacion;
                 Encabezado.FechaModificacion = DateTime.Now;

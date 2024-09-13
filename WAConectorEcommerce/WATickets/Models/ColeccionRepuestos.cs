@@ -11,5 +11,6 @@ namespace WATickets.Models
         public EncReparacion EncReparacion { get; set; }
         public DetReparacion[] DetReparacion { get; set; }
         public AdjuntosViewModel[] Adjuntos { get; set; }
+        public int EstadoLlamada { get; set; }
     }
 }
