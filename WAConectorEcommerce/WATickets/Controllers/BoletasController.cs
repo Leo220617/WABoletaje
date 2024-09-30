@@ -186,9 +186,17 @@ namespace WATickets.Controllers
 
                         var respuesta = client.Update();
 
+
+
                         if (respuesta == 0)
                         {
                             Conexion.Desconectar();
+
+                            var SQLCommdand = "UPDATE LlamadasServicios set CardCode = '" + boleta.CardCode + "' where SerieFabricante = '" + boleta.NoSerieFabricante + "' and ItemCode = '" + itemCode + "' and Status != '-1' ";
+
+                            db.Database.ExecuteSqlCommand(SQLCommdand);
+                             
+
                         }
                         else
                         {
