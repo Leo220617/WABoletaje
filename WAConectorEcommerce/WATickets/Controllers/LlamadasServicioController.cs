@@ -722,15 +722,16 @@ namespace WATickets.Controllers
                         catch (Exception)
                         {
 
-                        be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry +" -> " + ex1.Message;
-                        be.StackTrace = ex1.StackTrace;
-                        be.Fecha = DateTime.Now;
+                            be.Descripcion = "Error en la llamada #" + Llamada.id + " con el callID " + Llamada.DocEntry + " -> " + ex1.Message;
+                            be.StackTrace = ex1.StackTrace;
+                            be.Fecha = DateTime.Now;
 
-                        db.BitacoraErrores.Add(be);
-                        db.SaveChanges();
-                        throw new Exception(ex1.Message);
+                            db.BitacoraErrores.Add(be);
+                            db.SaveChanges();
+                            throw new Exception(ex1.Message);
+                        }
+
                     }
-
                 }
                 else
                 {
