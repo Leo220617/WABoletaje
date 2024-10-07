@@ -311,6 +311,7 @@ namespace WATickets.Controllers
                 ////Enviar Correo
                 ///
                 try
+
                 {
                     var EmailDestino = "";
                     Parametros parametros = db.Parametros.FirstOrDefault();
@@ -406,7 +407,7 @@ namespace WATickets.Controllers
 
                     if (!resp)
                     {
-                        throw new Exception("No se ha podido enviar el correo con la liquidación");
+                        throw new Exception("No se ha podido enviar el correo al o los destinatarios: " + correo);
                     }
 
                 }
@@ -981,7 +982,7 @@ namespace WATickets.Controllers
 
                             if (!resp)
                             {
-                                throw new Exception("No se ha podido enviar el correo con la liquidación");
+                                throw new Exception("No se ha podido enviar el correo al o los destinatarios: " + Llamada.EmailPersonaContacto);
                             }
                         }
                     }
