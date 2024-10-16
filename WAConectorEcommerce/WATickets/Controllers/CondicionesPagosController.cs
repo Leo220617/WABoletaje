@@ -86,7 +86,7 @@ namespace WATickets.Controllers
                     CondP = new CondicionesPagos();
                     CondP.codSAP = cond.codSAP;
                     CondP.Nombre = cond.Nombre;
-
+                    CondP.Dias = cond.Dias;
                     db.CondicionesPagos.Add(CondP);
                     db.SaveChanges();
 
@@ -128,6 +128,7 @@ namespace WATickets.Controllers
 
                     CondP.codSAP = cond.codSAP;
                     CondP.Nombre = cond.Nombre;
+                    CondP.Dias = cond.Dias;
 
                     db.SaveChanges();
 
