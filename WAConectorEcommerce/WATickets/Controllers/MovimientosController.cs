@@ -1252,7 +1252,10 @@ namespace WATickets.Controllers
                 {
                     a.id,
                     a.DocEntry,
-
+                    
+                    EmailPersonaContacto = db.LlamadasServicios
+                    .Where(z => z.DocEntry.ToString() == a.NumLlamada).FirstOrDefault() == null ? "" : db.LlamadasServicios
+                    .Where(z => z.DocEntry.ToString() == a.NumLlamada).FirstOrDefault().EmailPersonaContacto,
                     a.CardCode,
                     a.CardName,
                     a.NumLlamada,
