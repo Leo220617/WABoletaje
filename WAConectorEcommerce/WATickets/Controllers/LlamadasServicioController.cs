@@ -24,6 +24,7 @@ namespace WATickets.Controllers
     public class LlamadasServicioController : ApiController
     {
         ModelCliente db = new ModelCliente();
+        ModelCliente db2 = new ModelCliente();
         G g = new G();
 
         [Route("api/LlamadasServicio/Modifica")]
@@ -534,8 +535,8 @@ namespace WATickets.Controllers
                         be.StackTrace = ex3.StackTrace;
                         be.Fecha = DateTime.Now;
 
-                        db.BitacoraErrores.Add(be);
-                        db.SaveChanges();
+                        db2.BitacoraErrores.Add(be);
+                        db2.SaveChanges();
                     }
 
                     try
@@ -557,8 +558,8 @@ namespace WATickets.Controllers
                         be.StackTrace = ex.StackTrace;
                         be.Fecha = DateTime.Now;
 
-                        db.BitacoraErrores.Add(be);
-                        db.SaveChanges();
+                        db2.BitacoraErrores.Add(be);
+                        db2.SaveChanges();
                     }
 
                     try
@@ -671,8 +672,8 @@ namespace WATickets.Controllers
                                     be.StackTrace = ex2.StackTrace;
                                     be.Fecha = DateTime.Now;
 
-                                    db.BitacoraErrores.Add(be);
-                                    db.SaveChanges();
+                                    db2.BitacoraErrores.Add(be);
+                                    db2.SaveChanges();
                                 }
                             }
 
@@ -701,8 +702,8 @@ namespace WATickets.Controllers
                             be.StackTrace = "Llamada de Servicio";
                             be.Fecha = DateTime.Now;
 
-                            db.BitacoraErrores.Add(be);
-                            db.SaveChanges();
+                            db2.BitacoraErrores.Add(be);
+                            db2.SaveChanges();
                             Conexion.Desconectar();
                             throw new Exception(be.Descripcion);
                         }
@@ -726,8 +727,8 @@ namespace WATickets.Controllers
                             be.StackTrace = ex1.StackTrace;
                             be.Fecha = DateTime.Now;
 
-                            db.BitacoraErrores.Add(be);
-                            db.SaveChanges();
+                            db2.BitacoraErrores.Add(be);
+                            db2.SaveChanges();
                             throw new Exception(ex1.Message);
                         }
 
@@ -753,8 +754,8 @@ namespace WATickets.Controllers
                 bit.Fecha = DateTime.Now;
                 bit.DocNum = "";
 
-                db.BitacoraErrores.Add(bit);
-                db.SaveChanges();
+                db2.BitacoraErrores.Add(bit);
+                db2.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
