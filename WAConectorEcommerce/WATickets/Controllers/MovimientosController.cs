@@ -2341,7 +2341,7 @@ namespace WATickets.Controllers
                                 EncMovimientoEntrega.idDiasValidos = 0;
                                 EncMovimientoEntrega.idGarantia = 0;
                                 EncMovimientoEntrega.idTiemposEntregas = 0;
-                                EncMovimientoEntrega.Facturado = false;
+                                EncMovimientoEntrega.Facturado = true;
                                 db.EncMovimiento.Add(EncMovimientoEntrega);
                                 db.SaveChanges();
 

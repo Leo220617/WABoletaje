@@ -932,7 +932,25 @@ namespace WATickets.Controllers
 
                     if(llamada.PIN != null)
                     {
-                        Llamada.PIN = llamada.PIN;
+                        if(llamada.PIN)
+                        {
+                            var DocEntryLlamada = Llamada.DocEntry.ToString();
+                            var EntregaSinFacturar = db.EncMovimiento.Where(a => a.NumLlamada == DocEntryLlamada && a.Facturado == false).FirstOrDefault();
+                            if(EntregaSinFacturar != null)
+                            {
+                                throw new Exception("No se puede validar el PIN ya que cuenta con entregas sin facturar, ejemplo #:" + EntregaSinFacturar.id);
+                            }
+                            else
+                            {
+                                Llamada.PIN = llamada.PIN;
+
+                            }
+                        }
+                        else
+                        {
+                            Llamada.PIN = llamada.PIN;
+
+                        }
                     }
                     
                     if(!string.IsNullOrEmpty(llamada.Prioridad) && Llamada.Prioridad != llamada.Prioridad)
