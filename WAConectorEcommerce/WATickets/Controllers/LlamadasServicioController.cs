@@ -936,7 +936,7 @@ namespace WATickets.Controllers
                         if(llamada.PIN)
                         {
                             var DocEntryLlamada = Llamada.DocEntry.ToString();
-                            var EntregaSinFacturar = db.EncMovimiento.Where(a => a.NumLlamada == DocEntryLlamada && a.Facturado == false).FirstOrDefault();
+                            var EntregaSinFacturar = db.EncMovimiento.Where(a => a.NumLlamada == DocEntryLlamada && a.Facturado == false && a.TipoMovimiento == 2).FirstOrDefault();
                             if(EntregaSinFacturar != null)
                             {
                                 throw new Exception("No se puede validar el PIN ya que cuenta con entregas sin facturar, ejemplo #:" + EntregaSinFacturar.id);

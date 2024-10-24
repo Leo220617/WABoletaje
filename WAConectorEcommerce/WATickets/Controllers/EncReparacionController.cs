@@ -517,7 +517,7 @@ namespace WATickets.Controllers
                                         detMovimiento.ItemCode = item.ItemCode;
                                         detMovimiento.ItemName = item.ItemName;
                                         detMovimiento.PrecioUnitario = item.PrecioUnitario;
-                                        detMovimiento.Cantidad = item.Cantidad;
+                                        detMovimiento.Cantidad = 0;//item.Cantidad;
                                         detMovimiento.PorDescuento = item.PorDescuento;
                                         detMovimiento.Descuento = item.Descuento;
                                         detMovimiento.Impuestos = item.Impuestos;

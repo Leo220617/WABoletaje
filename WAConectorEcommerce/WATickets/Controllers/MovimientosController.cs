@@ -1328,7 +1328,7 @@ namespace WATickets.Controllers
                         EncMovimiento.Moneda = encMovimiento.Moneda;
                         EncMovimiento.idCondPago = encMovimiento.idCondPago;
                         EncMovimiento.idDiasValidos = encMovimiento.idDiasValidos;
-                        EncMovimiento.idGarantia = encMovimiento.idGarantia;
+                       // EncMovimiento.idGarantia = encMovimiento.idGarantia;
                         EncMovimiento.idTiemposEntregas = encMovimiento.idTiemposEntregas;
                         db.SaveChanges();
 
@@ -1450,7 +1450,7 @@ namespace WATickets.Controllers
                         EncMovimiento.AprobadaSuperior = false;
                         EncMovimiento.idCondPago = encMovimiento.idCondPago;
                         EncMovimiento.idDiasValidos = encMovimiento.idDiasValidos;
-                        EncMovimiento.idGarantia = encMovimiento.idGarantia;
+                        //EncMovimiento.idGarantia = encMovimiento.idGarantia;
                         EncMovimiento.idTiemposEntregas = encMovimiento.idTiemposEntregas;
                         EncMovimiento.Facturado = false;
                         db.EncMovimiento.Add(EncMovimiento);
@@ -2339,7 +2339,7 @@ namespace WATickets.Controllers
                                 EncMovimientoEntrega.AprobadaSuperior = false;
                                 EncMovimientoEntrega.idCondPago = 0;
                                 EncMovimientoEntrega.idDiasValidos = 0;
-                                EncMovimientoEntrega.idGarantia = 0;
+                                EncMovimientoEntrega.idGarantia = 1;
                                 EncMovimientoEntrega.idTiemposEntregas = 0;
                                 EncMovimientoEntrega.Facturado = true;
                                 db.EncMovimiento.Add(EncMovimientoEntrega);
