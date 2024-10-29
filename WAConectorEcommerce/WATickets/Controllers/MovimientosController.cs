@@ -671,8 +671,7 @@ namespace WATickets.Controllers
                     && (filtro.FiltrarFacturado ? (filtro.NoFacturado ? a.Facturado == false : a.Facturado == true) : true )
                     && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
                      && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
-                    )
-                       .Select(a => new
+                    ).Select(a => new
                        {
                            a.id,
                            a.DocEntry,
@@ -680,15 +679,15 @@ namespace WATickets.Controllers
                            a.CardName,
                            a.NumLlamada,
                            Llamada = db.LlamadasServicios
-                    .Where(z => z.DocEntry.ToString() == a.NumLlamada)
-                    .Select(z => new
-                    {
-                        z.id,
-                        z.EmailPersonaContacto,
-                        z.Status,
-                        z.TipoCaso
-                    })
-                    .FirstOrDefault(),
+                            .Where(z => z.DocEntry.ToString() == a.NumLlamada)
+                            .Select(z => new
+                            {
+                                z.id,
+                                z.EmailPersonaContacto,
+                                z.Status,
+                                z.TipoCaso
+                            })
+                            .FirstOrDefault(),
                            a.Fecha,
                            a.TipoMovimiento,
                            a.Comentarios,
@@ -954,105 +953,105 @@ namespace WATickets.Controllers
 
 
 
-                        if (!string.IsNullOrEmpty(filtro.CardName)) //Status
-                        {
-                            var valores = filtro.CardName.Split('|');
-                            foreach (var item in valores)
+                            if (!string.IsNullOrEmpty(filtro.CardName)) //Status
                             {
-                                if (!string.IsNullOrEmpty(item))
+                                var valores = filtro.CardName.Split('|');
+                                foreach (var item in valores)
                                 {
-                                    filtro.seleccionMultiple.Add(Convert.ToInt32(item));
+                                    if (!string.IsNullOrEmpty(item))
+                                    {
+                                        filtro.seleccionMultiple.Add(Convert.ToInt32(item));
+
+                                    }
 
                                 }
 
-                            }
-
-                            if (filtro.seleccionMultiple.Count > 0)
-                            {
-                                var llamadasQuery = db.LlamadasServicios.AsQueryable();
+                                if (filtro.seleccionMultiple.Count > 0)
+                                {
+                                    var llamadasQuery = db.LlamadasServicios.AsQueryable();
 
 
-                                // Filtrar por Status diferente a Codigo3
-                                var llamadas = llamadasQuery.Where(a => !filtro.seleccionMultiple.Contains(a.Status.Value)).Select(a => a.DocEntry.ToString()).ToHashSet();
-                                // Filtrar por fechas si las fechas son diferentes al valor por defecto
-                                //if (filtro.FechaInicial != time)
-                                //{
-                                //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion >= filtro.FechaInicial);
-                                //}
-                                //if (filtro.FechaFinal != time)
-                                //{
-                                //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion <= filtro.FechaFinal);
-                                //}
+                                    // Filtrar por Status diferente a Codigo3
+                                    var llamadas = llamadasQuery.Where(a => !filtro.seleccionMultiple.Contains(a.Status.Value)).Select(a => a.DocEntry.ToString()).ToHashSet();
+                                    // Filtrar por fechas si las fechas son diferentes al valor por defecto
+                                    //if (filtro.FechaInicial != time)
+                                    //{
+                                    //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion >= filtro.FechaInicial);
+                                    //}
+                                    //if (filtro.FechaFinal != time)
+                                    //{
+                                    //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion <= filtro.FechaFinal);
+                                    //}
 
 
-                                var encMovimientos = db.EncMovimiento.Where(a => !llamadas.Contains(a.NumLlamada) && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true) && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true))
-                               .Select(a => new
-                               {
-                                   a.id,
-                                   a.DocEntry,
-                                   a.CardCode,
-                                   a.CardName,
-                                   a.NumLlamada,
-                                   Llamada = db.LlamadasServicios
-                    .Where(z => z.DocEntry.ToString() == a.NumLlamada)
-                    .Select(z => new
-                    {
-                        z.id,
-                        z.EmailPersonaContacto,
-                        z.Status,
-                        z.TipoCaso
-                    })
-                    .FirstOrDefault(),
-                                   a.Fecha,
-                                   a.TipoMovimiento,
-                                   a.Comentarios,
-                                   a.CreadoPor,
-                                   a.Subtotal,
-                                   a.PorDescuento,
-                                   a.Descuento,
-                                   a.Impuestos,
-                                   a.TotalComprobante,
-                                   a.Moneda,
-                                   a.AprobadaSuperior,
-                                   a.idCondPago,
-                                   a.idDiasValidos,
-                                   a.idGarantia,
-                                   a.idTiemposEntregas,
-                                   a.Aprobada,
-                                   a.Facturado,
-                                   Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
-                               })
-    .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
-    .Select(a => new
-    {
-        a.id,
-        a.DocEntry,
-        a.CardCode,
-        a.CardName,
-        a.NumLlamada,
-        idLlamada = a.Llamada?.id ?? 0,
-        EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
-        StatusLlamada = a.Llamada?.Status ?? 0,
-        TipoCaso = a.Llamada?.TipoCaso ?? 0,
-        a.Fecha,
-        a.TipoMovimiento,
-        a.Comentarios,
-        a.CreadoPor,
-        a.Subtotal,
-        a.PorDescuento,
-        a.Descuento,
-        a.Impuestos,
-        a.TotalComprobante,
-        a.Moneda,
-        a.AprobadaSuperior,
-        a.idCondPago,
-        a.idDiasValidos,
-        a.idGarantia,
-        a.idTiemposEntregas,
-        a.Aprobada,
-        a.Detalle
-    })
-    .ToList();
+                                    var encMovimientos = db.EncMovimiento.Where(a => !llamadas.Contains(a.NumLlamada) && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true) && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true))
+                                   .Select(a => new
+                                   {
+                                       a.id,
+                                       a.DocEntry,
+                                       a.CardCode,
+                                       a.CardName,
+                                       a.NumLlamada,
+                                       Llamada = db.LlamadasServicios
+                        .Where(z => z.DocEntry.ToString() == a.NumLlamada)
+                        .Select(z => new
+                        {
+                            z.id,
+                            z.EmailPersonaContacto,
+                            z.Status,
+                            z.TipoCaso
+                        })
+                        .FirstOrDefault(),
+                                       a.Fecha,
+                                       a.TipoMovimiento,
+                                       a.Comentarios,
+                                       a.CreadoPor,
+                                       a.Subtotal,
+                                       a.PorDescuento,
+                                       a.Descuento,
+                                       a.Impuestos,
+                                       a.TotalComprobante,
+                                       a.Moneda,
+                                       a.AprobadaSuperior,
+                                       a.idCondPago,
+                                       a.idDiasValidos,
+                                       a.idGarantia,
+                                       a.idTiemposEntregas,
+                                       a.Aprobada,
+                                       a.Facturado,
+                                       Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
+                                   })
+        .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
+        .Select(a => new
+        {
+            a.id,
+            a.DocEntry,
+            a.CardCode,
+            a.CardName,
+            a.NumLlamada,
+            idLlamada = a.Llamada?.id ?? 0,
+            EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+            StatusLlamada = a.Llamada?.Status ?? 0,
+            TipoCaso = a.Llamada?.TipoCaso ?? 0,
+            a.Fecha,
+            a.TipoMovimiento,
+            a.Comentarios,
+            a.CreadoPor,
+            a.Subtotal,
+            a.PorDescuento,
+            a.Descuento,
+            a.Impuestos,
+            a.TotalComprobante,
+            a.Moneda,
+            a.AprobadaSuperior,
+            a.idCondPago,
+            a.idDiasValidos,
+            a.idGarantia,
+            a.idTiemposEntregas,
+            a.Aprobada,
+            a.Detalle
+        })
+        .ToList();
                                  
                                 return Request.CreateResponse(HttpStatusCode.OK, encMovimientos.ToList());
 

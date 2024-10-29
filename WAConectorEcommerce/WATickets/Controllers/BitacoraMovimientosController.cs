@@ -389,6 +389,15 @@ namespace WATickets.Controllers
                                     }
                                     else
                                     {
+                                        var Detalles = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).ToList();
+                                        foreach(var item in Detalles)
+                                        {
+                                            db.Entry(item).State = EntityState.Modified;
+                                            item.CantidadEnviar = 0;
+                                            db.SaveChanges();
+                                        }
+
+
                                         db.Entry(BT).State = EntityState.Modified;
                                         BT.Status = "0"; 
                                         db.SaveChanges();
@@ -410,6 +419,7 @@ namespace WATickets.Controllers
                             }
                             else
                             {
+
                                 db.Entry(BT).State = EntityState.Modified;
                                 BT.Status = "0";
                                 db.SaveChanges();
@@ -422,6 +432,16 @@ namespace WATickets.Controllers
 
                                 db.BitacoraErrores.Add(be);
                                 db.SaveChanges();
+
+                                var Detalles = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).ToList();
+                                foreach (var item in Detalles)
+                                {
+                                    db.Entry(item).State = EntityState.Modified;
+                                    item.CantidadEnviar = 0;
+                                    db.SaveChanges();
+                                }
+
+
                                 Conexion.Desconectar();
                                 throw new Exception("Error al generar el traslado en SAP " + be.Descripcion);
                             }
@@ -440,6 +460,16 @@ namespace WATickets.Controllers
 
                             db.BitacoraErrores.Add(be);
                             db.SaveChanges();
+
+                            var Detalles = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).ToList();
+                            foreach (var item in Detalles)
+                            {
+                                db.Entry(item).State = EntityState.Modified;
+                                item.CantidadEnviar = 0;
+                                db.SaveChanges();
+                            }
+
+
                             throw new Exception("Error al generar el traslado " + be.Descripcion);
 
                         }
