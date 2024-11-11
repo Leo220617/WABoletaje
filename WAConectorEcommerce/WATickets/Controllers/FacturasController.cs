@@ -584,18 +584,24 @@ namespace WATickets.Controllers
                         {
                             documentoSAP.DocTotal = Convert.ToDouble(Factura.TotalCompra);
                         }
-                        var EncMovimiento = db.EncMovimiento.Where(a => a.id == Factura.idEntrega).FirstOrDefault();
-                        var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
-                        var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
-                        var Tec = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
-                        var Tecnico = db.Tecnicos.Where(a => a.idSAP == Tec).FirstOrDefault();
-
-
-
-                        if (Tecnico.Letra > 0)
+                        var EncMovimiento = new EncMovimiento();
+                        if (Factura.idEntrega > 0)
                         {
-                            documentoSAP.SalesPersonCode = Tecnico.Letra;
+                            EncMovimiento = db.EncMovimiento.Where(a => a.id == Factura.idEntrega).FirstOrDefault();
+                            var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
+                            var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
+                            var Tec = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
+                            var Tecnico = db.Tecnicos.Where(a => a.idSAP == Tec).FirstOrDefault();
+
+
+
+                            if (Tecnico.Letra > 0)
+                            {
+                                documentoSAP.SalesPersonCode = Tecnico.Letra;
+                            }
                         }
+
+
                         documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoConsecutivo).Value = Factura.ConsecutivoHacienda; //"U_LDT_NumeroGTI"
                         documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoClave).Value = Factura.ClaveHacienda;       //"U_LDT_FiscalDoc"
                                                                                                                                    //documentoSAP.UserFields.Fields.Item("U_DYD_Estado").Value = "A";
@@ -686,22 +692,27 @@ namespace WATickets.Controllers
                             try
                             {
                                 // Get the delivery
-                                Documents delivery = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
-                                if (delivery.GetByKey(EncMovimiento.DocEntry))
+                                if (Factura.idEntrega > 0)
                                 {
-                                    for (int j = 0; j < delivery.Lines.Count; j++)
-                                    {
-                                        delivery.Lines.SetCurrentLine(j);
 
-                                        if (item.ItemCode == delivery.Lines.ItemCode) // Match criteria can be adjusted
+                                    Documents delivery = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
+                                    if (delivery.GetByKey(EncMovimiento.DocEntry))
+                                    {
+                                        for (int j = 0; j < delivery.Lines.Count; j++)
                                         {
-                                            documentoSAP.Lines.BaseEntry = delivery.DocEntry;
-                                            documentoSAP.Lines.BaseType = (int)BoObjectTypes.oDeliveryNotes;
-                                            documentoSAP.Lines.BaseLine = delivery.Lines.LineNum;
-                                            break;
+                                            delivery.Lines.SetCurrentLine(j);
+
+                                            if (item.ItemCode == delivery.Lines.ItemCode) // Match criteria can be adjusted
+                                            {
+                                                documentoSAP.Lines.BaseEntry = delivery.DocEntry;
+                                                documentoSAP.Lines.BaseType = (int)BoObjectTypes.oDeliveryNotes;
+                                                documentoSAP.Lines.BaseLine = delivery.Lines.LineNum;
+                                                break;
+                                            }
                                         }
                                     }
                                 }
+
                             }
                             catch (Exception ex)
                             {
@@ -1252,16 +1263,20 @@ namespace WATickets.Controllers
                             factura.ConsecutivoHacienda = res.ConsecutivoHacienda;
                             db.SaveChanges();
 
-                            var Entrega = db.EncMovimiento.Where(a => a.id == Factura.idEntrega).FirstOrDefault();
-                            if (Entrega != null && res.code == 1)
+                            if (Factura.idEntrega > 0)
                             {
-                                db.Entry(Entrega).State = EntityState.Modified;
-                                Entrega.Facturado = true;
-                                db.SaveChanges();
-                            }
-                            else
-                            {
-                                throw new Exception("Ha ocurrido un error al facturar: " + "el resultado de la factura es " + res.code);
+                                var Entrega = db.EncMovimiento.Where(a => a.id == Factura.idEntrega).FirstOrDefault();
+                                if (Entrega != null && res.code == 1)
+                                {
+                                    db.Entry(Entrega).State = EntityState.Modified;
+                                    Entrega.Facturado = true;
+                                    db.SaveChanges();
+                                }
+                                else
+                                {
+                                    throw new Exception("Ha ocurrido un error al facturar: " + "el resultado de la factura es " + res.code);
+                                }
+
                             }
 
 
@@ -1323,7 +1338,7 @@ namespace WATickets.Controllers
                         documentoSAP.DocDueDate = Factura.Fecha.AddDays(Dias);
                         documentoSAP.DocType = BoDocumentTypes.dDocument_Items;
                         documentoSAP.NumAtCard = "Boletaje FAC:" + " " + Factura.id;
-                        documentoSAP.Comments = g.TruncarString(Factura.Comentarios, 200); 
+                        documentoSAP.Comments = g.TruncarString(Factura.Comentarios, 200);
                         documentoSAP.PaymentGroupCode = Convert.ToInt32(db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault() == null ? "0" : db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault().codSAP);
                         var CondPago = db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault() == null ? "0" : db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault().Nombre;
                         documentoSAP.Series = CondPago.ToLower().Contains("contado") ? ParametrosFacturacion.SerieFECO : ParametrosFacturacion.SerieFECR;  //4;  //param.SerieProforma; //Quemada
@@ -1340,18 +1355,24 @@ namespace WATickets.Controllers
                         {
                             documentoSAP.DocTotal = Convert.ToDouble(Factura.TotalCompra);
                         }
-                        var EncMovimiento = db.EncMovimiento.Where(a => a.id == Factura.idEntrega).FirstOrDefault();
-                        var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
-                        var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
-                        var Tec = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
-                        var Tecnico = db.Tecnicos.Where(a => a.idSAP == Tec).FirstOrDefault();
 
-
-
-                        if (Tecnico.Letra > 0)
+                        var EncMovimiento = new EncMovimiento();
+                        if (Factura.idEntrega > 0)
                         {
-                            documentoSAP.SalesPersonCode = Tecnico.Letra;
+                            EncMovimiento = db.EncMovimiento.Where(a => a.id == Factura.idEntrega).FirstOrDefault();
+                            var Llam = Convert.ToInt32(EncMovimiento.NumLlamada);
+                            var Llamada2 = db.LlamadasServicios.Where(a => a.DocEntry == Llam).FirstOrDefault();
+                            var Tec = Llamada2.Tecnico == null ? "" : Llamada2.Tecnico.ToString();
+                            var Tecnico = db.Tecnicos.Where(a => a.idSAP == Tec).FirstOrDefault();
+
+
+
+                            if (Tecnico.Letra > 0)
+                            {
+                                documentoSAP.SalesPersonCode = Tecnico.Letra;
+                            }
                         }
+
                         documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoConsecutivo).Value = Factura.ConsecutivoHacienda; //"U_LDT_NumeroGTI"
                         documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoClave).Value = Factura.ClaveHacienda;       //"U_LDT_FiscalDoc"
                                                                                                                                    //documentoSAP.UserFields.Fields.Item("U_DYD_Estado").Value = "A";
@@ -1441,23 +1462,27 @@ namespace WATickets.Controllers
 
                             try
                             {
-                                // Get the delivery
-                                Documents delivery = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
-                                if (delivery.GetByKey(EncMovimiento.DocEntry))
+                                if(Factura.idEntrega > 0)
                                 {
-                                    for (int j = 0; j < delivery.Lines.Count; j++)
+                                    Documents delivery = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
+                                    if (delivery.GetByKey(EncMovimiento.DocEntry))
                                     {
-                                        delivery.Lines.SetCurrentLine(j);
-
-                                        if (item.ItemCode == delivery.Lines.ItemCode) // Match criteria can be adjusted
+                                        for (int j = 0; j < delivery.Lines.Count; j++)
                                         {
-                                            documentoSAP.Lines.BaseEntry = delivery.DocEntry;
-                                            documentoSAP.Lines.BaseType = (int)BoObjectTypes.oDeliveryNotes;
-                                            documentoSAP.Lines.BaseLine = delivery.Lines.LineNum;
-                                            break;
+                                            delivery.Lines.SetCurrentLine(j);
+
+                                            if (item.ItemCode == delivery.Lines.ItemCode) // Match criteria can be adjusted
+                                            {
+                                                documentoSAP.Lines.BaseEntry = delivery.DocEntry;
+                                                documentoSAP.Lines.BaseType = (int)BoObjectTypes.oDeliveryNotes;
+                                                documentoSAP.Lines.BaseLine = delivery.Lines.LineNum;
+                                                break;
+                                            }
                                         }
                                     }
                                 }
+                                // Get the delivery
+                                
                             }
                             catch (Exception ex)
                             {

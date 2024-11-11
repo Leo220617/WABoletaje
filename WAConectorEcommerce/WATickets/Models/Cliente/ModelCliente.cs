@@ -68,6 +68,11 @@ namespace WATickets.Models.Cliente
         public virtual DbSet<CuentasBancarias> CuentasBancarias { get; set; }
         public virtual DbSet<MetodosPagosFacturas> MetodosPagosFacturas { get; set; }
 
+        public virtual DbSet<ProductosGarantias> ProductosGarantias { get; set; }
+        public virtual DbSet<LlamadasFacturas> LlamadasFacturas { get; set; }
+        public virtual DbSet<AprobacionesFacturas> AprobacionesFacturas { get; set; }
+
+
 
 
 

@@ -29,5 +29,6 @@ namespace WATickets.Models.Cliente
         public string Norma { get; set; }
         public string SQLDocumentoExoneracion { get; set; }
         public int SeriePago { get; set; }
+        public string SQLProductosFacturar { get; set; }
     }
 }

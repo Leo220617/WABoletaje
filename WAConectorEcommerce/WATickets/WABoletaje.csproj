@@ -236,6 +236,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\ActividadesController.cs" />
+    <Compile Include="Controllers\AprobacionesFacturasController.cs" />
     <Compile Include="Controllers\AsuntosController.cs" />
     <Compile Include="Controllers\BackOfficeController.cs" />
     <Compile Include="Controllers\BitacoraController.cs" />
@@ -262,6 +263,7 @@
     <Compile Include="Controllers\HistoricoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImpuestosController.cs" />
+    <Compile Include="Controllers\LlamadasFacturasController.cs" />
     <Compile Include="Controllers\LlamadasServicioController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\LogModificacionesController.cs" />
@@ -271,6 +273,8 @@
     <Compile Include="Controllers\PersonasContactoController.cs" />
     <Compile Include="Controllers\PlazosCreditosController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
+    <Compile Include="Controllers\ProductosFacturacionInicialController.cs" />
+    <Compile Include="Controllers\ProductosGarantiasController.cs" />
     <Compile Include="Controllers\ProductosHijosController.cs" />
     <Compile Include="Controllers\ProductosPadresController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
@@ -296,6 +300,7 @@
     <Compile Include="Models\Cliente\Actividades.cs" />
     <Compile Include="Models\Cliente\Adjuntos.cs" />
     <Compile Include="Models\Cliente\AdjuntosIdentificacion.cs" />
+    <Compile Include="Models\Cliente\AprobacionesFacturas.cs" />
     <Compile Include="Models\Cliente\Asuntos.cs" />
     <Compile Include="Models\Cliente\BackOffice.cs" />
     <Compile Include="Models\Cliente\BitacoraErrores.cs" />
@@ -322,6 +327,7 @@
     <Compile Include="Models\Cliente\Errores.cs" />
     <Compile Include="Models\Cliente\Garantias.cs" />
     <Compile Include="Models\Cliente\Impuestos.cs" />
+    <Compile Include="Models\Cliente\LlamadasFacturas.cs" />
     <Compile Include="Models\Cliente\LlamadasServicios.cs" />
     <Compile Include="Models\Cliente\Login.cs" />
     <Compile Include="Models\Cliente\LogModificaciones.cs" />
@@ -331,6 +337,7 @@
     <Compile Include="Models\Cliente\Parametros.cs" />
     <Compile Include="Models\Cliente\ParametrosFacturacion.cs" />
     <Compile Include="Models\Cliente\PlazosCreditos.cs" />
+    <Compile Include="Models\Cliente\ProductosGarantias.cs" />
     <Compile Include="Models\Cliente\ProductosHijos.cs" />
     <Compile Include="Models\Cliente\ProductosPadres.cs" />
     <Compile Include="Models\Cliente\Roles.cs" />

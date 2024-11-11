@@ -88,7 +88,7 @@ namespace WATickets.Controllers
             try
             {
                 var time = new DateTime();
-                var Llamada = new List<LlamadasServicios>();
+                var Llamada = new object();
                 if (filtro.FechaFinal != time)
                 {
                     filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
@@ -112,7 +112,41 @@ namespace WATickets.Controllers
 
                         if (filtro.seleccionMultiple.Count > 0)
                         {
-                             Llamada = db.LlamadasServicios
+                             Llamada = db.LlamadasServicios.Select(a => new
+                             {
+                                 a.id,
+                                 a.TipoLlamada,
+                                 a.Series,
+                                 a.Status,
+                                 a.CardCode,
+                                 a.DocEntry,
+                                 a.DocNum,
+                                 a.SerieFabricante,
+                                 a.ItemCode,
+                                 a.Asunto,
+                                 a.TipoCaso,
+                                 a.FechaSISO,
+                                 a.LugarReparacion,
+                                 a.SucRecibo,
+                                 a.SucRetiro,
+                                 a.Comentarios,
+                                 a.TratadoPor,
+                                 a.Garantia,
+                                 a.Tecnico,
+                                 a.ProcesadaSAP,
+                                 a.FechaCreacion,
+                                 a.Firma,
+                                 a.Horas,
+                                 a.PersonaContacto,
+                                 a.EmailPersonaContacto,
+                                 a.NumeroPersonaContacto,
+                                 a.PIN,
+                                 a.SinRepuestos,
+                                 a.Prioridad,
+                                 a.SinFacturar,
+                                 Factura = db.EncFacturas.Where(x => x.NumLlamada == a.DocEntry.ToString()).ToList()
+                             }
+                                 )
                              .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
                              && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
                              && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true)
@@ -137,7 +171,41 @@ namespace WATickets.Controllers
 
                         }
 
-                        Llamada = db.LlamadasServicios
+                        Llamada = db.LlamadasServicios.Select(a => new
+                        {
+                            a.id,
+                            a.TipoLlamada,
+                            a.Series,
+                            a.Status,
+                            a.CardCode,
+                            a.DocEntry,
+                            a.DocNum,
+                            a.SerieFabricante,
+                            a.ItemCode,
+                            a.Asunto,
+                            a.TipoCaso,
+                            a.FechaSISO,
+                            a.LugarReparacion,
+                            a.SucRecibo,
+                            a.SucRetiro,
+                            a.Comentarios,
+                            a.TratadoPor,
+                            a.Garantia,
+                            a.Tecnico,
+                            a.ProcesadaSAP,
+                            a.FechaCreacion,
+                            a.Firma,
+                            a.Horas,
+                            a.PersonaContacto,
+                            a.EmailPersonaContacto,
+                            a.NumeroPersonaContacto,
+                            a.PIN,
+                            a.SinRepuestos,
+                            a.Prioridad,
+                            a.SinFacturar,
+                            Factura = db.EncFacturas.Where(x => x.NumLlamada == a.DocEntry.ToString()).ToList()
+                        }
+                                 )
                        .Where(a => (DocEntry != 0 ? a.DocEntry == DocEntry : true)
                        && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
                        ).ToList();
@@ -145,7 +213,41 @@ namespace WATickets.Controllers
                     }
                     else
                     {
-                          Llamada = db.LlamadasServicios
+                          Llamada = db.LlamadasServicios.Select(a => new
+                          {
+                              a.id,
+                              a.TipoLlamada,
+                              a.Series,
+                              a.Status,
+                              a.CardCode,
+                              a.DocEntry,
+                              a.DocNum,
+                              a.SerieFabricante,
+                              a.ItemCode,
+                              a.Asunto,
+                              a.TipoCaso,
+                              a.FechaSISO,
+                              a.LugarReparacion,
+                              a.SucRecibo,
+                              a.SucRetiro,
+                              a.Comentarios,
+                              a.TratadoPor,
+                              a.Garantia,
+                              a.Tecnico,
+                              a.ProcesadaSAP,
+                              a.FechaCreacion,
+                              a.Firma,
+                              a.Horas,
+                              a.PersonaContacto,
+                              a.EmailPersonaContacto,
+                              a.NumeroPersonaContacto,
+                              a.PIN,
+                              a.SinRepuestos,
+                              a.Prioridad,
+                              a.SinFacturar,
+                              Factura = db.EncFacturas.Where(x => x.NumLlamada == a.DocEntry.ToString()).ToList()
+                          }
+                                 )
                          .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
                          && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)
                          && (filtro.Codigo1 > 0 ? a.Tecnico == filtro.Codigo1 : true)
@@ -172,7 +274,41 @@ namespace WATickets.Controllers
 
                         }
 
-                          Llamada = db.LlamadasServicios
+                          Llamada = db.LlamadasServicios.Select(a => new
+                          {
+                              a.id,
+                              a.TipoLlamada,
+                              a.Series,
+                              a.Status,
+                              a.CardCode,
+                              a.DocEntry,
+                              a.DocNum,
+                              a.SerieFabricante,
+                              a.ItemCode,
+                              a.Asunto,
+                              a.TipoCaso,
+                              a.FechaSISO,
+                              a.LugarReparacion,
+                              a.SucRecibo,
+                              a.SucRetiro,
+                              a.Comentarios,
+                              a.TratadoPor,
+                              a.Garantia,
+                              a.Tecnico,
+                              a.ProcesadaSAP,
+                              a.FechaCreacion,
+                              a.Firma,
+                              a.Horas,
+                              a.PersonaContacto,
+                              a.EmailPersonaContacto,
+                              a.NumeroPersonaContacto,
+                              a.PIN,
+                              a.SinRepuestos,
+                              a.Prioridad,
+                              a.SinFacturar,
+                              Factura = db.EncFacturas.Where(x => x.NumLlamada == a.DocEntry.ToString()).ToList()
+                          }
+                                 )
                          .Where(a => (DocEntry != 0 ? a.DocEntry == DocEntry : true)
                          && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
                          ).ToList();
@@ -201,7 +337,41 @@ namespace WATickets.Controllers
 
                             if (filtro.seleccionMultiple.Count > 0)
                             {
-                                Llamada = db.LlamadasServicios
+                                Llamada = db.LlamadasServicios.Select(a => new
+                                {
+                                    a.id,
+                                    a.TipoLlamada,
+                                    a.Series,
+                                    a.Status,
+                                    a.CardCode,
+                                    a.DocEntry,
+                                    a.DocNum,
+                                    a.SerieFabricante,
+                                    a.ItemCode,
+                                    a.Asunto,
+                                    a.TipoCaso,
+                                    a.FechaSISO,
+                                    a.LugarReparacion,
+                                    a.SucRecibo,
+                                    a.SucRetiro,
+                                    a.Comentarios,
+                                    a.TratadoPor,
+                                    a.Garantia,
+                                    a.Tecnico,
+                                    a.ProcesadaSAP,
+                                    a.FechaCreacion,
+                                    a.Firma,
+                                    a.Horas,
+                                    a.PersonaContacto,
+                                    a.EmailPersonaContacto,
+                                    a.NumeroPersonaContacto,
+                                    a.PIN,
+                                    a.SinRepuestos,
+                                    a.Prioridad,
+                                    a.SinFacturar,
+                                    Factura = db.EncFacturas.Where(x => x.NumLlamada == a.DocEntry.ToString()).ToList()
+                                }
+                                 )
                           .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
                           && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true) && filtro.seleccionMultiple.Contains(a.Status.Value)
                           
@@ -214,7 +384,41 @@ namespace WATickets.Controllers
                         }
                         else
                         {
-                            Llamada = db.LlamadasServicios
+                            Llamada = db.LlamadasServicios.Select(a => new
+                            {
+                                a.id,
+                                a.TipoLlamada,
+                                a.Series,
+                                a.Status,
+                                a.CardCode,
+                                a.DocEntry,
+                                a.DocNum,
+                                a.SerieFabricante,
+                                a.ItemCode,
+                                a.Asunto,
+                                a.TipoCaso,
+                                a.FechaSISO,
+                                a.LugarReparacion,
+                                a.SucRecibo,
+                                a.SucRetiro,
+                                a.Comentarios,
+                                a.TratadoPor,
+                                a.Garantia,
+                                a.Tecnico,
+                                a.ProcesadaSAP,
+                                a.FechaCreacion,
+                                a.Firma,
+                                a.Horas,
+                                a.PersonaContacto,
+                                a.EmailPersonaContacto,
+                                a.NumeroPersonaContacto,
+                                a.PIN,
+                                a.SinRepuestos,
+                                a.Prioridad,
+                                a.SinFacturar,
+                                Factura = db.EncFacturas.Where(x => x.NumLlamada == a.DocEntry.ToString()).ToList()
+                            }
+                                 )
                           .Where(a => (filtro.FechaInicial != time ? a.FechaCreacion >= filtro.FechaInicial : true)
                           && (filtro.FechaFinal != time ? a.FechaCreacion <= filtro.FechaFinal : true)  
                           ).ToList();
@@ -244,12 +448,80 @@ namespace WATickets.Controllers
 
 
 
-                var LlamadasServicio = db.LlamadasServicios.Where(a => a.id == id).FirstOrDefault();
+                var LlamadasServicio = db.LlamadasServicios.Select(a => new
+                {
+                    a.id,
+                    a.TipoLlamada,
+                    a.Series,
+                    a.Status,
+                    a.CardCode,
+                    a.DocEntry,
+                    a.DocNum,
+                    a.SerieFabricante,
+                    a.ItemCode,
+                    a.Asunto,
+                    a.TipoCaso,
+                    a.FechaSISO,
+                    a.LugarReparacion,
+                    a.SucRecibo,
+                    a.SucRetiro,
+                    a.Comentarios,
+                    a.TratadoPor,
+                    a.Garantia,
+                    a.Tecnico,
+                    a.ProcesadaSAP,
+                    a.FechaCreacion,
+                    a.Firma,
+                    a.Horas,
+                    a.PersonaContacto,
+                    a.EmailPersonaContacto,
+                    a.NumeroPersonaContacto,
+                    a.PIN,
+                    a.SinRepuestos,
+                    a.Prioridad,
+                    a.SinFacturar,
+                    Factura = db.EncFacturas.Where(x => x.NumLlamada == a.DocEntry.ToString()).ToList()
+                }
+                                 ).Where(a => a.id == id).FirstOrDefault();
 
 
                 if (LlamadasServicio == null)
                 {
-                    LlamadasServicio = db.LlamadasServicios.Where(a => a.DocEntry == id).FirstOrDefault();
+                    LlamadasServicio = db.LlamadasServicios.Select(a => new
+                    {
+                        a.id,
+                        a.TipoLlamada,
+                        a.Series,
+                        a.Status,
+                        a.CardCode,
+                        a.DocEntry,
+                        a.DocNum,
+                        a.SerieFabricante,
+                        a.ItemCode,
+                        a.Asunto,
+                        a.TipoCaso,
+                        a.FechaSISO,
+                        a.LugarReparacion,
+                        a.SucRecibo,
+                        a.SucRetiro,
+                        a.Comentarios,
+                        a.TratadoPor,
+                        a.Garantia,
+                        a.Tecnico,
+                        a.ProcesadaSAP,
+                        a.FechaCreacion,
+                        a.Firma,
+                        a.Horas,
+                        a.PersonaContacto,
+                        a.EmailPersonaContacto,
+                        a.NumeroPersonaContacto,
+                        a.PIN,
+                        a.SinRepuestos,
+                        a.Prioridad,
+                        a.SinFacturar,
+                        Factura = db.EncFacturas.Where(x => x.NumLlamada == a.DocEntry.ToString()).ToList()
+                    }
+                                 ).Where(a => a.DocEntry == id).FirstOrDefault();
                     if (LlamadasServicio == null)
                     {
                         throw new Exception("Este LlamadasServicio no se encuentra registrado");
@@ -276,7 +548,41 @@ namespace WATickets.Controllers
 
 
 
-                var LlamadasServicio = db.LlamadasServicios.Where(a => a.DocEntry == id).FirstOrDefault();
+                var LlamadasServicio = db.LlamadasServicios.Select(a => new
+                {
+                    a.id,
+                    a.TipoLlamada,
+                    a.Series,
+                    a.Status,
+                    a.CardCode,
+                    a.DocEntry,
+                    a.DocNum,
+                    a.SerieFabricante,
+                    a.ItemCode,
+                    a.Asunto,
+                    a.TipoCaso,
+                    a.FechaSISO,
+                    a.LugarReparacion,
+                    a.SucRecibo,
+                    a.SucRetiro,
+                    a.Comentarios,
+                    a.TratadoPor,
+                    a.Garantia,
+                    a.Tecnico,
+                    a.ProcesadaSAP,
+                    a.FechaCreacion,
+                    a.Firma,
+                    a.Horas,
+                    a.PersonaContacto,
+                    a.EmailPersonaContacto,
+                    a.NumeroPersonaContacto,
+                    a.PIN,
+                    a.SinRepuestos,
+                    a.Prioridad,
+                    a.SinFacturar,
+                    Factura = db.EncFacturas.Where(x => x.NumLlamada == a.DocEntry.ToString()).ToList()
+                }
+                                 ).Where(a => a.DocEntry == id).FirstOrDefault();
 
 
                 if (LlamadasServicio == null)
@@ -457,6 +763,14 @@ namespace WATickets.Controllers
 
                 if (Llamada == null)
                 {
+                    var fecha = DateTime.Now.Date;
+                
+                    if(db.AprobacionesFacturas.Where(a => a.ItemCode == llamada.ItemCode && a.Serie == llamada.SerieFabricante && a.CardCode == llamada.CardCode && a.Fecha == fecha && a.Aprobada == true).FirstOrDefault() == null &&
+                        db.LlamadasFacturas.Where(a => a.ItemCode == llamada.ItemCode && a.Serie == llamada.SerieFabricante && a.CardCode == llamada.CardCode && a.Fecha == fecha).FirstOrDefault() == null && llamada.TipoCaso != 3)
+                    {
+                        throw new Exception("Falta Facturar");
+                    } 
+
                     Llamada = new LlamadasServicios();
                     Llamada.TipoLlamada = llamada.TipoLlamada;
                     Llamada.Series = Parametros.SerieBoleta;
@@ -468,7 +782,6 @@ namespace WATickets.Controllers
                     Llamada.TipoCaso = llamada.TipoCaso;
                     Llamada.FechaSISO = DateTime.Now.AddDays(1); //llamada.FechaSISO;
                     Llamada.LugarReparacion = llamada.LugarReparacion;
-
 
                     Llamada.SucRecibo = llamada.SucRecibo.Value;
                     Llamada.SucRetiro = llamada.SucRetiro;
@@ -485,6 +798,7 @@ namespace WATickets.Controllers
                     Llamada.NumeroPersonaContacto = llamada.NumeroPersonaContacto;
                     Llamada.PIN = false;
                     Llamada.SinRepuestos = llamada.SinRepuestos;
+                    Llamada.SinFacturar = llamada.SinFacturar;
                     Llamada.Prioridad = llamada.Prioridad;
                     db.LlamadasServicios.Add(Llamada);
                     db.SaveChanges();
@@ -538,6 +852,7 @@ namespace WATickets.Controllers
                         db2.BitacoraErrores.Add(be);
                         db2.SaveChanges();
                     }
+
 
                     try
                     {
@@ -680,8 +995,37 @@ namespace WATickets.Controllers
 
                             if (Llamada.DocEntry != 0 && Llamada.DocEntry != null)
                             {
+
                                 Llamada.ProcesadaSAP = true;
 
+                                try
+                                {
+                                    var time = DateTime.Now.Date;
+                                    var llamadasFac = db.LlamadasFacturas.Where(a => a.CardCode == Llamada.CardCode && a.Serie == Llamada.SerieFabricante && a.ItemCode == Llamada.ItemCode && a.Fecha == time).FirstOrDefault();
+                                    if (llamadasFac != null)
+                                    {
+                                        var Factura = db.EncFacturas.Where(a => a.id == llamadasFac.idFac).FirstOrDefault();
+                                        if(Factura != null)
+                                        {
+                                            db.Entry(Factura).State = EntityState.Modified;
+                                            Factura.NumLlamada = Llamada.DocEntry.ToString();
+                                            db.SaveChanges();
+
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+
+                                    BitacoraErrores be = new BitacoraErrores();
+
+                                    be.Descripcion = ex.Message;
+                                    be.StackTrace = ex.StackTrace;
+                                    be.Fecha = DateTime.Now;
+
+                                    db2.BitacoraErrores.Add(be);
+                                    db2.SaveChanges();
+                                }
                             }
 
                             db.SaveChanges();

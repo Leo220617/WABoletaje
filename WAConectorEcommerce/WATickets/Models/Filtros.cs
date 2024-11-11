@@ -20,6 +20,8 @@ namespace WATickets.Models
         public string Categoria { get; set; }
         public DateTime FechaInicial { get; set; }
         public DateTime FechaFinal { get; set; }
+        public DateTime FechaBusqueda { get; set; }
+
         public bool FiltroEspecial { get; set; }
         public bool PIN { get; set; }
         public bool NoFacturado { get; set; }
