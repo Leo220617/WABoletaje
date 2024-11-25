@@ -513,13 +513,14 @@ namespace WATickets.Controllers
                                     var DetalleOfertaAprobada = db.DetMovimiento.Where(a => a.idEncabezado == OfertaAprobada.id).ToList();
                                     foreach (var item in DetalleOfertaAprobada)
                                     {
+                                        
                                         DetMovimiento detMovimiento = new DetMovimiento();
                                         detMovimiento.idEncabezado = encMovimiento.id;
                                         detMovimiento.NumLinea = 1;
                                         detMovimiento.ItemCode = item.ItemCode;
                                         detMovimiento.ItemName = item.ItemName;
                                         detMovimiento.PrecioUnitario = item.PrecioUnitario;
-                                        detMovimiento.Cantidad = 0;//item.Cantidad;
+                                        detMovimiento.Cantidad = item.ItemName.ToLower().Contains("Mano de Obra".ToLower()) || item.ItemCode.ToLower().Contains("C0-000-045") ? item.Cantidad : 0;//item.Cantidad;
                                         detMovimiento.PorDescuento = item.PorDescuento;
                                         detMovimiento.Descuento = item.Descuento;
                                         detMovimiento.Impuestos = item.Impuestos;
@@ -542,8 +543,13 @@ namespace WATickets.Controllers
                                         var DetMovimientos = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).ToList();
                                         foreach(var itemMovimiento in DetMovimientos)
                                         {
-                                            db.DetMovimiento.Remove(itemMovimiento);
-                                            db.SaveChanges();
+                                            if(!itemMovimiento.ItemName.ToLower().Contains("Mano de Obra".ToLower()) && !itemMovimiento.ItemCode.ToLower().Contains("C0-000-045"))
+                                            {
+                                                db.DetMovimiento.Remove(itemMovimiento);
+                                                db.SaveChanges();
+                                            }
+                                            
+                                          
                                         }
                                     }
 

@@ -658,35 +658,38 @@ namespace WATickets.Controllers
                             documentoSAP.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
 
                             documentoSAP.Lines.WarehouseCode = item.CodBodega;
-                            switch (ParametrosFacturacion.Dimension)
+                            if (!string.IsNullOrEmpty(ParametrosFacturacion.Norma))
                             {
-                                case 1:
-                                    {
-                                        documentoSAP.Lines.CostingCode = ParametrosFacturacion.Norma;
+                                switch (ParametrosFacturacion.Dimension)
+                                {
+                                    case 1:
+                                        {
+                                            documentoSAP.Lines.CostingCode = ParametrosFacturacion.Norma;
 
-                                        break;
-                                    }
-                                case 2:
-                                    {
-                                        documentoSAP.Lines.CostingCode2 = ParametrosFacturacion.Norma;
-                                        break;
-                                    }
-                                case 3:
-                                    {
-                                        documentoSAP.Lines.CostingCode3 = ParametrosFacturacion.Norma;
-                                        break;
-                                    }
-                                case 4:
-                                    {
-                                        documentoSAP.Lines.CostingCode4 = ParametrosFacturacion.Norma;
-                                        break;
-                                    }
-                                case 5:
-                                    {
-                                        documentoSAP.Lines.CostingCode5 = ParametrosFacturacion.Norma;
-                                        break;
-                                    }
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            documentoSAP.Lines.CostingCode2 = ParametrosFacturacion.Norma;
+                                            break;
+                                        }
+                                    case 3:
+                                        {
+                                            documentoSAP.Lines.CostingCode3 = ParametrosFacturacion.Norma;
+                                            break;
+                                        }
+                                    case 4:
+                                        {
+                                            documentoSAP.Lines.CostingCode4 = ParametrosFacturacion.Norma;
+                                            break;
+                                        }
+                                    case 5:
+                                        {
+                                            documentoSAP.Lines.CostingCode5 = ParametrosFacturacion.Norma;
+                                            break;
+                                        }
 
+                                }
                             }
 
                             try
@@ -785,8 +788,74 @@ namespace WATickets.Controllers
                             Factura.ProcesadoSAP = true;
                             Factura.FechaProcesado = DateTime.Now;
                             db.SaveChanges();
+                            if(Factura.idEntrega > 0)
+                            {
+                                var count = -1;
+                                try
+                                {
+                                    var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
+
+                                    if (client2.GetByKey(Convert.ToInt32(Factura.NumLlamada)))
+                                    {
+                                        var idLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                                        var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == idLlamada).FirstOrDefault();
+                                        count = db.BitacoraMovimientosSAP.Where(a => a.idLlamada == Llamada.id && a.ProcesadaSAP == true).Distinct().GroupBy(a => a.DocEntry).Count();
+                                        // Que no exista otra entrega asociada
+                                        count += db.EncFacturas.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.ProcesadoSAP == true).FirstOrDefault() == null ? 0 : db.EncFacturas.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.ProcesadoSAP == true).Count();
+                                        count += db.EncMovimiento.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.id != EncMovimiento.id && a.TipoMovimiento == 2 && a.DocEntry > 0).Count();
+                                        var bandera = false;
+                                        if (count > 0)
+                                        {
+                                            bandera = true;
+                                        }
+                                        if (client2.Expenses.Count > 0)
+                                        {
+                                            if (bandera == true)
+                                            {
+                                                client2.Expenses.Add();
+
+                                            }
+                                        }
+
+                                        client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Invoice;
+
+                                        client2.Expenses.DocumentNumber = Convert.ToInt32(Factura.DocEntry);
+                                        client2.Expenses.DocEntry = Convert.ToInt32(Factura.DocEntry);
+                                        if (client2.Expenses.Count == 0)
+                                        {
+                                            client2.Expenses.Add();
+                                        }
+                                        client2.Expenses.Add();
+
+                                        var respuesta2 = client2.Update();
+                                        if (respuesta2 == 0)
+                                        {
+                                            Conexion.Desconectar();
+                                        }
+                                        else
+                                        {
+                                            BitacoraErrores be = new BitacoraErrores();
+
+                                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                            be.StackTrace = "Insercion de Liga FAC - LL " + client2.DocNum;
+                                            be.Fecha = DateTime.Now;
+
+                                            db.BitacoraErrores.Add(be);
+                                            db.SaveChanges();
+                                            Conexion.Desconectar();
 
 
+                                        }
+                                    }
+                                }
+                                catch (Exception)
+                                {
+
+
+                                }
+                            }
+                            
+                            
 
                             //Procesamos el pago
                             var CondicionPago = db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault() == null ? db.CondicionesPagos.FirstOrDefault() : db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault();
@@ -1154,6 +1223,7 @@ namespace WATickets.Controllers
 
                 if (Factura == null)
                 {
+                    
                     Factura = new EncFacturas();
                     Factura.idCondicionVenta = factura.idCondicionVenta;
                     Factura.idPlazoCredito = factura.idPlazoCredito;
@@ -1429,36 +1499,40 @@ namespace WATickets.Controllers
                             documentoSAP.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
 
                             documentoSAP.Lines.WarehouseCode = item.CodBodega;
-                            switch (ParametrosFacturacion.Dimension)
+                            if(!string.IsNullOrEmpty(ParametrosFacturacion.Norma))
                             {
-                                case 1:
-                                    {
-                                        documentoSAP.Lines.CostingCode = ParametrosFacturacion.Norma;
+                                switch (ParametrosFacturacion.Dimension)
+                                {
+                                    case 1:
+                                        {
+                                            documentoSAP.Lines.CostingCode = ParametrosFacturacion.Norma;
 
-                                        break;
-                                    }
-                                case 2:
-                                    {
-                                        documentoSAP.Lines.CostingCode2 = ParametrosFacturacion.Norma;
-                                        break;
-                                    }
-                                case 3:
-                                    {
-                                        documentoSAP.Lines.CostingCode3 = ParametrosFacturacion.Norma;
-                                        break;
-                                    }
-                                case 4:
-                                    {
-                                        documentoSAP.Lines.CostingCode4 = ParametrosFacturacion.Norma;
-                                        break;
-                                    }
-                                case 5:
-                                    {
-                                        documentoSAP.Lines.CostingCode5 = ParametrosFacturacion.Norma;
-                                        break;
-                                    }
+                                            break;
+                                        }
+                                    case 2:
+                                        {
+                                            documentoSAP.Lines.CostingCode2 = ParametrosFacturacion.Norma;
+                                            break;
+                                        }
+                                    case 3:
+                                        {
+                                            documentoSAP.Lines.CostingCode3 = ParametrosFacturacion.Norma;
+                                            break;
+                                        }
+                                    case 4:
+                                        {
+                                            documentoSAP.Lines.CostingCode4 = ParametrosFacturacion.Norma;
+                                            break;
+                                        }
+                                    case 5:
+                                        {
+                                            documentoSAP.Lines.CostingCode5 = ParametrosFacturacion.Norma;
+                                            break;
+                                        }
 
+                                }
                             }
+                           
 
                             try
                             {
@@ -1556,7 +1630,73 @@ namespace WATickets.Controllers
                             Factura.FechaProcesado = DateTime.Now;
                             db.SaveChanges();
 
+                            if(Factura.idEntrega > 0)
+                            {
+                                var count = -1;
+                                try
+                                {
+                                    var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
 
+                                    if (client2.GetByKey(Convert.ToInt32(Factura.NumLlamada)))
+                                    {
+                                        var idLlamada = Convert.ToInt32(EncMovimiento.NumLlamada);
+                                        var Llamada = db.LlamadasServicios.Where(a => a.DocEntry == idLlamada).FirstOrDefault();
+                                        count = db.BitacoraMovimientosSAP.Where(a => a.idLlamada == Llamada.id && a.ProcesadaSAP == true).Distinct().GroupBy(a => a.DocEntry).Count();
+                                        // Que no exista otra entrega asociada
+                                        count += db.EncFacturas.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.ProcesadoSAP == true).FirstOrDefault() == null ? 0 : db.EncFacturas.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.ProcesadoSAP == true).Count();
+                                        count += db.EncMovimiento.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.id != EncMovimiento.id && a.TipoMovimiento == 2 && a.DocEntry > 0).Count();
+                                        var bandera = false;
+                                        if (count > 0)
+                                        {
+                                            bandera = true;
+                                        }
+                                        if (client2.Expenses.Count > 0)
+                                        {
+                                            if (bandera == true)
+                                            {
+                                                client2.Expenses.Add();
+
+                                            }
+                                        }
+
+                                        client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Invoice;
+
+                                        client2.Expenses.DocumentNumber = Convert.ToInt32(Factura.DocEntry);
+                                        client2.Expenses.DocEntry = Convert.ToInt32(Factura.DocEntry);
+                                        if (client2.Expenses.Count == 0)
+                                        {
+                                            client2.Expenses.Add();
+                                        }
+                                        client2.Expenses.Add();
+
+                                        var respuesta2 = client2.Update();
+                                        if (respuesta2 == 0)
+                                        {
+                                            Conexion.Desconectar();
+                                        }
+                                        else
+                                        {
+                                            BitacoraErrores be = new BitacoraErrores();
+
+                                            be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                            be.StackTrace = "Insercion de Liga FAC - LL " + client2.DocNum;
+                                            be.Fecha = DateTime.Now;
+
+                                            db.BitacoraErrores.Add(be);
+                                            db.SaveChanges();
+                                            Conexion.Desconectar();
+
+
+                                        }
+                                    }
+                                }
+                                catch (Exception)
+                                {
+
+
+                                }
+                            }
+                        
 
                             //Procesamos el pago
                             var CondicionPago = db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault() == null ? db.CondicionesPagos.FirstOrDefault() : db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault();

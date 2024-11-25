@@ -2047,6 +2047,7 @@ namespace WATickets.Controllers
                                     //Que no existan bitacoraMovimientos aprobados 
                                     count = db.BitacoraMovimientosSAP.Where(a => a.idLlamada == Llamada.id && a.ProcesadaSAP == true).Distinct().GroupBy(a => a.DocEntry).Count();
                                     // Que no exista otra entrega asociada
+                                    count += db.EncFacturas.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.ProcesadoSAP == true).FirstOrDefault() == null ? 0 : db.EncFacturas.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.ProcesadoSAP == true).Count();
                                     count += db.EncMovimiento.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.id != EncMovimiento.id && a.TipoMovimiento == 2 && a.DocEntry > 0).Count();
                                     var bandera = false;
                                     if (count > 0)
@@ -2069,7 +2070,7 @@ namespace WATickets.Controllers
 
 
 
-                                    if (client2.Expenses.Count == 0)
+                                    if (client2.Expenses.Count == 0 || bandera == false)
                                     {
                                         client2.Expenses.Add();
                                     }

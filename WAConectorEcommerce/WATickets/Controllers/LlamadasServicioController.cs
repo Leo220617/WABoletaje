@@ -975,7 +975,6 @@ namespace WATickets.Controllers
                                     Cn.Open();
                                     Da.Fill(Ds, "DocNum1");
                                     Llamada.DocNum = Convert.ToInt32(Ds.Tables["DocNum1"].Rows[0]["DocNum"]);
-
                                     Cn.Close();
                                 }
                                 catch (Exception ex2)
@@ -991,12 +990,22 @@ namespace WATickets.Controllers
                                     db2.SaveChanges();
                                 }
                             }
-
-
                             if (Llamada.DocEntry != 0 && Llamada.DocEntry != null)
                             {
 
                                 Llamada.ProcesadaSAP = true;
+                            }
+                            db.SaveChanges();
+
+
+                            Conexion.Desconectar();
+
+                            t.Commit();
+
+                            if (Llamada.DocEntry != 0 && Llamada.DocEntry != null)
+                            {
+
+                               
 
                                 try
                                 {
@@ -1010,6 +1019,60 @@ namespace WATickets.Controllers
                                             db.Entry(Factura).State = EntityState.Modified;
                                             Factura.NumLlamada = Llamada.DocEntry.ToString();
                                             db.SaveChanges();
+
+                                            try
+                                            {
+                                                if(Factura.ProcesadoSAP)
+                                                {
+                                                    if(!string.IsNullOrEmpty(Factura.DocEntry))
+                                                    {
+                                                        var count = -1;
+                                                        var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
+
+                                                        if (client2.GetByKey(Convert.ToInt32(Llamada.DocEntry)))
+                                                        {
+                                                            client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_Invoice; 
+
+                                                            client2.Expenses.DocumentNumber = Convert.ToInt32(Factura.DocEntry);
+                                                            client2.Expenses.DocEntry = Convert.ToInt32(Factura.DocEntry);
+                                                            client2.Expenses.Add();
+
+                                                            var respuesta2 = client2.Update();
+                                                            if (respuesta2 == 0)
+                                                            {
+                                                                Conexion.Desconectar();
+                                                            }
+                                                            else
+                                                            {
+                                                                BitacoraErrores be = new BitacoraErrores();
+
+                                                                be.Descripcion = Conexion.Company.GetLastErrorDescription();
+                                                                be.StackTrace = "Insercion de Liga FAC - LL " + client2.DocNum;
+                                                                be.Fecha = DateTime.Now;
+
+                                                                db.BitacoraErrores.Add(be);
+                                                                db.SaveChanges();
+                                                                Conexion.Desconectar();
+                                                                 
+
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                
+                                            }
+                                            catch (Exception ex)
+                                            {
+
+                                                BitacoraErrores be = new BitacoraErrores();
+
+                                                be.Descripcion = ex.Message;
+                                                be.StackTrace = "Generando liga factura con llamada: " + ex.StackTrace;
+                                                be.Fecha = DateTime.Now;
+
+                                                db2.BitacoraErrores.Add(be);
+                                                db2.SaveChanges();
+                                            }
 
                                         }
                                     }
@@ -1028,12 +1091,7 @@ namespace WATickets.Controllers
                                 }
                             }
 
-                            db.SaveChanges();
-
-
-                            Conexion.Desconectar();
-
-                            t.Commit();
+                          
 
 
 
@@ -1280,8 +1338,9 @@ namespace WATickets.Controllers
                         if(llamada.PIN)
                         {
                             var DocEntryLlamada = Llamada.DocEntry.ToString();
-                            var EntregaSinFacturar = db.EncMovimiento.Where(a => a.NumLlamada == DocEntryLlamada && a.Facturado == false && a.TipoMovimiento == 2).FirstOrDefault();
-                            if(EntregaSinFacturar != null)
+                            
+                            var EntregaSinFacturar = db.EncMovimiento.Where(a => a.NumLlamada == DocEntryLlamada && a.Facturado == false && a.TipoMovimiento == 2 && a.AprobadaSuperior == true).FirstOrDefault();
+                            if(EntregaSinFacturar != null && Llamada.TipoCaso != 3)
                             {
                                 throw new Exception("No se puede validar el PIN ya que cuenta con entregas sin facturar, ejemplo #:" + EntregaSinFacturar.id);
                             }
