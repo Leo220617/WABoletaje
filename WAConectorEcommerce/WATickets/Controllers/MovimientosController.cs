@@ -666,8 +666,12 @@ namespace WATickets.Controllers
                 }
                 if (!filtro.FiltroEspecial)
                 {
-                    var encMovimientos = db.EncMovimiento.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true))
-                       .Select(a => new
+                    var encMovimientos = db.EncMovimiento.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true)
+                    && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)
+                    && (filtro.FiltrarFacturado ? (filtro.NoFacturado ? a.Facturado == false : a.Facturado == true) : true )
+                    && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
+                     && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
+                    ).Select(a => new
                        {
                            a.id,
                            a.DocEntry,
@@ -675,15 +679,15 @@ namespace WATickets.Controllers
                            a.CardName,
                            a.NumLlamada,
                            Llamada = db.LlamadasServicios
-                    .Where(z => z.DocEntry.ToString() == a.NumLlamada)
-                    .Select(z => new
-                    {
-                        z.id,
-                        z.EmailPersonaContacto,
-                        z.Status,
-                        z.TipoCaso
-                    })
-                    .FirstOrDefault(),
+                            .Where(z => z.DocEntry.ToString() == a.NumLlamada)
+                            .Select(z => new
+                            {
+                                z.id,
+                                z.EmailPersonaContacto,
+                                z.Status,
+                                z.TipoCaso
+                            })
+                            .FirstOrDefault(),
                            a.Fecha,
                            a.TipoMovimiento,
                            a.Comentarios,
@@ -700,6 +704,7 @@ namespace WATickets.Controllers
                            a.idGarantia,
                            a.idTiemposEntregas,
                            a.Aprobada,
+                           a.Facturado,
                            Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                        })
                             .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -730,14 +735,11 @@ namespace WATickets.Controllers
                                 a.idGarantia,
                                 a.idTiemposEntregas,
                                 a.Aprobada,
+                                a.Facturado,
                                 a.Detalle
                             })
                             .ToList();
-                    if (filtro.Codigo1 > 0)
-                    {
-                        encMovimientos = encMovimientos.Where(a => a.TipoMovimiento == filtro.Codigo1).ToList();
-
-                    }
+                   
                     if (!string.IsNullOrEmpty(filtro.CardName))
                     {
                         var valores = filtro.CardName.Split('|');
@@ -777,35 +779,7 @@ namespace WATickets.Controllers
 
 
                     }
-                    //Si me estan filtrando por Status de la llamada
-                    //if (filtro.Codigo2 != 0)
-                    //{
-                    //    var Llamadas = db.LlamadasServicios.Where(a => a.Status != filtro.Codigo2).ToList();
-                    //    var ListadoReparacionesEnCero = encMovimientos.Where(a => a.NumLlamada == "0").ToList();
 
-                    //    foreach (var item in ListadoReparacionesEnCero)
-                    //    {
-                    //        encMovimientos.Remove(item);
-
-                    //    }
-
-
-                    //    foreach (var item in Llamadas)
-                    //    {
-                    //        var DocEntry = item.DocEntry.ToString();
-                    //        var EncReparacionSacar = encMovimientos.Where(a => a.NumLlamada == DocEntry).ToList();
-                    //        if (EncReparacionSacar != null)
-                    //        {
-                    //            foreach (var item2 in EncReparacionSacar)
-                    //            {
-                    //                encMovimientos.Remove(item2);
-
-                    //            }
-
-                    //        }
-                    //    }
-
-                    //}
                     if (!string.IsNullOrEmpty(filtro.Texto) || !string.IsNullOrEmpty(filtro.CardCode))
                     {
 
@@ -813,6 +787,8 @@ namespace WATickets.Controllers
                         encMovimientos = db.EncMovimiento
                        .Where(a => (!string.IsNullOrEmpty(filtro.Texto) ? a.NumLlamada == filtro.Texto : true)
                        && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
+                       && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true) 
+                       && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
                        ).Select(a => new
                        {
                            a.id,
@@ -846,6 +822,7 @@ namespace WATickets.Controllers
                            a.idGarantia,
                            a.idTiemposEntregas,
                            a.Aprobada,
+                           a.Facturado,
                            Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                        })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -876,11 +853,14 @@ namespace WATickets.Controllers
         a.idGarantia,
         a.idTiemposEntregas,
         a.Aprobada,
+        a.Facturado,
         a.Detalle
     })
     .ToList();
 
                     }
+                     
+
                     return Request.CreateResponse(HttpStatusCode.OK, encMovimientos);
                 }
                 else
@@ -892,6 +872,8 @@ namespace WATickets.Controllers
                         var encMovimientos = db.EncMovimiento
                          .Where(a => (!string.IsNullOrEmpty(filtro.Texto) ? a.NumLlamada == filtro.Texto : true)
                          && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
+                         && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
+                        && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
                          ).Select(a => new
                          {
                              a.id,
@@ -925,6 +907,7 @@ namespace WATickets.Controllers
                              a.idGarantia,
                              a.idTiemposEntregas,
                              a.Aprobada,
+                             a.Facturado,
                              Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                          })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -955,6 +938,7 @@ namespace WATickets.Controllers
         a.idGarantia,
         a.idTiemposEntregas,
         a.Aprobada,
+        a.Facturado,
         a.Detalle
     })
     .ToList(); ;
@@ -969,110 +953,118 @@ namespace WATickets.Controllers
 
 
 
-                        if (!string.IsNullOrEmpty(filtro.CardName))
-                        {
-                            var valores = filtro.CardName.Split('|');
-                            foreach (var item in valores)
+                            if (!string.IsNullOrEmpty(filtro.CardName)) //Status
                             {
-                                if (!string.IsNullOrEmpty(item))
+                                var valores = filtro.CardName.Split('|');
+                                foreach (var item in valores)
                                 {
-                                    filtro.seleccionMultiple.Add(Convert.ToInt32(item));
+                                    if (!string.IsNullOrEmpty(item))
+                                    {
+                                        filtro.seleccionMultiple.Add(Convert.ToInt32(item));
+
+                                    }
 
                                 }
 
-                            }
-
-                            if (filtro.seleccionMultiple.Count > 0)
-                            {
-                                var llamadasQuery = db.LlamadasServicios.AsQueryable();
+                                if (filtro.seleccionMultiple.Count > 0)
+                                {
+                                    var llamadasQuery = db.LlamadasServicios.AsQueryable();
 
 
-                                // Filtrar por Status diferente a Codigo3
-                                var llamadas = llamadasQuery.Where(a => !filtro.seleccionMultiple.Contains(a.Status.Value)).Select(a => a.DocEntry.ToString()).ToHashSet();
-                                // Filtrar por fechas si las fechas son diferentes al valor por defecto
-                                //if (filtro.FechaInicial != time)
-                                //{
-                                //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion >= filtro.FechaInicial);
-                                //}
-                                //if (filtro.FechaFinal != time)
-                                //{
-                                //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion <= filtro.FechaFinal);
-                                //}
+                                    // Filtrar por Status diferente a Codigo3
+                                    var llamadas = llamadasQuery.Where(a => !filtro.seleccionMultiple.Contains(a.Status.Value)).Select(a => a.DocEntry.ToString()).ToHashSet();
+                                    // Filtrar por fechas si las fechas son diferentes al valor por defecto
+                                    //if (filtro.FechaInicial != time)
+                                    //{
+                                    //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion >= filtro.FechaInicial);
+                                    //}
+                                    //if (filtro.FechaFinal != time)
+                                    //{
+                                    //    llamadasQuery = llamadasQuery.Where(a => a.FechaCreacion <= filtro.FechaFinal);
+                                    //}
 
 
-                                var encMovimientos = db.EncMovimiento.Where(a => !llamadas.Contains(a.NumLlamada) && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true))
-                               .Select(a => new
-                               {
-                                   a.id,
-                                   a.DocEntry,
-                                   a.CardCode,
-                                   a.CardName,
-                                   a.NumLlamada,
-                                   Llamada = db.LlamadasServicios
-                    .Where(z => z.DocEntry.ToString() == a.NumLlamada)
-                    .Select(z => new
-                    {
-                        z.id,
-                        z.EmailPersonaContacto,
-                        z.Status,
-                        z.TipoCaso
-                    })
-                    .FirstOrDefault(),
-                                   a.Fecha,
-                                   a.TipoMovimiento,
-                                   a.Comentarios,
-                                   a.CreadoPor,
-                                   a.Subtotal,
-                                   a.PorDescuento,
-                                   a.Descuento,
-                                   a.Impuestos,
-                                   a.TotalComprobante,
-                                   a.Moneda,
-                                   a.AprobadaSuperior,
-                                   a.idCondPago,
-                                   a.idDiasValidos,
-                                   a.idGarantia,
-                                   a.idTiemposEntregas,
-                                   a.Aprobada,
-                                   Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
-                               })
-    .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
-    .Select(a => new
-    {
-        a.id,
-        a.DocEntry,
-        a.CardCode,
-        a.CardName,
-        a.NumLlamada,
-        idLlamada = a.Llamada?.id ?? 0,
-        EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
-        StatusLlamada = a.Llamada?.Status ?? 0,
-        TipoCaso = a.Llamada?.TipoCaso ?? 0,
-        a.Fecha,
-        a.TipoMovimiento,
-        a.Comentarios,
-        a.CreadoPor,
-        a.Subtotal,
-        a.PorDescuento,
-        a.Descuento,
-        a.Impuestos,
-        a.TotalComprobante,
-        a.Moneda,
-        a.AprobadaSuperior,
-        a.idCondPago,
-        a.idDiasValidos,
-        a.idGarantia,
-        a.idTiemposEntregas,
-        a.Aprobada,
-        a.Detalle
-    })
-    .ToList();
+                                    var encMovimientos = db.EncMovimiento.Where(a => !llamadas.Contains(a.NumLlamada) && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true) && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true))
+                                   .Select(a => new
+                                   {
+                                       a.id,
+                                       a.DocEntry,
+                                       a.CardCode,
+                                       a.CardName,
+                                       a.NumLlamada,
+                                       Llamada = db.LlamadasServicios
+                        .Where(z => z.DocEntry.ToString() == a.NumLlamada)
+                        .Select(z => new
+                        {
+                            z.id,
+                            z.EmailPersonaContacto,
+                            z.Status,
+                            z.TipoCaso
+                        })
+                        .FirstOrDefault(),
+                                       a.Fecha,
+                                       a.TipoMovimiento,
+                                       a.Comentarios,
+                                       a.CreadoPor,
+                                       a.Subtotal,
+                                       a.PorDescuento,
+                                       a.Descuento,
+                                       a.Impuestos,
+                                       a.TotalComprobante,
+                                       a.Moneda,
+                                       a.AprobadaSuperior,
+                                       a.idCondPago,
+                                       a.idDiasValidos,
+                                       a.idGarantia,
+                                       a.idTiemposEntregas,
+                                       a.Aprobada,
+                                       a.Facturado,
+                                       Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
+                                   })
+        .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
+        .Select(a => new
+        {
+            a.id,
+            a.DocEntry,
+            a.CardCode,
+            a.CardName,
+            a.NumLlamada,
+            idLlamada = a.Llamada?.id ?? 0,
+            EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+            StatusLlamada = a.Llamada?.Status ?? 0,
+            TipoCaso = a.Llamada?.TipoCaso ?? 0,
+            a.Fecha,
+            a.TipoMovimiento,
+            a.Comentarios,
+            a.CreadoPor,
+            a.Subtotal,
+            a.PorDescuento,
+            a.Descuento,
+            a.Impuestos,
+            a.TotalComprobante,
+            a.Moneda,
+            a.AprobadaSuperior,
+            a.idCondPago,
+            a.idDiasValidos,
+            a.idGarantia,
+            a.idTiemposEntregas,
+            a.Aprobada,
+            a.Detalle
+        })
+        .ToList();
+                                 
                                 return Request.CreateResponse(HttpStatusCode.OK, encMovimientos.ToList());
 
                             }
                             else
                             {
-                                var encMovimientos = db.EncMovimiento.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true))
+                                var encMovimientos = db.EncMovimiento.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true)
+                                && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)
+                                 && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
+                       && (filtro.FiltrarFacturado ? (filtro.NoFacturado ? a.Facturado == false : a.Facturado == true) : true)
+                       && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
+                                )
+
                      .Select(a => new
                      {
                          a.id,
@@ -1106,6 +1098,7 @@ namespace WATickets.Controllers
                          a.idGarantia,
                          a.idTiemposEntregas,
                          a.Aprobada,
+                         a.Facturado,
                          Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                      })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -1136,6 +1129,7 @@ namespace WATickets.Controllers
         a.idGarantia,
         a.idTiemposEntregas,
         a.Aprobada,
+        a.Facturado,
         a.Detalle
     })
     .ToList();
@@ -1146,7 +1140,13 @@ namespace WATickets.Controllers
                         }
                         else
                         {
-                            var encMovimientos = db.EncMovimiento.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true))
+                            var encMovimientos = db.EncMovimiento.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true)
+                            && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)
+                            && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
+                       && (filtro.FiltrarFacturado ? (filtro.NoFacturado ? a.Facturado == false : a.Facturado == true) : true)
+                       && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
+                            )
+
                                   .Select(a => new
                                   {
                                       a.id,
@@ -1180,6 +1180,7 @@ namespace WATickets.Controllers
                                       a.idGarantia,
                                       a.idTiemposEntregas,
                                       a.Aprobada,
+                                      a.Facturado,
                                       Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                                   })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -1210,6 +1211,7 @@ namespace WATickets.Controllers
         a.idGarantia,
         a.idTiemposEntregas,
         a.Aprobada,
+        a.Facturado,
         a.Detalle
     })
     .ToList();
@@ -1249,7 +1251,10 @@ namespace WATickets.Controllers
                 {
                     a.id,
                     a.DocEntry,
-
+                    
+                    EmailPersonaContacto = db.LlamadasServicios
+                    .Where(z => z.DocEntry.ToString() == a.NumLlamada).FirstOrDefault() == null ? "" : db.LlamadasServicios
+                    .Where(z => z.DocEntry.ToString() == a.NumLlamada).FirstOrDefault().EmailPersonaContacto,
                     a.CardCode,
                     a.CardName,
                     a.NumLlamada,
@@ -1322,7 +1327,7 @@ namespace WATickets.Controllers
                         EncMovimiento.Moneda = encMovimiento.Moneda;
                         EncMovimiento.idCondPago = encMovimiento.idCondPago;
                         EncMovimiento.idDiasValidos = encMovimiento.idDiasValidos;
-                        EncMovimiento.idGarantia = encMovimiento.idGarantia;
+                       // EncMovimiento.idGarantia = encMovimiento.idGarantia;
                         EncMovimiento.idTiemposEntregas = encMovimiento.idTiemposEntregas;
                         db.SaveChanges();
 
@@ -1369,6 +1374,7 @@ namespace WATickets.Controllers
                                 Det.Garantia = item.Garantia;
                                 Det.idImpuesto = item.idImpuesto;
                                 Det.Opcional = item.Opcional;
+                                Det.idDocumentoExoneracion = item.idDocumentoExoneracion;
                                 db.SaveChanges();
                             }
                             else
@@ -1388,6 +1394,7 @@ namespace WATickets.Controllers
                                 Det.Garantia = item.Garantia;
                                 Det.idImpuesto = item.idImpuesto;
                                 Det.Opcional = item.Opcional;
+                                Det.idDocumentoExoneracion = item.idDocumentoExoneracion;
 
                                 db.DetMovimiento.Add(Det);
                                 db.SaveChanges();
@@ -1442,8 +1449,9 @@ namespace WATickets.Controllers
                         EncMovimiento.AprobadaSuperior = false;
                         EncMovimiento.idCondPago = encMovimiento.idCondPago;
                         EncMovimiento.idDiasValidos = encMovimiento.idDiasValidos;
-                        EncMovimiento.idGarantia = encMovimiento.idGarantia;
+                        //EncMovimiento.idGarantia = encMovimiento.idGarantia;
                         EncMovimiento.idTiemposEntregas = encMovimiento.idTiemposEntregas;
+                        EncMovimiento.Facturado = false;
                         db.EncMovimiento.Add(EncMovimiento);
                         db.SaveChanges();
 
@@ -1481,6 +1489,7 @@ namespace WATickets.Controllers
                             Det.Garantia = item.Garantia;
                             Det.idImpuesto = item.idImpuesto;
                             Det.Opcional = item.Opcional;
+                            Det.idDocumentoExoneracion = item.idDocumentoExoneracion;
 
                             db.DetMovimiento.Add(Det);
                             db.SaveChanges();
@@ -1597,6 +1606,30 @@ namespace WATickets.Controllers
                             client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;//"IVA-13";
                             client.Lines.TaxOnly = BoYesNoEnum.tNO;
                             client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
+                            if (item.idDocumentoExoneracion > 0)
+                            {
+                                var ParametrosFacturacion = db.ParametrosFacturacion.FirstOrDefault();
+                                var conexion2 = g.DevuelveCadena(db);
+                                var valorAFiltrar = item.idDocumentoExoneracion.ToString();
+
+                                var SQL = ParametrosFacturacion.SQLDocumentoExoneracion + valorAFiltrar;
+
+                                SqlConnection Cn = new SqlConnection(conexion2);
+                                SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                DataSet Ds = new DataSet();
+                                Cn.Open();
+                                Da.Fill(Ds, "DocNum1");
+                                client.Lines.UserFields.Fields.Item("U_Tipo_Doc").Value = Ds.Tables["DocNum1"].Rows[0]["TipoDocumento"].ToString();
+                                client.Lines.UserFields.Fields.Item("U_NumDoc").Value = Ds.Tables["DocNum1"].Rows[0]["NumeroDocumento"].ToString();
+                                client.Lines.UserFields.Fields.Item("U_NomInst").Value = Ds.Tables["DocNum1"].Rows[0]["Emisora"].ToString();
+                                client.Lines.UserFields.Fields.Item("U_FecEmis").Value = Convert.ToDateTime(Ds.Tables["DocNum1"].Rows[0]["FechaEmision"].ToString());
+
+                                Cn.Close();
+
+
+
+                            }
                             client.Lines.Add();
 
 
@@ -1722,7 +1755,30 @@ namespace WATickets.Controllers
                                 orden.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
                                 orden.Lines.TaxOnly = BoYesNoEnum.tNO;
                                 orden.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
+                                if (item.idDocumentoExoneracion > 0)
+                                {
+                                    var ParametrosFacturacion = db.ParametrosFacturacion.FirstOrDefault();
+                                    var conexion2 = g.DevuelveCadena(db);
+                                    var valorAFiltrar = item.idDocumentoExoneracion.ToString();
 
+                                    var SQL = ParametrosFacturacion.SQLDocumentoExoneracion + valorAFiltrar;
+
+                                    SqlConnection Cn = new SqlConnection(conexion2);
+                                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                    DataSet Ds = new DataSet();
+                                    Cn.Open();
+                                    Da.Fill(Ds, "DocNum1");
+                                    orden.Lines.UserFields.Fields.Item("U_Tipo_Doc").Value = Ds.Tables["DocNum1"].Rows[0]["TipoDocumento"].ToString();
+                                    orden.Lines.UserFields.Fields.Item("U_NumDoc").Value = Ds.Tables["DocNum1"].Rows[0]["NumeroDocumento"].ToString();
+                                    orden.Lines.UserFields.Fields.Item("U_NomInst").Value = Ds.Tables["DocNum1"].Rows[0]["Emisora"].ToString();
+                                    orden.Lines.UserFields.Fields.Item("U_FecEmis").Value = Convert.ToDateTime(Ds.Tables["DocNum1"].Rows[0]["FechaEmision"].ToString());
+
+                                    Cn.Close();
+
+
+
+                                }
                                 orden.Lines.Add();
 
 
@@ -1905,7 +1961,30 @@ namespace WATickets.Controllers
                                 client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
                                 client.Lines.TaxOnly = BoYesNoEnum.tNO;
                                 client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
+                                if (item.idDocumentoExoneracion > 0)
+                                {
+                                    var ParametrosFacturacion = db.ParametrosFacturacion.FirstOrDefault();
+                                    var conexion2 = g.DevuelveCadena(db);
+                                    var valorAFiltrar = item.idDocumentoExoneracion.ToString();
 
+                                    var SQL = ParametrosFacturacion.SQLDocumentoExoneracion + valorAFiltrar;
+
+                                    SqlConnection Cn = new SqlConnection(conexion2);
+                                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                    DataSet Ds = new DataSet();
+                                    Cn.Open();
+                                    Da.Fill(Ds, "DocNum1");
+                                    client.Lines.UserFields.Fields.Item("U_Tipo_Doc").Value = Ds.Tables["DocNum1"].Rows[0]["TipoDocumento"].ToString();
+                                    client.Lines.UserFields.Fields.Item("U_NumDoc").Value = Ds.Tables["DocNum1"].Rows[0]["NumeroDocumento"].ToString();
+                                    client.Lines.UserFields.Fields.Item("U_NomInst").Value = Ds.Tables["DocNum1"].Rows[0]["Emisora"].ToString();
+                                    client.Lines.UserFields.Fields.Item("U_FecEmis").Value = Convert.ToDateTime(Ds.Tables["DocNum1"].Rows[0]["FechaEmision"].ToString());
+
+                                    Cn.Close();
+
+
+
+                                }
                                 client.Lines.Add();
 
 
@@ -1968,6 +2047,7 @@ namespace WATickets.Controllers
                                     //Que no existan bitacoraMovimientos aprobados 
                                     count = db.BitacoraMovimientosSAP.Where(a => a.idLlamada == Llamada.id && a.ProcesadaSAP == true).Distinct().GroupBy(a => a.DocEntry).Count();
                                     // Que no exista otra entrega asociada
+                                    count += db.EncFacturas.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.ProcesadoSAP == true).FirstOrDefault() == null ? 0 : db.EncFacturas.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.ProcesadoSAP == true).Count();
                                     count += db.EncMovimiento.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.id != EncMovimiento.id && a.TipoMovimiento == 2 && a.DocEntry > 0).Count();
                                     var bandera = false;
                                     if (count > 0)
@@ -1990,7 +2070,7 @@ namespace WATickets.Controllers
 
 
 
-                                    if (client2.Expenses.Count == 0)
+                                    if (client2.Expenses.Count == 0 || bandera == false)
                                     {
                                         client2.Expenses.Add();
                                     }
@@ -2088,6 +2168,30 @@ namespace WATickets.Controllers
                                     clientEntrega.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
                                     clientEntrega.Lines.TaxOnly = BoYesNoEnum.tNO;
                                     clientEntrega.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
+                                    if (item.idDocumentoExoneracion > 0)
+                                    {
+                                        var ParametrosFacturacion = db.ParametrosFacturacion.FirstOrDefault();
+                                        var conexion2 = g.DevuelveCadena(db);
+                                        var valorAFiltrar = item.idDocumentoExoneracion.ToString();
+
+                                        var SQL = ParametrosFacturacion.SQLDocumentoExoneracion + valorAFiltrar;
+
+                                        SqlConnection Cn = new SqlConnection(conexion2);
+                                        SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                        SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                        DataSet Ds = new DataSet();
+                                        Cn.Open();
+                                        Da.Fill(Ds, "DocNum1");
+                                        clientEntrega.Lines.UserFields.Fields.Item("U_Tipo_Doc").Value = Ds.Tables["DocNum1"].Rows[0]["TipoDocumento"].ToString();
+                                        clientEntrega.Lines.UserFields.Fields.Item("U_NumDoc").Value = Ds.Tables["DocNum1"].Rows[0]["NumeroDocumento"].ToString();
+                                        clientEntrega.Lines.UserFields.Fields.Item("U_NomInst").Value = Ds.Tables["DocNum1"].Rows[0]["Emisora"].ToString();
+                                        clientEntrega.Lines.UserFields.Fields.Item("U_FecEmis").Value = Convert.ToDateTime(Ds.Tables["DocNum1"].Rows[0]["FechaEmision"].ToString());
+
+                                        Cn.Close();
+
+
+
+                                    }
                                     clientEntrega.Lines.Add();
 
 
@@ -2149,7 +2253,7 @@ namespace WATickets.Controllers
                                         // Que no exista otra entrega asociada
                                         count += db.EncMovimiento.Where(a => a.NumLlamada == EncMovimiento.NumLlamada && a.id != EncMovimiento.id && a.TipoMovimiento == 2 && a.DocEntry > 0).Count();
                                         var bandera = false;
-                                        if(count > 0)
+                                        if (count > 0)
                                         {
                                             bandera = true;
                                         }
@@ -2157,7 +2261,7 @@ namespace WATickets.Controllers
                                         var CantidadExpenses = 0;
                                         if (client2.Expenses.Count > 0)
                                         {
-                                            if(bandera == true)
+                                            if (bandera == true)
                                             {
                                                 client2.Expenses.Add();
 
@@ -2167,7 +2271,7 @@ namespace WATickets.Controllers
                                         client2.Expenses.DocumentNumber = idEntry;
                                         client2.Expenses.DocEntry = idEntry;
 
-                                        if (client2.Expenses.Count == 0 )
+                                        if (client2.Expenses.Count == 0)
                                         {
                                             client2.Expenses.Add();
                                         }
@@ -2235,8 +2339,9 @@ namespace WATickets.Controllers
                                 EncMovimientoEntrega.AprobadaSuperior = false;
                                 EncMovimientoEntrega.idCondPago = 0;
                                 EncMovimientoEntrega.idDiasValidos = 0;
-                                EncMovimientoEntrega.idGarantia = 0;
+                                EncMovimientoEntrega.idGarantia = 1;
                                 EncMovimientoEntrega.idTiemposEntregas = 0;
+                                EncMovimientoEntrega.Facturado = true;
                                 db.EncMovimiento.Add(EncMovimientoEntrega);
                                 db.SaveChanges();
 

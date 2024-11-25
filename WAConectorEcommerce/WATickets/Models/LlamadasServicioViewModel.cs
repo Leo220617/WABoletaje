@@ -62,6 +62,7 @@ namespace WATickets.Models
         public bool PIN { get; set; }
         public bool SinRepuestos { get; set; }
         public string Prioridad { get; set; }
+        public bool SinFacturar { get; set; }
         public List<AdjuntosViewModel> Adjuntos { get; set; }
         public List<AdjuntosViewModel> AdjuntosIdentificacion { get; set; }
 

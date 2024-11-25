@@ -440,8 +440,10 @@ namespace WATickets.Controllers
                     }
                     )
                     .Where(a => a.idTecnico == Encabezado.idTecnico && a.StatusLlamada == 47 && a.id != Encabezado.id).FirstOrDefault();
+                    
 
-                    if (ValidacionReparacionAnterior != null && G.ObtenerConfig("Empresa") == "G" )
+                        
+                    if (ValidacionReparacionAnterior != null && G.ObtenerConfig("Empresa") == "G")
                     {
                         throw new Exception("Este tecnico ya tiene asignaciones de boletas con status 'EN TALLER'");
                     }
@@ -504,19 +506,21 @@ namespace WATickets.Controllers
                                     encMovimiento.idDiasValidos = 0;
                                     encMovimiento.idGarantia = 0;
                                     encMovimiento.idTiemposEntregas = 0;
+                                    encMovimiento.Facturado = false;
                                     db.EncMovimiento.Add(encMovimiento);
                                     db.SaveChanges();
 
                                     var DetalleOfertaAprobada = db.DetMovimiento.Where(a => a.idEncabezado == OfertaAprobada.id).ToList();
                                     foreach (var item in DetalleOfertaAprobada)
                                     {
+                                        
                                         DetMovimiento detMovimiento = new DetMovimiento();
                                         detMovimiento.idEncabezado = encMovimiento.id;
                                         detMovimiento.NumLinea = 1;
                                         detMovimiento.ItemCode = item.ItemCode;
                                         detMovimiento.ItemName = item.ItemName;
                                         detMovimiento.PrecioUnitario = item.PrecioUnitario;
-                                        detMovimiento.Cantidad = item.Cantidad;
+                                        detMovimiento.Cantidad = item.ItemName.ToLower().Contains("Mano de Obra".ToLower()) || item.ItemCode.ToLower().Contains("C0-000-045") ? item.Cantidad : 0;//item.Cantidad;
                                         detMovimiento.PorDescuento = item.PorDescuento;
                                         detMovimiento.Descuento = item.Descuento;
                                         detMovimiento.Impuestos = item.Impuestos;
@@ -539,8 +543,13 @@ namespace WATickets.Controllers
                                         var DetMovimientos = db.DetMovimiento.Where(a => a.idEncabezado == encMovimiento.id).ToList();
                                         foreach(var itemMovimiento in DetMovimientos)
                                         {
-                                            db.DetMovimiento.Remove(itemMovimiento);
-                                            db.SaveChanges();
+                                            if(!itemMovimiento.ItemName.ToLower().Contains("Mano de Obra".ToLower()) && !itemMovimiento.ItemCode.ToLower().Contains("C0-000-045"))
+                                            {
+                                                db.DetMovimiento.Remove(itemMovimiento);
+                                                db.SaveChanges();
+                                            }
+                                            
+                                          
                                         }
                                     }
 
@@ -718,6 +727,7 @@ namespace WATickets.Controllers
                                     encMovimiento.idDiasValidos = 0;
                                     encMovimiento.idGarantia = 0;
                                     encMovimiento.idTiemposEntregas = 0;
+                                    encMovimiento.Facturado = false;
                                     db.EncMovimiento.Add(encMovimiento);
                                     db.SaveChanges();
 
@@ -910,6 +920,7 @@ namespace WATickets.Controllers
                                 encMovimiento.idDiasValidos = 0;
                                 encMovimiento.idGarantia = 0;
                                 encMovimiento.idTiemposEntregas = 0;
+                                encMovimiento.Facturado = false;
                                 db.EncMovimiento.Add(encMovimiento);
                                 db.SaveChanges();
 
@@ -1252,6 +1263,7 @@ namespace WATickets.Controllers
                             encMovimiento.idDiasValidos = 0;
                             encMovimiento.idGarantia = 0;
                             encMovimiento.idTiemposEntregas = 0;
+                            encMovimiento.Facturado = false;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 
@@ -1464,6 +1476,7 @@ namespace WATickets.Controllers
                             encMovimiento.idDiasValidos = 0;
                             encMovimiento.idGarantia = 0;
                             encMovimiento.idTiemposEntregas = 0;
+                            encMovimiento.Facturado = false;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 

@@ -326,9 +326,12 @@ namespace WATickets.Controllers
                                 var client2 = (ServiceCalls)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oServiceCalls);
                                 if (client2.GetByKey(Llamada.DocEntry.Value))
                                 {
-                                   // count = db.BitacoraMovimientos.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).Count();
-
+                                    // count = db.BitacoraMovimientos.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).Count();
+                                    var llamada = db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault();
+                                    var NumLlamada = llamada.DocEntry.ToString();
                                     count = db.BitacoraMovimientosSAP.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).GroupBy(a => a.DocEntry).Count();
+                                    count += db.EncFacturas.Where(a => a.NumLlamada == NumLlamada && a.ProcesadoSAP == true).FirstOrDefault() == null ? 0 : db.EncFacturas.Where(a => a.NumLlamada == NumLlamada && a.ProcesadoSAP == true).Count();
+
                                     G G = new G();
                                     G.GuardarTxt("BitacoraCount.txt", "llamada " + Encabezado.idLlamada + " -> Count: " + count.ToString());
                                     if (count > 0)
@@ -389,6 +392,15 @@ namespace WATickets.Controllers
                                     }
                                     else
                                     {
+                                        var Detalles = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).ToList();
+                                        foreach(var item in Detalles)
+                                        {
+                                            db.Entry(item).State = EntityState.Modified;
+                                            item.CantidadEnviar = 0;
+                                            db.SaveChanges();
+                                        }
+
+
                                         db.Entry(BT).State = EntityState.Modified;
                                         BT.Status = "0"; 
                                         db.SaveChanges();
@@ -410,6 +422,7 @@ namespace WATickets.Controllers
                             }
                             else
                             {
+
                                 db.Entry(BT).State = EntityState.Modified;
                                 BT.Status = "0";
                                 db.SaveChanges();
@@ -422,6 +435,16 @@ namespace WATickets.Controllers
 
                                 db.BitacoraErrores.Add(be);
                                 db.SaveChanges();
+
+                                var Detalles = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).ToList();
+                                foreach (var item in Detalles)
+                                {
+                                    db.Entry(item).State = EntityState.Modified;
+                                    item.CantidadEnviar = 0;
+                                    db.SaveChanges();
+                                }
+
+
                                 Conexion.Desconectar();
                                 throw new Exception("Error al generar el traslado en SAP " + be.Descripcion);
                             }
@@ -440,6 +463,16 @@ namespace WATickets.Controllers
 
                             db.BitacoraErrores.Add(be);
                             db.SaveChanges();
+
+                            var Detalles = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).ToList();
+                            foreach (var item in Detalles)
+                            {
+                                db.Entry(item).State = EntityState.Modified;
+                                item.CantidadEnviar = 0;
+                                db.SaveChanges();
+                            }
+
+
                             throw new Exception("Error al generar el traslado " + be.Descripcion);
 
                         }
