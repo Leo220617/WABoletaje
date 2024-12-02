@@ -1163,7 +1163,7 @@ namespace WATickets.Controllers
                         }
                         else
                         {
-                            var error = "hubo un error " + Conexion.Company.GetLastErrorDescription();
+                            var error = "hubo un error en la factura " + Factura.id + " -> " + Conexion.Company.GetLastErrorDescription();
                             BitacoraErrores be = new BitacoraErrores();
                             be.Descripcion = error;
 
