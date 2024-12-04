@@ -1223,7 +1223,26 @@ namespace WATickets.Controllers
 
                 if (Factura == null)
                 {
-                    
+                    if(factura.idEntrega == 0)
+                    {
+                        var Fecha = factura.Fecha.Date;
+                        var VerificaExistencia = db.LlamadasFacturas.Where(a => a.CardCode == factura.CardCode && a.ItemCode == factura.ItemCode && a.Serie == factura.Serie && a.Fecha == Fecha).FirstOrDefault();
+
+                        if(VerificaExistencia != null)
+                        {
+                            throw new Exception("YA existe una factura igual, favor revisar en el listado de facturas");
+                        }
+                    }
+                    else
+                    {
+                        var Fecha = factura.Fecha.Date;
+                        var VerificaExistencia = db.EncFacturas.Where(a => a.CardCode == factura.CardCode && a.idEntrega == factura.idEntrega && a.Fecha == Fecha).FirstOrDefault();
+
+                        if (VerificaExistencia != null)
+                        {
+                            throw new Exception("YA existe una factura igual, favor revisar en el listado de facturas");
+                        }
+                    }
                     Factura = new EncFacturas();
                     Factura.idCondicionVenta = factura.idCondicionVenta;
                     Factura.idPlazoCredito = factura.idPlazoCredito;

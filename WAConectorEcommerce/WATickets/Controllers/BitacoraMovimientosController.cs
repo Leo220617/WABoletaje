@@ -334,6 +334,8 @@ namespace WATickets.Controllers
 
                                     G G = new G();
                                     G.GuardarTxt("BitacoraCount.txt", "llamada " + Encabezado.idLlamada + " -> Count: " + count.ToString());
+
+
                                     if (count > 0)
                                     {
                                         client2.Expenses.Add();
@@ -343,12 +345,16 @@ namespace WATickets.Controllers
                                     client2.Expenses.DocumentNumber = idEntry;
 
                                     client2.Expenses.DocEntry = idEntry;
-
+                                    if (client2.Expenses.Count == 0)
+                                    {
+                                        client2.Expenses.Add();
+                                    } 
+                                    client2.Expenses.Add();
                                     if (count == 0)
                                     {
                                         client2.Expenses.Add();
                                     }
-
+                                    //client2.Expenses.Add();
                                     var respuesta2 = client2.Update();
                                     if (respuesta2 == 0)
                                     {
