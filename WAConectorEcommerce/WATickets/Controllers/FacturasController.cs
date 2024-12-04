@@ -1236,7 +1236,8 @@ namespace WATickets.Controllers
                     else
                     {
                         var Fecha = factura.Fecha.Date;
-                        var VerificaExistencia = db.EncFacturas.Where(a => a.CardCode == factura.CardCode && a.idEntrega == factura.idEntrega && a.Fecha == Fecha).FirstOrDefault();
+                        var Fecha2 = Fecha.AddDays(1);
+                        var VerificaExistencia = db.EncFacturas.Where(a => a.CardCode == factura.CardCode && a.idEntrega == factura.idEntrega && a.Fecha >= Fecha && a.Fecha <= Fecha2).FirstOrDefault();
 
                         if (VerificaExistencia != null)
                         {
