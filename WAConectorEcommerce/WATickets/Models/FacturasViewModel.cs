@@ -33,6 +33,8 @@ namespace WATickets.Models
         public string ConsecutivoHacienda { get; set; }
         public int CreadoPor { get; set; }
         public decimal PorDesc { get; set; }
+        public string ItemCode { get; set; }
+        public string Serie { get; set; }
         public DetFacturas[] DetFactura { get; set; }
         public MetodosPagosFacturas[] MetodosPagos { get; set; }
 
