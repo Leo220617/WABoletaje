@@ -41,6 +41,7 @@ namespace WATickets.Controllers
                      ).Select(a => new
                      {
                          a.id,
+                         a.idSucursal,
                          a.idCondicionVenta,
                          a.idPlazoCredito,
                          a.TipoDocumento,
@@ -80,10 +81,11 @@ namespace WATickets.Controllers
 
                     var Facturas = db.EncFacturas.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true)
                         && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)
-
+                        && ((filtro.Codigo2 > 0 && filtro.Codigo2!= null) ? a.idSucursal == filtro.Codigo2 : true)
                         ).Select(a => new
                         {
                             a.id,
+                            a.idSucursal,
                             a.idCondicionVenta,
                             a.idPlazoCredito,
                             a.TipoDocumento,
@@ -147,6 +149,7 @@ namespace WATickets.Controllers
                 var Factura = db.EncFacturas.Select(a => new
                 {
                     a.id,
+                    a.idSucursal,
                     a.idCondicionVenta,
                     a.idPlazoCredito,
                     a.TipoDocumento,
@@ -1246,6 +1249,7 @@ namespace WATickets.Controllers
                     }
                     Factura = new EncFacturas();
                     Factura.idCondicionVenta = factura.idCondicionVenta;
+                    Factura.idSucursal = factura.idSucursal;
                     Factura.idPlazoCredito = factura.idPlazoCredito;
                     Factura.idEntrega = factura.idEntrega;
                     Factura.NumLlamada = factura.NumLlamada;

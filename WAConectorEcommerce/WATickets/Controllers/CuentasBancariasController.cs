@@ -23,7 +23,7 @@ namespace WATickets.Controllers
             try
             {
 
-                var CuentasBancarias = db.CuentasBancarias.ToList(); 
+                var CuentasBancarias = db.CuentasBancarias.Where(a => (filtro.Codigo1 > 0 && filtro.Codigo1 != null ? a.idSucursal == filtro.Codigo1 : true)).ToList(); 
                 return Request.CreateResponse(HttpStatusCode.OK, CuentasBancarias);
 
             }
@@ -84,7 +84,8 @@ namespace WATickets.Controllers
 
                 if (Cuentas == null)
                 {
-                    Cuentas = new CuentasBancarias();  
+                    Cuentas = new CuentasBancarias();
+                    Cuentas.idSucursal = cuentas.idSucursal;
                     Cuentas.Nombre = cuentas.Nombre;
                     Cuentas.CuentaSAP = cuentas.CuentaSAP;
                     Cuentas.Estado = true;
@@ -129,7 +130,9 @@ namespace WATickets.Controllers
 
                 if (Cuentas != null)
                 {
-                    db.Entry(Cuentas).State = EntityState.Modified; 
+                    db.Entry(Cuentas).State = EntityState.Modified;
+                    Cuentas.idSucursal = cuentas.idSucursal;
+
                     Cuentas.Nombre = cuentas.Nombre;
                     Cuentas.CuentaSAP = cuentas.CuentaSAP;
                     Cuentas.Banco = cuentas.Banco;

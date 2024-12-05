@@ -107,6 +107,7 @@ namespace WATickets.Controllers
                     de.Bodega = Usuario.Bodega;
                     de.PIN = Usuario.PIN;
                     de.Seguridad = SeguridadModulos;
+                    de.idSucursal = Usuario.idSucursal;
                     de.idTecnico = db.Tecnicos.Where(a => a.Nombre.ToLower().Contains(Usuario.Nombre.ToLower())).FirstOrDefault() == null ? Usuario.CardCode : db.Tecnicos.Where(a => a.Nombre.ToLower().Contains(Usuario.Nombre.ToLower())).FirstOrDefault().idSAP;
                     return Request.CreateResponse(HttpStatusCode.OK, de);
 
@@ -146,6 +147,7 @@ namespace WATickets.Controllers
                 Usuario.NormaReparto = usuario.NormaReparto;
                 Usuario.EmpleadoSAP = usuario.EmpleadoSAP;
                 Usuario.PIN = usuario.PIN;
+                Usuario.idSucursal = usuario.idSucursal;
                 db.Login.Add(Usuario);
                 db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.OK);
@@ -187,7 +189,10 @@ namespace WATickets.Controllers
                 {
                     Usuario.idRol = usuario.idRol;
                 }
-
+                if(Usuario.idSucursal != usuario.idSucursal && usuario.idSucursal != null)
+                {
+                    Usuario.idSucursal = usuario.idSucursal;
+                }
                 if(Usuario.Activo != usuario.Activo && usuario.Activo != null)
                 {
                     Usuario.Activo = usuario.Activo;
@@ -329,6 +334,7 @@ namespace WATickets.Controllers
         public string Bodega { get; set; }
         public string PIN { get; set; }
         public string idTecnico { get; set; }
+        public int idSucursal { get; set; }
         public List<SeguridadRolesModulos> Seguridad { get; set; }
     }
 }

@@ -12,6 +12,7 @@ namespace WATickets.Models.Cliente
     public partial class CuentasBancarias
     {
         public int id { get; set; }
+        public int idSucursal { get; set; }
         public string Nombre { get; set; }
         public string CuentaSAP { get; set; }
         public bool Estado { get; set; }

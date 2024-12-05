@@ -12,6 +12,7 @@ namespace WATickets.Models.Cliente
     public partial class EncFacturas
     {
         public int id { get; set; }
+        public int idSucursal { get; set; }
         public int idCondicionVenta { get; set; }
         public int idPlazoCredito { get; set; }
         public int idEntrega { get; set; }
