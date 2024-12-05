@@ -12,6 +12,7 @@ namespace WATickets.Models.Cliente
         public int id { get; set; }
 
         public int? idRol { get; set; }
+        public int idSucursal { get; set; }
 
         [StringLength(200)]
         public string Email { get; set; }
