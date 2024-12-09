@@ -705,6 +705,7 @@ namespace WATickets.Controllers
                         a.idTiemposEntregas,
                         a.Aprobada,
                         a.Facturado,
+                        a.DocEntryDevolucion,
                         Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                     })
                             .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -736,6 +737,7 @@ namespace WATickets.Controllers
                                 a.idTiemposEntregas,
                                 a.Aprobada,
                                 a.Facturado,
+                                a.DocEntryDevolucion,
                                 a.Detalle
                             })
                             .ToList();
@@ -823,6 +825,7 @@ namespace WATickets.Controllers
                            a.idTiemposEntregas,
                            a.Aprobada,
                            a.Facturado,
+                           a.DocEntryDevolucion,
                            Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                        })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -854,6 +857,7 @@ namespace WATickets.Controllers
         a.idTiemposEntregas,
         a.Aprobada,
         a.Facturado,
+        a.DocEntryDevolucion,
         a.Detalle
     })
     .ToList();
@@ -908,6 +912,7 @@ namespace WATickets.Controllers
                              a.idTiemposEntregas,
                              a.Aprobada,
                              a.Facturado,
+                             a.DocEntryDevolucion,
                              Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                          })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -939,6 +944,7 @@ namespace WATickets.Controllers
         a.idTiemposEntregas,
         a.Aprobada,
         a.Facturado,
+        a.DocEntryDevolucion,
         a.Detalle
     })
     .ToList(); ;
@@ -1019,6 +1025,7 @@ namespace WATickets.Controllers
                                    a.idTiemposEntregas,
                                    a.Aprobada,
                                    a.Facturado,
+                                   a.DocEntryDevolucion,
                                    Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                                })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -1049,6 +1056,7 @@ namespace WATickets.Controllers
         a.idGarantia,
         a.idTiemposEntregas,
         a.Aprobada,
+        a.DocEntryDevolucion,
         a.Detalle
     })
     .ToList();
@@ -1099,6 +1107,7 @@ namespace WATickets.Controllers
                          a.idTiemposEntregas,
                          a.Aprobada,
                          a.Facturado,
+                         a.DocEntryDevolucion,
                          Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                      })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -1130,6 +1139,7 @@ namespace WATickets.Controllers
         a.idTiemposEntregas,
         a.Aprobada,
         a.Facturado,
+        a.DocEntryDevolucion,
         a.Detalle
     })
     .ToList();
@@ -1181,6 +1191,7 @@ namespace WATickets.Controllers
                                       a.idTiemposEntregas,
                                       a.Aprobada,
                                       a.Facturado,
+                                      a.DocEntryDevolucion,
                                       Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
                                   })
     .AsEnumerable() // Convert to in-memory collection before setting the properties that depend on null checks
@@ -1212,6 +1223,7 @@ namespace WATickets.Controllers
         a.idTiemposEntregas,
         a.Aprobada,
         a.Facturado,
+        a.DocEntryDevolucion,
         a.Detalle
     })
     .ToList();
@@ -1273,6 +1285,7 @@ namespace WATickets.Controllers
                     a.idDiasValidos,
                     a.idGarantia,
                     a.idTiemposEntregas,
+                    a.DocEntryDevolucion,
                     Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
 
                 }
