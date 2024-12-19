@@ -109,8 +109,9 @@ namespace WATickets.Controllers
         {
             try
             {
-                if (_company != null)
+                if (_company != null && _company.Connected)
                 {
+                    _company.Disconnect();
                     _company = null;
                 }
                 return true;

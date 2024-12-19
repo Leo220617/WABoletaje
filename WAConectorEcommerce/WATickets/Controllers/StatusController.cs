@@ -81,7 +81,7 @@ namespace WATickets.Controllers
                     Status = new Status();
                     Status.idSAP = status.idSAP;
                     Status.Nombre = status.Nombre;
-
+                    Status.Taller = status.Taller;
                     db.Status.Add(Status);
                     db.SaveChanges();
 
@@ -117,7 +117,7 @@ namespace WATickets.Controllers
                     db.Entry(Status).State = EntityState.Modified;
                     Status.idSAP = status.idSAP;
                     Status.Nombre = status.Nombre;
-
+                    Status.Taller = status.Taller;
                     db.SaveChanges();
 
                 }
