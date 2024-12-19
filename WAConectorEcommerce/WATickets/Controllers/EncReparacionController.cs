@@ -507,6 +507,7 @@ namespace WATickets.Controllers
                                     encMovimiento.idGarantia = 0;
                                     encMovimiento.idTiemposEntregas = 0;
                                     encMovimiento.Facturado = false;
+                                    encMovimiento.DocEntryDevolucion = 0;
                                     db.EncMovimiento.Add(encMovimiento);
                                     db.SaveChanges();
 
@@ -728,6 +729,7 @@ namespace WATickets.Controllers
                                     encMovimiento.idGarantia = 0;
                                     encMovimiento.idTiemposEntregas = 0;
                                     encMovimiento.Facturado = false;
+                                    encMovimiento.DocEntryDevolucion = 0;
                                     db.EncMovimiento.Add(encMovimiento);
                                     db.SaveChanges();
 
@@ -921,6 +923,7 @@ namespace WATickets.Controllers
                                 encMovimiento.idGarantia = 0;
                                 encMovimiento.idTiemposEntregas = 0;
                                 encMovimiento.Facturado = false;
+                                encMovimiento.DocEntryDevolucion = 0;
                                 db.EncMovimiento.Add(encMovimiento);
                                 db.SaveChanges();
 
@@ -1264,6 +1267,8 @@ namespace WATickets.Controllers
                             encMovimiento.idGarantia = 0;
                             encMovimiento.idTiemposEntregas = 0;
                             encMovimiento.Facturado = false;
+                            encMovimiento.DocEntry = 0;
+                            encMovimiento.DocEntryDevolucion = 0;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 
@@ -1477,6 +1482,7 @@ namespace WATickets.Controllers
                             encMovimiento.idGarantia = 0;
                             encMovimiento.idTiemposEntregas = 0;
                             encMovimiento.Facturado = false;
+                            encMovimiento.DocEntryDevolucion = 0;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 

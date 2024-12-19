@@ -82,7 +82,7 @@ namespace WATickets.Controllers
                     TP = new TiposCasos();
                     TP.idSAP = tipocaso.idSAP;
                     TP.Nombre = tipocaso.Nombre;
-
+                    TP.Taller = tipocaso.Taller;
                     db.TiposCasos.Add(TP);
                     db.SaveChanges();
 
@@ -118,7 +118,7 @@ namespace WATickets.Controllers
                     db.Entry(TP).State = EntityState.Modified;
                     TP.idSAP = tipocaso.idSAP;
                     TP.Nombre = tipocaso.Nombre;
-
+                    TP.Taller = tipocaso.Taller;
                     db.SaveChanges();
 
                 }
