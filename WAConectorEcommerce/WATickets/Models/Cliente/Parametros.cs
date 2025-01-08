@@ -34,5 +34,8 @@ namespace WATickets.Models.Cliente
         public string StatusLlamadaAprobado { get; set; }
         public bool SetearAprobado { get; set; }
         public string SQLDocEntryDocs { get; set; }
+        public string SQLClienteTOP { get; set; }
+        public string SQLVerificaGarantia { get; set; }
+        public string SQLArtSustituido { get; set; }
     }
 }

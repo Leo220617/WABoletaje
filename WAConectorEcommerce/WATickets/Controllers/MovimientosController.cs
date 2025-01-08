@@ -685,7 +685,8 @@ namespace WATickets.Controllers
                                 z.id,
                                 z.EmailPersonaContacto,
                                 z.Status,
-                                z.TipoCaso
+                                z.TipoCaso,
+                                z.PrioridadAtencion
                             })
                             .FirstOrDefault(),
                         a.Fecha,
@@ -718,6 +719,7 @@ namespace WATickets.Controllers
                                 a.NumLlamada,
                                 idLlamada = a.Llamada?.id ?? 0,
                                 EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+                                PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
                                 StatusLlamada = a.Llamada?.Status ?? 0,
                                 TipoCaso = a.Llamada?.TipoCaso ?? 0,
                                 a.Fecha,
@@ -805,7 +807,8 @@ namespace WATickets.Controllers
                     z.id,
                     z.EmailPersonaContacto,
                     z.Status,
-                    z.TipoCaso
+                    z.TipoCaso,
+                    z.PrioridadAtencion
                 })
                 .FirstOrDefault(),
                            a.Fecha,
@@ -838,8 +841,9 @@ namespace WATickets.Controllers
         a.NumLlamada,
         idLlamada = a.Llamada?.id ?? 0,
         EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+        PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
         StatusLlamada = a.Llamada?.Status ?? 0,
-        TipoCaso = a.Llamada?.TipoCaso ?? 0,
+        TipoCaso = a.Llamada?.TipoCaso ?? 0,  
         a.Fecha,
         a.TipoMovimiento,
         a.Comentarios,
@@ -892,7 +896,8 @@ namespace WATickets.Controllers
                     z.id,
                     z.EmailPersonaContacto,
                     z.Status,
-                    z.TipoCaso
+                    z.TipoCaso,
+                    z.PrioridadAtencion
                 })
                 .FirstOrDefault(),
                              a.Fecha,
@@ -924,7 +929,8 @@ namespace WATickets.Controllers
         a.CardName,
         a.NumLlamada,
         idLlamada = a.Llamada?.id ?? 0,
-        EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+        EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "", 
+        PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
         StatusLlamada = a.Llamada?.Status ?? 0,
         TipoCaso = a.Llamada?.TipoCaso ?? 0,
         a.Fecha,
@@ -1005,7 +1011,8 @@ namespace WATickets.Controllers
                         z.id,
                         z.EmailPersonaContacto,
                         z.Status,
-                        z.TipoCaso
+                        z.TipoCaso,
+                        z.PrioridadAtencion
                     })
                     .FirstOrDefault(),
                                    a.Fecha,
@@ -1038,6 +1045,7 @@ namespace WATickets.Controllers
         a.NumLlamada,
         idLlamada = a.Llamada?.id ?? 0,
         EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+        PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
         StatusLlamada = a.Llamada?.Status ?? 0,
         TipoCaso = a.Llamada?.TipoCaso ?? 0,
         a.Fecha,
@@ -1087,7 +1095,8 @@ namespace WATickets.Controllers
                         z.id,
                         z.EmailPersonaContacto,
                         z.Status,
-                        z.TipoCaso
+                        z.TipoCaso,
+                        z.PrioridadAtencion
                     })
                     .FirstOrDefault(),
                          a.Fecha,
@@ -1120,6 +1129,7 @@ namespace WATickets.Controllers
         a.NumLlamada,
         idLlamada = a.Llamada?.id ?? 0,
         EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+        PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
         StatusLlamada = a.Llamada?.Status ?? 0,
         TipoCaso = a.Llamada?.TipoCaso ?? 0,
         a.Fecha,
@@ -1171,7 +1181,8 @@ namespace WATickets.Controllers
                         z.id,
                         z.EmailPersonaContacto,
                         z.Status,
-                        z.TipoCaso
+                        z.TipoCaso,
+                        z.PrioridadAtencion
                     })
                     .FirstOrDefault(),
                                       a.Fecha,
@@ -1204,6 +1215,7 @@ namespace WATickets.Controllers
         a.NumLlamada,
         idLlamada = a.Llamada?.id ?? 0,
         EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+        PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
         StatusLlamada = a.Llamada?.Status ?? 0,
         TipoCaso = a.Llamada?.TipoCaso ?? 0,
         a.Fecha,

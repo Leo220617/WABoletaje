@@ -257,6 +257,7 @@
     <Compile Include="Controllers\EncReparacionController.cs" />
     <Compile Include="Controllers\ErroresController.cs" />
     <Compile Include="Controllers\ExoneracionesController.cs" />
+    <Compile Include="Controllers\FacturaAprobadaController.cs" />
     <Compile Include="Controllers\FacturasController.cs" />
     <Compile Include="Controllers\G.cs" />
     <Compile Include="Controllers\GarantiasController.cs" />
