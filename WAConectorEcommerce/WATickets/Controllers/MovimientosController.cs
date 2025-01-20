@@ -1298,6 +1298,8 @@ namespace WATickets.Controllers
                     a.idGarantia,
                     a.idTiemposEntregas,
                     a.DocEntryDevolucion,
+                    a.Redondeo,
+
                     Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
 
                 }
@@ -1354,6 +1356,7 @@ namespace WATickets.Controllers
                         EncMovimiento.idDiasValidos = encMovimiento.idDiasValidos;
                         // EncMovimiento.idGarantia = encMovimiento.idGarantia;
                         EncMovimiento.idTiemposEntregas = encMovimiento.idTiemposEntregas;
+                        EncMovimiento.Redondeo = encMovimiento.Redondeo;
                         db.SaveChanges();
 
                         /// Probar funcionabilidad
@@ -1478,6 +1481,7 @@ namespace WATickets.Controllers
                         EncMovimiento.idTiemposEntregas = encMovimiento.idTiemposEntregas;
                         EncMovimiento.Facturado = false;
                         EncMovimiento.DocEntry = 0;
+                        EncMovimiento.Redondeo = encMovimiento.Redondeo;
                         db.EncMovimiento.Add(EncMovimiento);
                         db.SaveChanges();
 
@@ -1612,7 +1616,11 @@ namespace WATickets.Controllers
                         }
 
                         client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
-
+                        if (EncMovimiento.Redondeo != 0)
+                        {
+                            client.Rounding = BoYesNoEnum.tYES;
+                            client.RoundingDiffAmount = Convert.ToDouble(EncMovimiento.Redondeo);
+                        }
                         var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).ToList();
                         var i = 0;
                         foreach (var item in DetalleSAP)
@@ -1762,7 +1770,11 @@ namespace WATickets.Controllers
                                 orden.SalesPersonCode = Tecnico2.Letra;
                             }
                             orden.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
-
+                            if (EncMovimiento.Redondeo != 0)
+                            {
+                                orden.Rounding = BoYesNoEnum.tYES;
+                                orden.RoundingDiffAmount = Convert.ToDouble(EncMovimiento.Redondeo);
+                            }
                             var ii = 0;
                             foreach (var item in DetalleSAP)
                             {
@@ -1968,7 +1980,11 @@ namespace WATickets.Controllers
                                 client.SalesPersonCode = Tecnico.Letra;
                             }
                             client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
-
+                            if (EncMovimiento.Redondeo != 0)
+                            {
+                                client.Rounding = BoYesNoEnum.tYES;
+                                client.RoundingDiffAmount = Convert.ToDouble(EncMovimiento.Redondeo);
+                            }
                             var i = 0;
                             foreach (var item in DetalleSAP)
                             {
@@ -2369,6 +2385,7 @@ namespace WATickets.Controllers
                                 EncMovimientoEntrega.idTiemposEntregas = 0;
                                 EncMovimientoEntrega.Facturado = true;
                                 EncMovimientoEntrega.DocEntryDevolucion = 0;
+                                EncMovimientoEntrega.Redondeo = 0;
                                 db.EncMovimiento.Add(EncMovimientoEntrega);
                                 db.SaveChanges();
 

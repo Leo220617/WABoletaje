@@ -109,6 +109,7 @@ namespace WATickets.Controllers
                             a.CreadoPor,
                             a.ConsecutivoHacienda,
                             a.ClaveHacienda,
+                            a.Redondeo,
                             DetFactura = db.DetFacturas.Where(b => b.idEncabezado == a.id).ToList(),
                             Entrega = db.EncMovimiento.Where(b => b.TipoMovimiento == 2 && b.id == a.idEntrega).FirstOrDefault(),
                             MetodosPagos = db.MetodosPagosFacturas.Where(c => c.idEncabezado == a.id).ToList()
@@ -174,6 +175,7 @@ namespace WATickets.Controllers
                     a.ConsecutivoHacienda,
                     a.ClaveHacienda,
                     a.PorDesc,
+                    a.Redondeo,
                     DetFactura = db.DetFacturas.Where(b => b.idEncabezado == a.id).ToList(),
                     Entrega = db.EncMovimiento.Where(b => b.TipoMovimiento == 2 && b.id == a.idEntrega).FirstOrDefault(),
                     MetodosPagos = db.MetodosPagosFacturas.Where(c => c.idEncabezado == a.id).ToList()
@@ -607,7 +609,11 @@ namespace WATickets.Controllers
 
                         documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoConsecutivo).Value = Factura.ConsecutivoHacienda; //"U_LDT_NumeroGTI"
                         documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoClave).Value = Factura.ClaveHacienda;       //"U_LDT_FiscalDoc"
-                                                                                                                                   //documentoSAP.UserFields.Fields.Item("U_DYD_Estado").Value = "A";
+                        if (Factura.Redondeo != 0)
+                        {
+                            documentoSAP.Rounding = BoYesNoEnum.tYES;
+                            documentoSAP.RoundingDiffAmount = Convert.ToDouble(Factura.Redondeo);
+                        }                                                                                             //documentoSAP.UserFields.Fields.Item("U_DYD_Estado").Value = "A";
 
                         //Detalle
                         int z = 0;
@@ -1272,6 +1278,7 @@ namespace WATickets.Controllers
                     Factura.PorDesc = factura.PorDesc;
                     Factura.ProcesadoSAPPago = false;
                     Factura.FechaProcesadoPago = DateTime.Now;
+                    Factura.Redondeo = factura.Redondeo;
                     db.EncFacturas.Add(Factura);
                     db.SaveChanges();
 
@@ -1469,7 +1476,11 @@ namespace WATickets.Controllers
 
                         documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoConsecutivo).Value = Factura.ConsecutivoHacienda; //"U_LDT_NumeroGTI"
                         documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoClave).Value = Factura.ClaveHacienda;       //"U_LDT_FiscalDoc"
-                                                                                                                                   //documentoSAP.UserFields.Fields.Item("U_DYD_Estado").Value = "A";
+                        if (Factura.Redondeo != 0)
+                        {
+                            documentoSAP.Rounding = BoYesNoEnum.tYES;
+                            documentoSAP.RoundingDiffAmount = Convert.ToDouble(Factura.Redondeo);
+                        }                                                                                                          //documentoSAP.UserFields.Fields.Item("U_DYD_Estado").Value = "A";
 
                         //Detalle
                         int z = 0;

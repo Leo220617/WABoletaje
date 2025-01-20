@@ -36,6 +36,7 @@ namespace WATickets.Models
         public decimal PorDesc { get; set; }
         public string ItemCode { get; set; }
         public string Serie { get; set; }
+        public decimal Redondeo { get; set; }
         public DetFacturas[] DetFactura { get; set; }
         public MetodosPagosFacturas[] MetodosPagos { get; set; }
 

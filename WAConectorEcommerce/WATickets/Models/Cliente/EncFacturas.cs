@@ -39,6 +39,8 @@ namespace WATickets.Models.Cliente
         public decimal PorDesc { get; set; }
         public string DocEntryPago { get; set; }
         public bool ProcesadoSAPPago { get; set; }
+        public decimal Redondeo { get; set; }
+
         public DateTime FechaProcesadoPago { get; set; }
     }
 
