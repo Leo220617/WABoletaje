@@ -29,6 +29,8 @@ namespace WATickets.Models
         public int idGarantia { get; set; }
         public int idTiemposEntregas { get; set; }
         public int idDiasValidos { get; set; }
+        public decimal Redondeo { get; set; }
+
         public DetMovimiento[] Detalle { get; set; }
     }
 }

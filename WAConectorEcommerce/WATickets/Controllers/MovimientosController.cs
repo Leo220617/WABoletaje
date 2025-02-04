@@ -223,7 +223,8 @@ namespace WATickets.Controllers
 
                 }
 
-
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
                 return Request.CreateResponse(HttpStatusCode.OK);
 
@@ -237,6 +238,8 @@ namespace WATickets.Controllers
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
                 db.SaveChanges();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -637,7 +640,8 @@ namespace WATickets.Controllers
                 {
                     throw new Exception("No existe el encabezado");
                 }
-
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.OK);
 
             }
@@ -650,6 +654,8 @@ namespace WATickets.Controllers
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
                 db.SaveChanges();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -671,6 +677,7 @@ namespace WATickets.Controllers
                     && (filtro.FiltrarFacturado ? (filtro.NoFacturado ? a.Facturado == false : a.Facturado == true) : true)
                     && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
                      && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
+                     && (filtro.Codigo5 > 0 ? !a.AprobadaSuperior: true)
                     ).Select(a => new
                     {
                         a.id,
@@ -685,7 +692,9 @@ namespace WATickets.Controllers
                                 z.id,
                                 z.EmailPersonaContacto,
                                 z.Status,
-                                z.TipoCaso
+                                z.TipoCaso,
+                                z.PrioridadAtencion,
+                                z.Garantia
                             })
                             .FirstOrDefault(),
                         a.Fecha,
@@ -718,8 +727,10 @@ namespace WATickets.Controllers
                                 a.NumLlamada,
                                 idLlamada = a.Llamada?.id ?? 0,
                                 EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+                                PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
                                 StatusLlamada = a.Llamada?.Status ?? 0,
                                 TipoCaso = a.Llamada?.TipoCaso ?? 0,
+                                GarantiaLlamada = a.Llamada?.Garantia ?? 0,
                                 a.Fecha,
                                 a.TipoMovimiento,
                                 a.Comentarios,
@@ -791,6 +802,7 @@ namespace WATickets.Controllers
                        && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
                        && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
                        && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
+                        && (filtro.Codigo5 > 0 ? !a.AprobadaSuperior : true)
                        ).Select(a => new
                        {
                            a.id,
@@ -805,7 +817,9 @@ namespace WATickets.Controllers
                     z.id,
                     z.EmailPersonaContacto,
                     z.Status,
-                    z.TipoCaso
+                    z.TipoCaso,
+                    z.PrioridadAtencion,
+                    z.Garantia
                 })
                 .FirstOrDefault(),
                            a.Fecha,
@@ -838,8 +852,10 @@ namespace WATickets.Controllers
         a.NumLlamada,
         idLlamada = a.Llamada?.id ?? 0,
         EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+        PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
         StatusLlamada = a.Llamada?.Status ?? 0,
         TipoCaso = a.Llamada?.TipoCaso ?? 0,
+        GarantiaLlamada = a.Llamada?.Garantia ?? 0,
         a.Fecha,
         a.TipoMovimiento,
         a.Comentarios,
@@ -878,6 +894,7 @@ namespace WATickets.Controllers
                          && (!string.IsNullOrEmpty(filtro.CardCode) ? a.CardCode.Contains(filtro.CardCode) : true)
                          && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
                         && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
+                         && (filtro.Codigo5 > 0 ? !a.AprobadaSuperior : true)
                          ).Select(a => new
                          {
                              a.id,
@@ -892,7 +909,9 @@ namespace WATickets.Controllers
                     z.id,
                     z.EmailPersonaContacto,
                     z.Status,
-                    z.TipoCaso
+                    z.TipoCaso,
+                    z.PrioridadAtencion,
+                    z.Garantia
                 })
                 .FirstOrDefault(),
                              a.Fecha,
@@ -924,9 +943,11 @@ namespace WATickets.Controllers
         a.CardName,
         a.NumLlamada,
         idLlamada = a.Llamada?.id ?? 0,
-        EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+        EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "", 
+        PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
         StatusLlamada = a.Llamada?.Status ?? 0,
         TipoCaso = a.Llamada?.TipoCaso ?? 0,
+        GarantiaLlamada = a.Llamada?.Garantia ?? 0,
         a.Fecha,
         a.TipoMovimiento,
         a.Comentarios,
@@ -990,7 +1011,10 @@ namespace WATickets.Controllers
                                 //}
 
 
-                                var encMovimientos = db.EncMovimiento.Where(a => !llamadas.Contains(a.NumLlamada) && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true) && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true))
+                                var encMovimientos = db.EncMovimiento
+                                    .Where(a => !llamadas.Contains(a.NumLlamada) && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true) 
+                                    && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
+                                     && (filtro.Codigo5 > 0 ? !a.AprobadaSuperior : true))
                                .Select(a => new
                                {
                                    a.id,
@@ -1005,7 +1029,9 @@ namespace WATickets.Controllers
                         z.id,
                         z.EmailPersonaContacto,
                         z.Status,
-                        z.TipoCaso
+                        z.TipoCaso,
+                        z.PrioridadAtencion,
+                        z.Garantia
                     })
                     .FirstOrDefault(),
                                    a.Fecha,
@@ -1038,8 +1064,10 @@ namespace WATickets.Controllers
         a.NumLlamada,
         idLlamada = a.Llamada?.id ?? 0,
         EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+        PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
         StatusLlamada = a.Llamada?.Status ?? 0,
         TipoCaso = a.Llamada?.TipoCaso ?? 0,
+        GarantiaLlamada = a.Llamada?.Garantia ?? 0,
         a.Fecha,
         a.TipoMovimiento,
         a.Comentarios,
@@ -1071,6 +1099,7 @@ namespace WATickets.Controllers
                                  && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
                        && (filtro.FiltrarFacturado ? (filtro.NoFacturado ? a.Facturado == false : a.Facturado == true) : true)
                        && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
+                        && (filtro.Codigo5 > 0 ? !a.AprobadaSuperior : true)
                                 )
 
                      .Select(a => new
@@ -1087,7 +1116,9 @@ namespace WATickets.Controllers
                         z.id,
                         z.EmailPersonaContacto,
                         z.Status,
-                        z.TipoCaso
+                        z.TipoCaso,
+                        z.PrioridadAtencion,
+                        z.Garantia
                     })
                     .FirstOrDefault(),
                          a.Fecha,
@@ -1120,8 +1151,10 @@ namespace WATickets.Controllers
         a.NumLlamada,
         idLlamada = a.Llamada?.id ?? 0,
         EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+        PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
         StatusLlamada = a.Llamada?.Status ?? 0,
         TipoCaso = a.Llamada?.TipoCaso ?? 0,
+        GarantiaLlamada = a.Llamada?.Garantia ?? 0,
         a.Fecha,
         a.TipoMovimiento,
         a.Comentarios,
@@ -1155,6 +1188,7 @@ namespace WATickets.Controllers
                             && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
                        && (filtro.FiltrarFacturado ? (filtro.NoFacturado ? a.Facturado == false : a.Facturado == true) : true)
                        && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
+                        && (filtro.Codigo5 > 0 ? !a.AprobadaSuperior : true)
                             )
 
                                   .Select(a => new
@@ -1171,7 +1205,9 @@ namespace WATickets.Controllers
                         z.id,
                         z.EmailPersonaContacto,
                         z.Status,
-                        z.TipoCaso
+                        z.TipoCaso,
+                        z.PrioridadAtencion,
+                        z.Garantia
                     })
                     .FirstOrDefault(),
                                       a.Fecha,
@@ -1204,8 +1240,10 @@ namespace WATickets.Controllers
         a.NumLlamada,
         idLlamada = a.Llamada?.id ?? 0,
         EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
+        PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
         StatusLlamada = a.Llamada?.Status ?? 0,
         TipoCaso = a.Llamada?.TipoCaso ?? 0,
+        GarantiaLlamada = a.Llamada?.Garantia ?? 0,
         a.Fecha,
         a.TipoMovimiento,
         a.Comentarios,
@@ -1267,6 +1305,9 @@ namespace WATickets.Controllers
                     EmailPersonaContacto = db.LlamadasServicios
                     .Where(z => z.DocEntry.ToString() == a.NumLlamada).FirstOrDefault() == null ? "" : db.LlamadasServicios
                     .Where(z => z.DocEntry.ToString() == a.NumLlamada).FirstOrDefault().EmailPersonaContacto,
+                    GarantiaLlamada = db.LlamadasServicios
+                    .Where(z => z.DocEntry.ToString() == a.NumLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios
+                    .Where(z => z.DocEntry.ToString() == a.NumLlamada).FirstOrDefault().Garantia,
                     a.CardCode,
                     a.CardName,
                     a.NumLlamada,
@@ -1286,6 +1327,8 @@ namespace WATickets.Controllers
                     a.idGarantia,
                     a.idTiemposEntregas,
                     a.DocEntryDevolucion,
+                    a.Redondeo,
+
                     Detalle = db.DetMovimiento.Where(b => b.idEncabezado == a.id).ToList()
 
                 }
@@ -1334,7 +1377,7 @@ namespace WATickets.Controllers
                         EncMovimiento.Descuento = encMovimiento.Descuento;
                         EncMovimiento.Impuestos = encMovimiento.Impuestos;
                         EncMovimiento.Subtotal = encMovimiento.Subtotal;
-                        EncMovimiento.PorDescuento = encMovimiento.PorDescuento;
+                        EncMovimiento.PorDescuento = Math.Round(encMovimiento.PorDescuento, 6);
                         EncMovimiento.TotalComprobante = encMovimiento.TotalComprobante;
                         EncMovimiento.Comentarios = encMovimiento.Comentarios;
                         EncMovimiento.Moneda = encMovimiento.Moneda;
@@ -1342,6 +1385,7 @@ namespace WATickets.Controllers
                         EncMovimiento.idDiasValidos = encMovimiento.idDiasValidos;
                         // EncMovimiento.idGarantia = encMovimiento.idGarantia;
                         EncMovimiento.idTiemposEntregas = encMovimiento.idTiemposEntregas;
+                        EncMovimiento.Redondeo = encMovimiento.Redondeo;
                         db.SaveChanges();
 
                         /// Probar funcionabilidad
@@ -1454,18 +1498,19 @@ namespace WATickets.Controllers
                         EncMovimiento.Descuento = encMovimiento.Descuento;
                         EncMovimiento.Impuestos = encMovimiento.Impuestos;
                         EncMovimiento.Subtotal = encMovimiento.Subtotal;
-                        EncMovimiento.PorDescuento = encMovimiento.PorDescuento;
+                        EncMovimiento.PorDescuento = Math.Round(encMovimiento.PorDescuento,6);
                         EncMovimiento.TotalComprobante = encMovimiento.TotalComprobante;
                         EncMovimiento.Comentarios = encMovimiento.Comentarios;
                         EncMovimiento.Moneda = encMovimiento.Moneda;
                         EncMovimiento.Aprobada = false;
-                        EncMovimiento.AprobadaSuperior = false;
+                        EncMovimiento.AprobadaSuperior = true;
                         EncMovimiento.idCondPago = encMovimiento.idCondPago;
                         EncMovimiento.idDiasValidos = encMovimiento.idDiasValidos;
                         //EncMovimiento.idGarantia = encMovimiento.idGarantia;
                         EncMovimiento.idTiemposEntregas = encMovimiento.idTiemposEntregas;
                         EncMovimiento.Facturado = false;
                         EncMovimiento.DocEntry = 0;
+                        EncMovimiento.Redondeo = encMovimiento.Redondeo;
                         db.EncMovimiento.Add(EncMovimiento);
                         db.SaveChanges();
 
@@ -1600,7 +1645,11 @@ namespace WATickets.Controllers
                         }
 
                         client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
-
+                        if (EncMovimiento.Redondeo != 0)
+                        {
+                            client.Rounding = BoYesNoEnum.tYES;
+                            client.RoundingDiffAmount = Convert.ToDouble(EncMovimiento.Redondeo);
+                        }
                         var DetalleSAP = db.DetMovimiento.Where(a => a.idEncabezado == EncMovimiento.id && a.Garantia == false).ToList();
                         var i = 0;
                         foreach (var item in DetalleSAP)
@@ -1750,7 +1799,11 @@ namespace WATickets.Controllers
                                 orden.SalesPersonCode = Tecnico2.Letra;
                             }
                             orden.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
-
+                            if (EncMovimiento.Redondeo != 0)
+                            {
+                                orden.Rounding = BoYesNoEnum.tYES;
+                                orden.RoundingDiffAmount = Convert.ToDouble(EncMovimiento.Redondeo);
+                            }
                             var ii = 0;
                             foreach (var item in DetalleSAP)
                             {
@@ -1956,7 +2009,11 @@ namespace WATickets.Controllers
                                 client.SalesPersonCode = Tecnico.Letra;
                             }
                             client.UserFields.Fields.Item("U_DYD_Boleta").Value = EncMovimiento.NumLlamada.ToString();
-
+                            if (EncMovimiento.Redondeo != 0)
+                            {
+                                client.Rounding = BoYesNoEnum.tYES;
+                                client.RoundingDiffAmount = Convert.ToDouble(EncMovimiento.Redondeo);
+                            }
                             var i = 0;
                             foreach (var item in DetalleSAP)
                             {
@@ -2350,13 +2407,14 @@ namespace WATickets.Controllers
                                 EncMovimientoEntrega.TotalComprobante = 0;
                                 EncMovimientoEntrega.Comentarios = "Esta es la entrega de los productos por garantia";
                                 EncMovimientoEntrega.Aprobada = false;
-                                EncMovimientoEntrega.AprobadaSuperior = false;
+                                EncMovimientoEntrega.AprobadaSuperior = true;
                                 EncMovimientoEntrega.idCondPago = 0;
                                 EncMovimientoEntrega.idDiasValidos = 0;
                                 EncMovimientoEntrega.idGarantia = 1;
                                 EncMovimientoEntrega.idTiemposEntregas = 0;
                                 EncMovimientoEntrega.Facturado = true;
                                 EncMovimientoEntrega.DocEntryDevolucion = 0;
+                                EncMovimientoEntrega.Redondeo = 0;
                                 db.EncMovimiento.Add(EncMovimientoEntrega);
                                 db.SaveChanges();
 
@@ -2398,10 +2456,10 @@ namespace WATickets.Controllers
                 {
                     t.Rollback();
                 }
-                catch (Exception)
+                catch (Exception ex1)
                 {
 
-
+                    g.GuardarTxt("errorTransaction.txt", ex1.Message);
                 }
 
                 BitacoraErrores be = new BitacoraErrores();

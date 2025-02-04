@@ -18,7 +18,7 @@ namespace WATickets.Controllers
 {
     [Authorize]
 
-    public class BitacoraMovimientosController: ApiController
+    public class BitacoraMovimientosController : ApiController
     {
         ModelCliente db = new ModelCliente();
         G g = new G();
@@ -28,14 +28,15 @@ namespace WATickets.Controllers
             try
             {
                 var time = new DateTime();
-                
-                if(filtro.FechaFinal != time)
+
+                if (filtro.FechaFinal != time)
                 {
                     filtro.FechaFinal = filtro.FechaFinal.AddDays(1);
                 }
                 if (string.IsNullOrEmpty(filtro.CardCode))
                 {
-                    var Bitacora = db.BitacoraMovimientos.Select(a => new {
+                    var Bitacora = db.BitacoraMovimientos.Select(a => new
+                    {
 
 
                         a.id,
@@ -108,9 +109,10 @@ namespace WATickets.Controllers
 
 
                     }
-                  
 
 
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
                     return Request.CreateResponse(HttpStatusCode.OK, Bitacora);
                 }
                 else
@@ -124,7 +126,8 @@ namespace WATickets.Controllers
                     {
 
                     }
-                    var Bitacora = db.BitacoraMovimientos.Select(a => new {
+                    var Bitacora = db.BitacoraMovimientos.Select(a => new
+                    {
 
 
                         a.id,
@@ -141,7 +144,9 @@ namespace WATickets.Controllers
                         StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
                         Detalle = db.DetBitacoraMovimientos.Where(b => b.idEncabezado == a.id).ToList()
 
-                    }).Where(a => (!string.IsNullOrEmpty(filtro.CardCode) ? a.idLlamada.Value == DocEntry : true) ).ToList();
+                    }).Where(a => (!string.IsNullOrEmpty(filtro.CardCode) ? a.idLlamada.Value == DocEntry : true)).ToList();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
                     return Request.CreateResponse(HttpStatusCode.OK, Bitacora);
 
                 }
@@ -157,6 +162,8 @@ namespace WATickets.Controllers
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
                 db.SaveChanges();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -170,7 +177,8 @@ namespace WATickets.Controllers
 
 
 
-                var Bitacora = db.BitacoraMovimientos.Select(a => new {
+                var Bitacora = db.BitacoraMovimientos.Select(a => new
+                {
 
 
                     a.id,
@@ -195,7 +203,8 @@ namespace WATickets.Controllers
                 {
                     throw new Exception("Este movimiento no se encuentra registrado");
                 }
-
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.OK, Bitacora);
             }
             catch (Exception ex)
@@ -206,6 +215,8 @@ namespace WATickets.Controllers
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
                 db.SaveChanges();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -218,7 +229,7 @@ namespace WATickets.Controllers
                 var errorSAP = "";
                 var BT = db.BitacoraMovimientos.Where(a => a.id == bts.id).FirstOrDefault();
 
-                if(BT != null)
+                if (BT != null)
                 {
                     db.Entry(BT).State = EntityState.Modified;
                     BT.Status = bts.Status;
@@ -229,13 +240,13 @@ namespace WATickets.Controllers
                         var DetBitacoraMovimiento = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.idProducto == item.idProducto && a.idError == item.idError).FirstOrDefault();
                         db.Entry(DetBitacoraMovimiento).State = EntityState.Modified;
                         DetBitacoraMovimiento.CantidadEnviar = item.CantidadEnviar;
-                 //       DetBitacoraMovimiento.CantidadFaltante = DetBitacoraMovimiento.CantidadFaltante - DetBitacoraMovimiento.CantidadEnviar;
+                        //       DetBitacoraMovimiento.CantidadFaltante = DetBitacoraMovimiento.CantidadFaltante - DetBitacoraMovimiento.CantidadEnviar;
                         db.SaveChanges();
 
                     }
 
-                    if(db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).Count() > 0)
-                   // if (BT.Status == "1" && !BT.ProcesadaSAP)
+                    if (db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).Count() > 0)
+                    // if (BT.Status == "1" && !BT.ProcesadaSAP)
                     {
                         try
                         {
@@ -246,18 +257,18 @@ namespace WATickets.Controllers
                             client.DocDate = DateTime.Now;
                             if (BT.TipoMovimiento == 1)
                             {
-                                client.FromWarehouse = Parametro.BodegaInicial; 
+                                client.FromWarehouse = Parametro.BodegaInicial;
                                 client.ToWarehouse = Parametro.BodegaFinal;
-                                 
+
                             }
                             else if (BT.TipoMovimiento == 2)
                             {
-                                client.FromWarehouse = Parametro.BodegaFinal; 
+                                client.FromWarehouse = Parametro.BodegaFinal;
                                 client.ToWarehouse = Parametro.BodegaInicial;
                             }
 
                             client.CardCode = Llamada.CardCode;
-                            client.Comments = g.TruncarString( Encabezado.Comentarios,200);
+                            client.Comments = g.TruncarString(Encabezado.Comentarios, 200);
                             client.UserFields.Fields.Item("U_TiendaDest").Value = BT.TipoMovimiento == 1 ? BT.BodegaInicial : BT.BodegaFinal;
                             client.UserFields.Fields.Item("U_DYD_Boleta").Value = db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault() == null ? Encabezado.idLlamada.ToString() : db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault().DocEntry.ToString();
 
@@ -282,7 +293,7 @@ namespace WATickets.Controllers
                                 var idEntry = 0;
                                 try
                                 {
-                                     idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
+                                    idEntry = Convert.ToInt32(Conexion.Company.GetNewObjectKey());
                                     throw new Exception("");
                                 }
                                 catch (Exception ex)
@@ -290,10 +301,10 @@ namespace WATickets.Controllers
                                     try
                                     {
                                         var Parametros = db.Parametros.FirstOrDefault();
-                                        var conexion = g.DevuelveCadena(db); 
+                                        var conexion = g.DevuelveCadena(db);
                                         var valorAFiltrar = "Traslados - " + Llamada.CardCode + " - " + BT.id;
                                         var filtroSQL = "JrnlMemo like '%" + valorAFiltrar + "%' order by DocEntry desc";
-                                        var SQL = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "OWTR").Replace("@CampoWhere = @reemplazo",filtroSQL);
+                                        var SQL = Parametros.SQLDocEntryDocs.Replace("@CampoBuscar", "DocEntry").Replace("@Tabla", "OWTR").Replace("@CampoWhere = @reemplazo", filtroSQL);
 
                                         SqlConnection Cn = new SqlConnection(conexion);
                                         SqlCommand Cmd = new SqlCommand(SQL, Cn);
@@ -319,7 +330,7 @@ namespace WATickets.Controllers
                                     }
 
                                 }
-                                
+
 
 
                                 var count = -1;
@@ -331,47 +342,57 @@ namespace WATickets.Controllers
                                     var NumLlamada = llamada.DocEntry.ToString();
                                     count = db.BitacoraMovimientosSAP.Where(a => a.idLlamada == Encabezado.idLlamada && a.ProcesadaSAP == true).GroupBy(a => a.DocEntry).Count();
                                     count += db.EncFacturas.Where(a => a.NumLlamada == NumLlamada && a.ProcesadoSAP == true).FirstOrDefault() == null ? 0 : db.EncFacturas.Where(a => a.NumLlamada == NumLlamada && a.ProcesadoSAP == true).Count();
-
+                                    count += db.EncMovimiento.Where(a => a.NumLlamada == NumLlamada && a.TipoMovimiento == 2 && a.DocEntry > 0).Count();
+                                    var bandera = false;
+                                    if (count > 0)
+                                    {
+                                        bandera = true;
+                                    }
                                     G G = new G();
                                     G.GuardarTxt("BitacoraCount.txt", "llamada " + Encabezado.idLlamada + " -> Count: " + count.ToString());
 
 
-                                    if (count > 0)
+                                    if (client2.Expenses.Count > 0)
                                     {
-                                        client2.Expenses.Add();
+                                        if (bandera == true)
+                                        {
+
+                                            client2.Expenses.Add();
+                                        }
                                     }
 
                                     client2.Expenses.DocumentType = BoSvcEpxDocTypes.edt_StockTransfer;
                                     client2.Expenses.DocumentNumber = idEntry;
 
                                     client2.Expenses.DocEntry = idEntry;
-                                    if (client2.Expenses.Count == 0)
+
+                                    if (client2.Expenses.Count == 0 || bandera == false)
                                     {
                                         client2.Expenses.Add();
-                                    } 
+                                    }
                                     client2.Expenses.Add();
                                     if (count == 0)
                                     {
                                         client2.Expenses.Add();
                                     }
-                                    //client2.Expenses.Add();
+                                    client2.Expenses.Add();
                                     var respuesta2 = client2.Update();
                                     if (respuesta2 == 0)
                                     {
                                         db.Entry(BT).State = EntityState.Modified;
                                         BT.DocEntry = idEntry;
-                                        if(BT.Status == "0")
+                                        if (BT.Status == "0")
                                         {
                                             BT.Status = "3";
                                         }
-                                       // BT.ProcesadaSAP = true;
+                                        // BT.ProcesadaSAP = true;
                                         db.SaveChanges();
 
                                         db.Entry(Encabezado).State = EntityState.Modified;
                                         Encabezado.TipoReparacion = 0;
                                         Encabezado.BodegaOrigen = "0";
                                         Encabezado.BodegaFinal = "0";
-                                        
+
                                         db.SaveChanges();
                                         foreach (var item in Det) //bts.Detalle)
                                         {
@@ -399,7 +420,7 @@ namespace WATickets.Controllers
                                     else
                                     {
                                         var Detalles = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).ToList();
-                                        foreach(var item in Detalles)
+                                        foreach (var item in Detalles)
                                         {
                                             db.Entry(item).State = EntityState.Modified;
                                             item.CantidadEnviar = 0;
@@ -408,7 +429,7 @@ namespace WATickets.Controllers
 
 
                                         db.Entry(BT).State = EntityState.Modified;
-                                        BT.Status = "0"; 
+                                        BT.Status = "0";
                                         db.SaveChanges();
                                         errorSAP = Conexion.Company.GetLastErrorDescription();
                                         BitacoraErrores be = new BitacoraErrores();
@@ -484,12 +505,15 @@ namespace WATickets.Controllers
                         }
                     }
 
-                    if((BT.Status == "0" && bts.Status != "0")) 
+                    if ((BT.Status == "0" && bts.Status != "0"))
                     {
-                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ha ocurrido un error al enviar a SAP ("+errorSAP+") , por lo tanto debe volver a intentarlo");
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ha ocurrido un error al enviar a SAP (" + errorSAP + ") , por lo tanto debe volver a intentarlo");
 
                     }
-
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
                     return Request.CreateResponse(HttpStatusCode.OK, BT);
 
                 }
@@ -510,6 +534,8 @@ namespace WATickets.Controllers
 
                 db.BitacoraErrores.Add(be);
                 db.SaveChanges();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }

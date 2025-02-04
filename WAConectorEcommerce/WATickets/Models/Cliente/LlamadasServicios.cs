@@ -62,5 +62,6 @@ namespace WATickets.Models.Cliente
         public bool SinRepuestos { get; set; }
         public string Prioridad { get; set; }
         public bool SinFacturar { get; set; }
+        public string PrioridadAtencion { get; set; }
     }
 }

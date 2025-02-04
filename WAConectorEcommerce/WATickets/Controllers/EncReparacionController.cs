@@ -53,6 +53,8 @@ namespace WATickets.Controllers
                     a.BodegaFinal,
                     FechaSISO = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO.Value,
                     StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
+                    PrioridadAtencion = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? "0" : string.IsNullOrEmpty(db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().PrioridadAtencion) ? "0" : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().PrioridadAtencion,
+                
                     TipoCaso = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso,
                     Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
                     Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
@@ -107,6 +109,7 @@ namespace WATickets.Controllers
                                 a.BodegaFinal,
                                 FechaSISO = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO.Value,
                                 StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
+                                PrioridadAtencion = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? "0" : string.IsNullOrEmpty(db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().PrioridadAtencion) ? "0" : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().PrioridadAtencion,
                                 TipoCaso = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso,
                                 Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
                                 Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
@@ -148,6 +151,7 @@ namespace WATickets.Controllers
                             a.BodegaFinal,
                             FechaSISO = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO.Value,
                             StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
+                            PrioridadAtencion = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? "0" : string.IsNullOrEmpty(db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().PrioridadAtencion) ? "0" : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().PrioridadAtencion,
                             TipoCaso = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso,
                             Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
                             Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
@@ -162,7 +166,8 @@ namespace WATickets.Controllers
                   ).ToList();
                     }
 
-
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
 
                     return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
                 }
@@ -197,6 +202,7 @@ namespace WATickets.Controllers
                         a.BodegaFinal,
                         FechaSISO = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO == null ? new DateTime() : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().FechaSISO.Value,
                         StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
+                        PrioridadAtencion = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? "0" : string.IsNullOrEmpty(db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().PrioridadAtencion) ? "0" : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().PrioridadAtencion,
                         TipoCaso = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().TipoCaso,
                         Detalle = db.DetReparacion.Where(b => b.idEncabezado == a.id).ToList(),
                         Adjuntos = db.Adjuntos.Where(b => b.idEncabezado == a.id).ToList(),
@@ -205,6 +211,8 @@ namespace WATickets.Controllers
 
                .Where(a => (!string.IsNullOrEmpty(filtro.CardCode) ? a.idLlamada.Value == DocEntry : true)
                ).ToList();
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
                     return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
                 }
 
@@ -264,7 +272,8 @@ namespace WATickets.Controllers
                 {
                     throw new Exception("Este documento no se encuentra registrado");
                 }
-
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.OK, EncReparacion);
             }
             catch (Exception ex)
@@ -430,7 +439,40 @@ namespace WATickets.Controllers
                 var Parametro = db.Parametros.FirstOrDefault();
                 var Encabezado = db.EncReparacion.Where(a => a.id == coleccion.EncReparacion.id).FirstOrDefault();
                 var Llamada = db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault();
-                if(coleccion.EstadoLlamada == 47)
+                var MesesAtrasLlamada = false;
+                try
+                {
+                    var conexion = g.DevuelveCadena(db);
+                    var SQL = Parametro.SQLVerificaMeses.Replace("@SerieFabricante", "'" + Llamada.SerieFabricante + "'").Replace("@itemCode", "'" + Llamada.ItemCode + "'");
+
+                    SqlConnection Cn = new SqlConnection(conexion);
+                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                    DataSet Ds = new DataSet();
+                    Cn.Open();
+                    Da.Fill(Ds, "Cliente");
+                    var Garantia = Ds.Tables["Cliente"].Rows[0]["Garantia"].ToString();
+                    if (Garantia == "1")
+                    {
+                        MesesAtrasLlamada = true;
+                    }
+                    Cn.Close();
+                }
+                catch (Exception ex1)
+                {
+                    BitacoraErrores be = new BitacoraErrores();
+
+                    be.Descripcion = "Error en la reparacion , al conseguir si lleva garantia-> " + ex1.Message;
+                    be.StackTrace = ex1.StackTrace;
+                    be.Fecha = DateTime.Now;
+
+                    db.BitacoraErrores.Add(be);
+                    db.SaveChanges();
+
+                }
+
+
+                if (coleccion.EstadoLlamada == 47)
                 {
                     var ValidacionReparacionAnterior = db.EncReparacion.Select(a => new
                     {
@@ -501,13 +543,14 @@ namespace WATickets.Controllers
                                     encMovimiento.TotalComprobante = OfertaAprobada.TotalComprobante;
                                     encMovimiento.Moneda = OfertaAprobada.Moneda;
                                     encMovimiento.Aprobada = false;
-                                    encMovimiento.AprobadaSuperior = false;
+                                    encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false : true;
                                     encMovimiento.idCondPago = 0;
                                     encMovimiento.idDiasValidos = 0;
                                     encMovimiento.idGarantia = 0;
                                     encMovimiento.idTiemposEntregas = 0;
                                     encMovimiento.Facturado = false;
                                     encMovimiento.DocEntryDevolucion = 0;
+                                    encMovimiento.Redondeo = OfertaAprobada.Redondeo;
                                     db.EncMovimiento.Add(encMovimiento);
                                     db.SaveChanges();
 
@@ -518,6 +561,43 @@ namespace WATickets.Controllers
                                         DetMovimiento detMovimiento = new DetMovimiento();
                                         detMovimiento.idEncabezado = encMovimiento.id;
                                         detMovimiento.NumLinea = 1;
+
+                                        if(!string.IsNullOrEmpty(Parametro.SQLArtSustituido))
+                                        {
+                                            try
+                                            {
+                                                var conexion = g.DevuelveCadena(db);
+                                                var SQL = Parametro.SQLArtSustituido + "'" + item.ItemCode + "'";
+
+                                                SqlConnection Cn = new SqlConnection(conexion);
+                                                SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                                DataSet Ds = new DataSet();
+                                                Cn.Open();
+                                                Da.Fill(Ds, "Art");
+                                                var Prod = Ds.Tables["Art"].Rows[0]["Sust"].ToString();
+                                                var Nom = Ds.Tables["Art"].Rows[0]["Nombre"].ToString();
+                                                if (!string.IsNullOrEmpty(Prod))
+                                                {
+                                                    item.ItemCode = Prod;
+                                                    item.ItemName = Nom;
+                                                }
+                                                Cn.Close();
+                                            }
+                                            catch (Exception ex1)
+                                            {
+                                                BitacoraErrores be = new BitacoraErrores();
+
+                                                be.Descripcion = "Error en la busqueda del sustituto -> " + ex1.Message;
+                                                be.StackTrace = ex1.StackTrace;
+                                                be.Fecha = DateTime.Now;
+
+                                                db.BitacoraErrores.Add(be);
+                                                db.SaveChanges();
+
+                                            }
+                                        }
+
                                         detMovimiento.ItemCode = item.ItemCode;
                                         detMovimiento.ItemName = item.ItemName;
                                         detMovimiento.PrecioUnitario = item.PrecioUnitario;
@@ -582,7 +662,7 @@ namespace WATickets.Controllers
                                                         detMovimiento.NumLinea = 1;
                                                         detMovimiento.ItemCode = itemCode;
                                                         detMovimiento.ItemName = itemName;
-                                                        detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                        detMovimiento.PrecioUnitario = DetalleOfertaAprobada.Where(a => a.ItemCode == itemCode).FirstOrDefault() != null ? DetalleOfertaAprobada.Where(a => a.ItemCode == itemCode).FirstOrDefault().PrecioUnitario : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
                                                         detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                         detMovimiento.PorDescuento = 0;
                                                         detMovimiento.Descuento = 0;
@@ -723,13 +803,14 @@ namespace WATickets.Controllers
                                     encMovimiento.TotalComprobante = OfertaAprobada.TotalComprobante;
                                     encMovimiento.Moneda = OfertaAprobada.Moneda;
                                     encMovimiento.Aprobada = false;
-                                    encMovimiento.AprobadaSuperior = false;
+                                    encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false :  true ;
                                     encMovimiento.idCondPago = 0;
                                     encMovimiento.idDiasValidos = 0;
                                     encMovimiento.idGarantia = 0;
                                     encMovimiento.idTiemposEntregas = 0;
                                     encMovimiento.Facturado = false;
                                     encMovimiento.DocEntryDevolucion = 0;
+                                    encMovimiento.Redondeo = OfertaAprobada.Redondeo;
                                     db.EncMovimiento.Add(encMovimiento);
                                     db.SaveChanges();
 
@@ -738,6 +819,41 @@ namespace WATickets.Controllers
                                         DetMovimiento detMovimiento = new DetMovimiento();
                                         detMovimiento.idEncabezado = encMovimiento.id;
                                         detMovimiento.NumLinea = 1;
+                                        if (!string.IsNullOrEmpty(Parametro.SQLArtSustituido))
+                                        {
+                                            try
+                                            {
+                                                var conexion = g.DevuelveCadena(db);
+                                                var SQL = Parametro.SQLArtSustituido + "'" + item.ItemCode + "'";
+
+                                                SqlConnection Cn = new SqlConnection(conexion);
+                                                SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                                DataSet Ds = new DataSet();
+                                                Cn.Open();
+                                                Da.Fill(Ds, "Art");
+                                                var Prod = Ds.Tables["Art"].Rows[0]["Sust"].ToString();
+                                                var Nom = Ds.Tables["Art"].Rows[0]["Nombre"].ToString();
+                                                if (!string.IsNullOrEmpty(Prod))
+                                                {
+                                                    item.ItemCode = Prod;
+                                                    item.ItemName = Nom;
+                                                }
+                                                Cn.Close();
+                                            }
+                                            catch (Exception ex1)
+                                            {
+                                                BitacoraErrores be = new BitacoraErrores();
+
+                                                be.Descripcion = "Error en la busqueda del sustituto -> " + ex1.Message;
+                                                be.StackTrace = ex1.StackTrace;
+                                                be.Fecha = DateTime.Now;
+
+                                                db.BitacoraErrores.Add(be);
+                                                db.SaveChanges();
+
+                                            }
+                                        }
                                         detMovimiento.ItemCode = item.ItemCode;
                                         detMovimiento.ItemName = item.ItemName;
                                         detMovimiento.PrecioUnitario = item.PrecioUnitario;
@@ -787,7 +903,7 @@ namespace WATickets.Controllers
                                                         detMovimiento.NumLinea = 1;
                                                         detMovimiento.ItemCode = itemCode;
                                                         detMovimiento.ItemName = itemName;
-                                                        detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                        detMovimiento.PrecioUnitario = DetalleOfertaAprobada.Where(a => a.ItemCode == itemCode).FirstOrDefault() != null ? DetalleOfertaAprobada.Where(a => a.ItemCode == itemCode).FirstOrDefault().PrecioUnitario : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
                                                         detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                         detMovimiento.PorDescuento = 0;
                                                         detMovimiento.Descuento = 0;
@@ -917,13 +1033,14 @@ namespace WATickets.Controllers
                                 encMovimiento.TotalComprobante = 0;
                                 encMovimiento.Moneda = "COL";
                                 encMovimiento.Aprobada = false;
-                                encMovimiento.AprobadaSuperior = false;
+                                encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false : true;
                                 encMovimiento.idCondPago = 0;
                                 encMovimiento.idDiasValidos = 0;
                                 encMovimiento.idGarantia = 0;
                                 encMovimiento.idTiemposEntregas = 0;
                                 encMovimiento.Facturado = false;
                                 encMovimiento.DocEntryDevolucion = 0;
+                                encMovimiento.Redondeo = 0;
                                 db.EncMovimiento.Add(encMovimiento);
                                 db.SaveChanges();
 
@@ -959,9 +1076,44 @@ namespace WATickets.Controllers
                                                     DetMovimiento detMovimiento = new DetMovimiento();
                                                     detMovimiento.idEncabezado = encMovimiento.id;
                                                     detMovimiento.NumLinea = 1;
+                                                    if (!string.IsNullOrEmpty(Parametro.SQLArtSustituido))
+                                                    {
+                                                        try
+                                                        {
+                                                             conexion = g.DevuelveCadena(db);
+                                                             SQL = Parametro.SQLArtSustituido + "'" + itemCode + "'";
+
+                                                             Cn = new SqlConnection(conexion);
+                                                             Cmd = new SqlCommand(SQL, Cn);
+                                                             Da = new SqlDataAdapter(Cmd);
+                                                             Ds = new DataSet();
+                                                            Cn.Open();
+                                                            Da.Fill(Ds, "Art");
+                                                            var Prod = Ds.Tables["Art"].Rows[0]["Sust"].ToString();
+                                                            var Nom = Ds.Tables["Art"].Rows[0]["Nombre"].ToString();
+                                                            if (!string.IsNullOrEmpty(Prod))
+                                                            {
+                                                                itemCode = Prod;
+                                                                itemName = Nom;
+                                                            }
+                                                            Cn.Close();
+                                                        }
+                                                        catch (Exception ex1)
+                                                        {
+                                                            BitacoraErrores be = new BitacoraErrores();
+
+                                                            be.Descripcion = "Error en la busqueda del sustituto -> " + ex1.Message;
+                                                            be.StackTrace = ex1.StackTrace;
+                                                            be.Fecha = DateTime.Now;
+
+                                                            db.BitacoraErrores.Add(be);
+                                                            db.SaveChanges();
+
+                                                        }
+                                                    }
                                                     detMovimiento.ItemCode = itemCode;
                                                     detMovimiento.ItemName = itemName;
-                                                    detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                    detMovimiento.PrecioUnitario =   db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
                                                     detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                     detMovimiento.PorDescuento = 0;
                                                     detMovimiento.Descuento = 0;
@@ -1261,7 +1413,7 @@ namespace WATickets.Controllers
                             encMovimiento.DocEntry = 0;
                             encMovimiento.Moneda = "COL";
                             encMovimiento.Aprobada = false;
-                            encMovimiento.AprobadaSuperior = false;
+                            encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false : true;
                             encMovimiento.idCondPago = 0;
                             encMovimiento.idDiasValidos = 0;
                             encMovimiento.idGarantia = 0;
@@ -1269,6 +1421,7 @@ namespace WATickets.Controllers
                             encMovimiento.Facturado = false;
                             encMovimiento.DocEntry = 0;
                             encMovimiento.DocEntryDevolucion = 0;
+                            encMovimiento.Redondeo = 0;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 
@@ -1302,6 +1455,42 @@ namespace WATickets.Controllers
                                             DetMovimiento detMovimiento = new DetMovimiento();
                                             detMovimiento.idEncabezado = encMovimiento.id;
                                             detMovimiento.NumLinea = 1;
+
+                                            if (!string.IsNullOrEmpty(Parametro.SQLArtSustituido))
+                                            {
+                                                try
+                                                {
+                                                     conexion = g.DevuelveCadena(db);
+                                                     SQL = Parametro.SQLArtSustituido + "'" + itemCode + "'";
+
+                                                     Cn = new SqlConnection(conexion);
+                                                     Cmd = new SqlCommand(SQL, Cn);
+                                                     Da = new SqlDataAdapter(Cmd);
+                                                     Ds = new DataSet();
+                                                    Cn.Open();
+                                                    Da.Fill(Ds, "Art");
+                                                    var Prod = Ds.Tables["Art"].Rows[0]["Sust"].ToString();
+                                                    var Nom = Ds.Tables["Art"].Rows[0]["Nombre"].ToString();
+                                                    if (!string.IsNullOrEmpty(Prod))
+                                                    {
+                                                        itemCode = Prod;
+                                                        itemName = Nom;
+                                                    }
+                                                    Cn.Close();
+                                                }
+                                                catch (Exception ex1)
+                                                {
+                                                    BitacoraErrores be = new BitacoraErrores();
+
+                                                    be.Descripcion = "Error en la busqueda del sustituto -> " + ex1.Message;
+                                                    be.StackTrace = ex1.StackTrace;
+                                                    be.Fecha = DateTime.Now;
+
+                                                    db.BitacoraErrores.Add(be);
+                                                    db.SaveChanges();
+
+                                                }
+                                            }
                                             detMovimiento.ItemCode = itemCode;
                                             detMovimiento.ItemName = itemName;
                                             detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
@@ -1476,13 +1665,14 @@ namespace WATickets.Controllers
                             encMovimiento.DocEntry = 0;
                             encMovimiento.Moneda = "COL";
                             encMovimiento.Aprobada = false;
-                            encMovimiento.AprobadaSuperior = false;
+                            encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false :true;
                             encMovimiento.idCondPago = 0;
                             encMovimiento.idDiasValidos = 0;
                             encMovimiento.idGarantia = 0;
                             encMovimiento.idTiemposEntregas = 0;
                             encMovimiento.Facturado = false;
                             encMovimiento.DocEntryDevolucion = 0;
+                            encMovimiento.Redondeo = 0;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
 
@@ -1498,6 +1688,41 @@ namespace WATickets.Controllers
                                 DetMovimiento detMovimiento = new DetMovimiento();
                                 detMovimiento.idEncabezado = encMovimiento.id;
                                 detMovimiento.NumLinea = 1;
+                                if (!string.IsNullOrEmpty(Parametro.SQLArtSustituido))
+                                {
+                                    try
+                                    {
+                                         conexion = g.DevuelveCadena(db);
+                                         SQL = Parametro.SQLArtSustituido + "'" + itemCode + "'";
+
+                                         Cn = new SqlConnection(conexion);
+                                         Cmd = new SqlCommand(SQL, Cn);
+                                         Da = new SqlDataAdapter(Cmd);
+                                         Ds = new DataSet();
+                                        Cn.Open();
+                                        Da.Fill(Ds, "Art");
+                                        var Prod = Ds.Tables["Art"].Rows[0]["Sust"].ToString();
+                                        var Nom = Ds.Tables["Art"].Rows[0]["Nombre"].ToString();
+                                        if (!string.IsNullOrEmpty(Prod))
+                                        {
+                                            itemCode = Prod;
+                                            itemName = Nom;
+                                        }
+                                        Cn.Close();
+                                    }
+                                    catch (Exception ex1)
+                                    {
+                                        BitacoraErrores be = new BitacoraErrores();
+
+                                        be.Descripcion = "Error en la busqueda del sustituto -> " + ex1.Message;
+                                        be.StackTrace = ex1.StackTrace;
+                                        be.Fecha = DateTime.Now;
+
+                                        db.BitacoraErrores.Add(be);
+                                        db.SaveChanges();
+
+                                    }
+                                }
                                 detMovimiento.ItemCode = itemCode;
                                 detMovimiento.ItemName = itemName;
                                 detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item.idProducto).FirstOrDefault().Precio;
@@ -1552,7 +1777,8 @@ namespace WATickets.Controllers
 
                     }
                 }
-
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.OK, coleccion);
             }
             catch (Exception ex)
@@ -1588,7 +1814,8 @@ namespace WATickets.Controllers
                 {
                     throw new Exception("Reparacion no existe");
                 }
-
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.OK, encReparacion);
 
             }
