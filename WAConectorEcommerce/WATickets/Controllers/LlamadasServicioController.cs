@@ -1625,7 +1625,15 @@ namespace WATickets.Controllers
 
 
                             client.TechnicianCode = Llamada.Tecnico.Value;
+                            if(Llamada.Garantia != 0)
+                            {
+                                var Garan = db.Garantias.Where(a => a.id == Llamada.Garantia).FirstOrDefault();
+                                if(Garan != null)
+                                {
+                                    client.CallType = Convert.ToInt32(Garan.idSAP); 
 
+                                }
+                            }
                             try
                             {
                                 var enc = db.EncReparacion.Where(a => a.idLlamada == Llamada.id).FirstOrDefault();
@@ -1770,6 +1778,15 @@ namespace WATickets.Controllers
                         client.UserFields.Fields.Item("U_SRECIB").Value = db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault() == null ? "" : db.Sucursales.Where(a => a.id == Llamada.SucRecibo).FirstOrDefault().Nombre;
                         client.Description = Llamada.Comentarios;
                         client.AssigneeCode = Llamada.TratadoPor.Value;
+                        if (Llamada.Garantia != 0)
+                        {
+                            var Garan = db.Garantias.Where(a => a.id == Llamada.Garantia).FirstOrDefault();
+                            if (Garan != null)
+                            {
+                                client.CallType = Convert.ToInt32(Garan.idSAP);
+
+                            }
+                        }
                         //client.CallType = Llamada.Garantia.Value;
                         client.TechnicianCode = Llamada.Tecnico.Value;
                         //client.ProblemSubType =  

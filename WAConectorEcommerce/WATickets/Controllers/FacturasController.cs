@@ -667,39 +667,43 @@ namespace WATickets.Controllers
                             documentoSAP.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
 
                             documentoSAP.Lines.WarehouseCode = item.CodBodega;
-                            if (!string.IsNullOrEmpty(ParametrosFacturacion.Norma))
+                            if(Factura.idEntrega == 0)
                             {
-                                switch (ParametrosFacturacion.Dimension)
+                                if (!string.IsNullOrEmpty(ParametrosFacturacion.Norma))
                                 {
-                                    case 1:
-                                        {
-                                            documentoSAP.Lines.CostingCode = ParametrosFacturacion.Norma;
+                                    switch (ParametrosFacturacion.Dimension)
+                                    {
+                                        case 1:
+                                            {
+                                                documentoSAP.Lines.CostingCode = ParametrosFacturacion.Norma;
 
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            documentoSAP.Lines.CostingCode2 = ParametrosFacturacion.Norma;
-                                            break;
-                                        }
-                                    case 3:
-                                        {
-                                            documentoSAP.Lines.CostingCode3 = ParametrosFacturacion.Norma;
-                                            break;
-                                        }
-                                    case 4:
-                                        {
-                                            documentoSAP.Lines.CostingCode4 = ParametrosFacturacion.Norma;
-                                            break;
-                                        }
-                                    case 5:
-                                        {
-                                            documentoSAP.Lines.CostingCode5 = ParametrosFacturacion.Norma;
-                                            break;
-                                        }
+                                                break;
+                                            }
+                                        case 2:
+                                            {
+                                                documentoSAP.Lines.CostingCode2 = ParametrosFacturacion.Norma;
+                                                break;
+                                            }
+                                        case 3:
+                                            {
+                                                documentoSAP.Lines.CostingCode3 = ParametrosFacturacion.Norma;
+                                                break;
+                                            }
+                                        case 4:
+                                            {
+                                                documentoSAP.Lines.CostingCode4 = ParametrosFacturacion.Norma;
+                                                break;
+                                            }
+                                        case 5:
+                                            {
+                                                documentoSAP.Lines.CostingCode5 = ParametrosFacturacion.Norma;
+                                                break;
+                                            }
 
+                                    }
                                 }
                             }
+                           
 
                             try
                             {
@@ -1201,6 +1205,8 @@ namespace WATickets.Controllers
 
                     //
                 }
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
 
@@ -1215,6 +1221,8 @@ namespace WATickets.Controllers
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
                 db.SaveChanges();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
@@ -1275,7 +1283,7 @@ namespace WATickets.Controllers
                     Factura.TotalDescuento = factura.TotalDescuento;
                     Factura.TotalCompra = factura.TotalCompra;
                     Factura.CreadoPor = factura.CreadoPor;
-                    Factura.PorDesc = factura.PorDesc;
+                    Factura.PorDesc = Math.Round(factura.PorDesc,6);
                     Factura.ProcesadoSAPPago = false;
                     Factura.FechaProcesadoPago = DateTime.Now;
                     Factura.Redondeo = factura.Redondeo;
@@ -1534,39 +1542,43 @@ namespace WATickets.Controllers
                             documentoSAP.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
 
                             documentoSAP.Lines.WarehouseCode = item.CodBodega;
-                            if(!string.IsNullOrEmpty(ParametrosFacturacion.Norma))
+                            if(Factura.idEntrega == 0)
                             {
-                                switch (ParametrosFacturacion.Dimension)
+                                if (!string.IsNullOrEmpty(ParametrosFacturacion.Norma))
                                 {
-                                    case 1:
-                                        {
-                                            documentoSAP.Lines.CostingCode = ParametrosFacturacion.Norma;
+                                    switch (ParametrosFacturacion.Dimension)
+                                    {
+                                        case 1:
+                                            {
+                                                documentoSAP.Lines.CostingCode = ParametrosFacturacion.Norma;
 
-                                            break;
-                                        }
-                                    case 2:
-                                        {
-                                            documentoSAP.Lines.CostingCode2 = ParametrosFacturacion.Norma;
-                                            break;
-                                        }
-                                    case 3:
-                                        {
-                                            documentoSAP.Lines.CostingCode3 = ParametrosFacturacion.Norma;
-                                            break;
-                                        }
-                                    case 4:
-                                        {
-                                            documentoSAP.Lines.CostingCode4 = ParametrosFacturacion.Norma;
-                                            break;
-                                        }
-                                    case 5:
-                                        {
-                                            documentoSAP.Lines.CostingCode5 = ParametrosFacturacion.Norma;
-                                            break;
-                                        }
+                                                break;
+                                            }
+                                        case 2:
+                                            {
+                                                documentoSAP.Lines.CostingCode2 = ParametrosFacturacion.Norma;
+                                                break;
+                                            }
+                                        case 3:
+                                            {
+                                                documentoSAP.Lines.CostingCode3 = ParametrosFacturacion.Norma;
+                                                break;
+                                            }
+                                        case 4:
+                                            {
+                                                documentoSAP.Lines.CostingCode4 = ParametrosFacturacion.Norma;
+                                                break;
+                                            }
+                                        case 5:
+                                            {
+                                                documentoSAP.Lines.CostingCode5 = ParametrosFacturacion.Norma;
+                                                break;
+                                            }
 
+                                    }
                                 }
                             }
+                           
                            
 
                             try
@@ -2075,7 +2087,8 @@ namespace WATickets.Controllers
                     throw new Exception("Esta factura YA existe");
                 }
 
-
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.OK, Factura);
             }
             catch (Exception ex)
@@ -2097,6 +2110,8 @@ namespace WATickets.Controllers
                 be.Fecha = DateTime.Now;
                 db.BitacoraErrores.Add(be);
                 db.SaveChanges();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }

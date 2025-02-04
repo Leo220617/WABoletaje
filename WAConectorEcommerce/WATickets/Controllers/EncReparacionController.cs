@@ -439,7 +439,40 @@ namespace WATickets.Controllers
                 var Parametro = db.Parametros.FirstOrDefault();
                 var Encabezado = db.EncReparacion.Where(a => a.id == coleccion.EncReparacion.id).FirstOrDefault();
                 var Llamada = db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault();
-                if(coleccion.EstadoLlamada == 47)
+                var MesesAtrasLlamada = false;
+                try
+                {
+                    var conexion = g.DevuelveCadena(db);
+                    var SQL = Parametro.SQLVerificaMeses.Replace("@SerieFabricante", "'" + Llamada.SerieFabricante + "'").Replace("@itemCode", "'" + Llamada.ItemCode + "'");
+
+                    SqlConnection Cn = new SqlConnection(conexion);
+                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                    DataSet Ds = new DataSet();
+                    Cn.Open();
+                    Da.Fill(Ds, "Cliente");
+                    var Garantia = Ds.Tables["Cliente"].Rows[0]["Garantia"].ToString();
+                    if (Garantia == "1")
+                    {
+                        MesesAtrasLlamada = true;
+                    }
+                    Cn.Close();
+                }
+                catch (Exception ex1)
+                {
+                    BitacoraErrores be = new BitacoraErrores();
+
+                    be.Descripcion = "Error en la reparacion , al conseguir si lleva garantia-> " + ex1.Message;
+                    be.StackTrace = ex1.StackTrace;
+                    be.Fecha = DateTime.Now;
+
+                    db.BitacoraErrores.Add(be);
+                    db.SaveChanges();
+
+                }
+
+
+                if (coleccion.EstadoLlamada == 47)
                 {
                     var ValidacionReparacionAnterior = db.EncReparacion.Select(a => new
                     {
@@ -510,7 +543,7 @@ namespace WATickets.Controllers
                                     encMovimiento.TotalComprobante = OfertaAprobada.TotalComprobante;
                                     encMovimiento.Moneda = OfertaAprobada.Moneda;
                                     encMovimiento.Aprobada = false;
-                                    encMovimiento.AprobadaSuperior = false;
+                                    encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false : true;
                                     encMovimiento.idCondPago = 0;
                                     encMovimiento.idDiasValidos = 0;
                                     encMovimiento.idGarantia = 0;
@@ -629,7 +662,7 @@ namespace WATickets.Controllers
                                                         detMovimiento.NumLinea = 1;
                                                         detMovimiento.ItemCode = itemCode;
                                                         detMovimiento.ItemName = itemName;
-                                                        detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                        detMovimiento.PrecioUnitario = DetalleOfertaAprobada.Where(a => a.ItemCode == itemCode).FirstOrDefault() != null ? DetalleOfertaAprobada.Where(a => a.ItemCode == itemCode).FirstOrDefault().PrecioUnitario : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
                                                         detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                         detMovimiento.PorDescuento = 0;
                                                         detMovimiento.Descuento = 0;
@@ -770,7 +803,7 @@ namespace WATickets.Controllers
                                     encMovimiento.TotalComprobante = OfertaAprobada.TotalComprobante;
                                     encMovimiento.Moneda = OfertaAprobada.Moneda;
                                     encMovimiento.Aprobada = false;
-                                    encMovimiento.AprobadaSuperior = false;
+                                    encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false :  true ;
                                     encMovimiento.idCondPago = 0;
                                     encMovimiento.idDiasValidos = 0;
                                     encMovimiento.idGarantia = 0;
@@ -870,7 +903,7 @@ namespace WATickets.Controllers
                                                         detMovimiento.NumLinea = 1;
                                                         detMovimiento.ItemCode = itemCode;
                                                         detMovimiento.ItemName = itemName;
-                                                        detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                        detMovimiento.PrecioUnitario = DetalleOfertaAprobada.Where(a => a.ItemCode == itemCode).FirstOrDefault() != null ? DetalleOfertaAprobada.Where(a => a.ItemCode == itemCode).FirstOrDefault().PrecioUnitario : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
                                                         detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                         detMovimiento.PorDescuento = 0;
                                                         detMovimiento.Descuento = 0;
@@ -1000,7 +1033,7 @@ namespace WATickets.Controllers
                                 encMovimiento.TotalComprobante = 0;
                                 encMovimiento.Moneda = "COL";
                                 encMovimiento.Aprobada = false;
-                                encMovimiento.AprobadaSuperior = false;
+                                encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false : true;
                                 encMovimiento.idCondPago = 0;
                                 encMovimiento.idDiasValidos = 0;
                                 encMovimiento.idGarantia = 0;
@@ -1080,7 +1113,7 @@ namespace WATickets.Controllers
                                                     }
                                                     detMovimiento.ItemCode = itemCode;
                                                     detMovimiento.ItemName = itemName;
-                                                    detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                    detMovimiento.PrecioUnitario =   db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
                                                     detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                     detMovimiento.PorDescuento = 0;
                                                     detMovimiento.Descuento = 0;
@@ -1380,7 +1413,7 @@ namespace WATickets.Controllers
                             encMovimiento.DocEntry = 0;
                             encMovimiento.Moneda = "COL";
                             encMovimiento.Aprobada = false;
-                            encMovimiento.AprobadaSuperior = false;
+                            encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false : true;
                             encMovimiento.idCondPago = 0;
                             encMovimiento.idDiasValidos = 0;
                             encMovimiento.idGarantia = 0;
@@ -1632,7 +1665,7 @@ namespace WATickets.Controllers
                             encMovimiento.DocEntry = 0;
                             encMovimiento.Moneda = "COL";
                             encMovimiento.Aprobada = false;
-                            encMovimiento.AprobadaSuperior = false;
+                            encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false :true;
                             encMovimiento.idCondPago = 0;
                             encMovimiento.idDiasValidos = 0;
                             encMovimiento.idGarantia = 0;

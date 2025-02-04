@@ -37,5 +37,6 @@ namespace WATickets.Models.Cliente
         public string SQLClienteTOP { get; set; }
         public string SQLVerificaGarantia { get; set; }
         public string SQLArtSustituido { get; set; }
+        public string SQLVerificaMeses { get; set; }
     }
 }

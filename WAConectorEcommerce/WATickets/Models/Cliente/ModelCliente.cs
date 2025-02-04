@@ -84,6 +84,13 @@ namespace WATickets.Models.Cliente
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<EncFacturas>()
+         .Property(e => e.PorDesc)
+         .HasPrecision(18, 6);
+            modelBuilder.Entity<EncMovimiento>()
+          .Property(e => e.PorDescuento)
+          .HasPrecision(18, 6);
             modelBuilder.Entity<BitacoraErrores>()
                 .Property(e => e.DocNum)
                 .IsUnicode(false);
@@ -187,6 +194,8 @@ namespace WATickets.Models.Cliente
             modelBuilder.Entity<Tecnicos>()
                 .Property(e => e.Nombre)
                 .IsUnicode(false);
+
+           
         }
     }
 }
