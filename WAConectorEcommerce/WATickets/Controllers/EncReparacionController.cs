@@ -1319,6 +1319,9 @@ namespace WATickets.Controllers
                                     dbt.idError = item.idError;
                                     dbt.CantidadEnviar = 0;
                                     dbt.CantidadFaltante = item.Cantidad;
+                                    dbt.SolicitudCompra = false;
+                                    dbt.SolicitudProcesada = false;
+
                                     db.DetBitacoraMovimientos.Add(dbt);
                                     db.SaveChanges();
                                 }

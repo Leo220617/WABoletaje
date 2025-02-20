@@ -106,6 +106,8 @@ namespace WATickets.Controllers
                             dbt.idError = item.idError;
                             dbt.CantidadEnviar = 0;
                             dbt.CantidadFaltante = item.Cantidad;
+                            dbt.SolicitudCompra = false;
+                            dbt.SolicitudProcesada = false;
                             db.DetBitacoraMovimientos.Add(dbt);
                             db.SaveChanges();
 
@@ -1451,8 +1453,7 @@ namespace WATickets.Controllers
                                 Det.Garantia = item.Garantia;
                                 Det.idImpuesto = item.idImpuesto;
                                 Det.Opcional = item.Opcional;
-                                Det.idDocumentoExoneracion = item.idDocumentoExoneracion;
-
+                                Det.idDocumentoExoneracion = item.idDocumentoExoneracion; 
                                 db.DetMovimiento.Add(Det);
                                 db.SaveChanges();
                                 try
@@ -1548,8 +1549,7 @@ namespace WATickets.Controllers
                             Det.Garantia = item.Garantia;
                             Det.idImpuesto = item.idImpuesto;
                             Det.Opcional = item.Opcional;
-                            Det.idDocumentoExoneracion = item.idDocumentoExoneracion;
-
+                            Det.idDocumentoExoneracion = item.idDocumentoExoneracion; 
                             db.DetMovimiento.Add(Det);
                             db.SaveChanges();
                             try
@@ -2420,8 +2420,7 @@ namespace WATickets.Controllers
 
                                 foreach (var item in DetalleSAPEntrega)
                                 {
-                                    item.idEncabezado = EncMovimientoEntrega.id;
-
+                                    item.idEncabezado = EncMovimientoEntrega.id; 
                                     db.DetMovimiento.Add(item);
                                     db.SaveChanges();
 

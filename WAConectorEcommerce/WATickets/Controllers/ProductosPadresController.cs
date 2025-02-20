@@ -175,6 +175,8 @@ namespace WATickets.Controllers
                             productos.Localizacion = item["localizacion"].ToString();
                             productos.Costo = Convert.ToDecimal(item["Costo"].ToString());
                             productos.PorMinimo = Convert.ToInt32(item["PorMinimo"].ToString());
+                            productos.Grupo = Convert.ToInt32(item["Grupo"].ToString());
+
                             try
                             {
                             productos.Rate = Convert.ToDecimal(item["Rate"].ToString());
@@ -213,7 +215,7 @@ namespace WATickets.Controllers
                             //productos.Cantidad = 0;
                             Prod.Precio = Convert.ToDecimal(item["Precio"].ToString());
                             Prod.Localizacion = item["localizacion"].ToString();
-
+                            Prod.Grupo = Convert.ToInt32(item["Grupo"].ToString());
                             Prod.Costo = Convert.ToDecimal(item["Costo"].ToString());
                             Prod.PorMinimo = Convert.ToInt32(item["PorMinimo"].ToString());
                             Prod.Rate = Convert.ToDecimal(item["Rate"].ToString());
