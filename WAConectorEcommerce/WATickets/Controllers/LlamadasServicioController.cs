@@ -845,7 +845,7 @@ namespace WATickets.Controllers
                     Llamada.SucRetiro = llamada.SucRetiro;
                     Llamada.Comentarios = llamada.Comentarios;
                     Llamada.TratadoPor = llamada.TratadoPor;
-                    //Llamada.Garantia = llamada.Garantia;
+                    Llamada.Garantia = 0;
                     Llamada.Tecnico = llamada.Tecnico;
                     Llamada.ProcesadaSAP = false;
                     Llamada.FechaCreacion = DateTime.Now;

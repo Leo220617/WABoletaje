@@ -281,6 +281,7 @@
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\SeguridadModulosController.cs" />
     <Compile Include="Controllers\SeguridadRolesModulosController.cs" />
+    <Compile Include="Controllers\SolicitudesComprasController.cs" />
     <Compile Include="Controllers\SoportesController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\SucursalesController.cs" />
@@ -318,6 +319,7 @@
     <Compile Include="Models\Cliente\DetOferta.cs" />
     <Compile Include="Models\Cliente\DetOrden.cs" />
     <Compile Include="Models\Cliente\DetReparacion.cs" />
+    <Compile Include="Models\Cliente\DetSolicitudCompra.cs" />
     <Compile Include="Models\Cliente\Diagnosticos.cs" />
     <Compile Include="Models\Cliente\DiasValidos.cs" />
     <Compile Include="Models\Cliente\EncFacturas.cs" />
@@ -344,6 +346,7 @@
     <Compile Include="Models\Cliente\Roles.cs" />
     <Compile Include="Models\Cliente\SeguridadModulos.cs" />
     <Compile Include="Models\Cliente\SeguridadRolesModulos.cs" />
+    <Compile Include="Models\Cliente\SolicitudCompra.cs" />
     <Compile Include="Models\Cliente\Soportes.cs" />
     <Compile Include="Models\Cliente\Status.cs" />
     <Compile Include="Models\Cliente\Sucursales.cs" />

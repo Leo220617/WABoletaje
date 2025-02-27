@@ -22,5 +22,6 @@ namespace WATickets.Models.Cliente
         public decimal Costo { get; set; }
         public int PorMinimo { get; set; }
         public decimal Rate { get; set; }
+        public int Grupo { get; set; }
     }
 }
