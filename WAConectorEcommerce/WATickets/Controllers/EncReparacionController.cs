@@ -440,36 +440,40 @@ namespace WATickets.Controllers
                 var Encabezado = db.EncReparacion.Where(a => a.id == coleccion.EncReparacion.id).FirstOrDefault();
                 var Llamada = db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault();
                 var MesesAtrasLlamada = false;
-                try
+                if(Llamada.LugarReparacion != 2)
                 {
-                    var conexion = g.DevuelveCadena(db);
-                    var SQL = Parametro.SQLVerificaMeses.Replace("@SerieFabricante", "'" + Llamada.SerieFabricante + "'").Replace("@itemCode", "'" + Llamada.ItemCode + "'");
-
-                    SqlConnection Cn = new SqlConnection(conexion);
-                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
-                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
-                    DataSet Ds = new DataSet();
-                    Cn.Open();
-                    Da.Fill(Ds, "Cliente");
-                    var Garantia = Ds.Tables["Cliente"].Rows[0]["Garantia"].ToString();
-                    if (Garantia == "1")
+                    try
                     {
-                        MesesAtrasLlamada = true;
+                        var conexion = g.DevuelveCadena(db);
+                        var SQL = Parametro.SQLVerificaMeses.Replace("@SerieFabricante", "'" + Llamada.SerieFabricante + "'").Replace("@itemCode", "'" + Llamada.ItemCode + "'");
+
+                        SqlConnection Cn = new SqlConnection(conexion);
+                        SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                        SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                        DataSet Ds = new DataSet();
+                        Cn.Open();
+                        Da.Fill(Ds, "Cliente");
+                        var Garantia = Ds.Tables["Cliente"].Rows[0]["Garantia"].ToString();
+                        if (Garantia == "1")
+                        {
+                            MesesAtrasLlamada = true;
+                        }
+                        Cn.Close();
                     }
-                    Cn.Close();
+                    catch (Exception ex1)
+                    {
+                        BitacoraErrores be = new BitacoraErrores();
+
+                        be.Descripcion = "Error en la reparacion , al conseguir si lleva garantia-> " + ex1.Message;
+                        be.StackTrace = ex1.StackTrace;
+                        be.Fecha = DateTime.Now;
+
+                        db.BitacoraErrores.Add(be);
+                        db.SaveChanges();
+
+                    }
                 }
-                catch (Exception ex1)
-                {
-                    BitacoraErrores be = new BitacoraErrores();
-
-                    be.Descripcion = "Error en la reparacion , al conseguir si lleva garantia-> " + ex1.Message;
-                    be.StackTrace = ex1.StackTrace;
-                    be.Fecha = DateTime.Now;
-
-                    db.BitacoraErrores.Add(be);
-                    db.SaveChanges();
-
-                }
+                
 
 
                 if (coleccion.EstadoLlamada == 47)

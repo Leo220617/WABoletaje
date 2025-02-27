@@ -83,7 +83,7 @@ namespace WATickets.Controllers
                     Garantias = new Garantias();
                     Garantias.idSAP = garantias.idSAP;
                     Garantias.Nombre = garantias.Nombre;
-
+                    Garantias.taller = garantias.taller;
                     db.Garantias.Add(Garantias);
                     db.SaveChanges();
 
@@ -118,6 +118,7 @@ namespace WATickets.Controllers
                     db.Entry(Garantias).State = EntityState.Modified;
                     Garantias.idSAP = garantias.idSAP;
                     Garantias.Nombre = garantias.Nombre;
+                    Garantias.taller = garantias.taller;
 
                     db.SaveChanges();
 
