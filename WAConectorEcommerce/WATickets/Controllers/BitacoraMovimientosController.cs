@@ -21,6 +21,8 @@ namespace WATickets.Controllers
     public class BitacoraMovimientosController : ApiController
     {
         ModelCliente db = new ModelCliente();
+        ModelCliente db2 = new ModelCliente();
+
         G g = new G();
         //Este api es el encargado de llevar el control de los movimientos en cuanto a traslados
         public async Task<HttpResponseMessage> Get([FromUri] Filtros filtro)
@@ -51,7 +53,7 @@ namespace WATickets.Controllers
                         a.Status,
                         a.ProcesadaSAP,
                         StatusLlamada = db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault() == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status == null ? 0 : db.LlamadasServicios.Where(b => b.id == a.idLlamada).FirstOrDefault().Status,
-                        Detalle = db.DetBitacoraMovimientos.Where(b => b.idEncabezado == a.id).ToList(), 
+                        Detalle = db.DetBitacoraMovimientos.Where(b => b.idEncabezado == a.id).ToList(),
 
                     }).Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true) && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)).ToList();
 
@@ -224,6 +226,7 @@ namespace WATickets.Controllers
         [HttpPost]
         public HttpResponseMessage Post([FromBody] BitacoraMovimientosViewModel bts)
         {
+            var t = db.Database.BeginTransaction();
             try
             {
                 List<ProductosHijos> productosCompra = new List<ProductosHijos>();
@@ -251,17 +254,135 @@ namespace WATickets.Controllers
                             a.idEncabezadoBitacora,
                             Detalle = db.DetSolicitudCompra.Where(z => z.idEncabezado == a.id).ToList()
                         }
-                        ).Where(a => a.idEncabezadoBitacora == BT.id && a.Detalle.Where(x => x.idProducto == item.idProducto).FirstOrDefault() != null).FirstOrDefault() != null;    
-                        if(!string.IsNullOrEmpty(ItemCode) && DetBitacoraMovimiento.SolicitudCompra && DetBitacoraMovimiento.SolicitudProcesada == false && !ExisteSolicitud)
+                        ).Where(a => a.idEncabezadoBitacora == BT.id && a.Detalle.Where(x => x.idProducto == item.idProducto).FirstOrDefault() != null).FirstOrDefault() != null;
+                        if (!string.IsNullOrEmpty(ItemCode) && DetBitacoraMovimiento.SolicitudCompra && DetBitacoraMovimiento.SolicitudProcesada == false && !ExisteSolicitud)
                         {
                             var ProductoHijo = db.ProductosHijos.Where(a => a.codSAP == ItemCode).FirstOrDefault();
-                            if(ProductoHijo != null)
+                            var ArtCompra = true;
+                            if (ProductoHijo != null)
                             {
+                                try
+                                {
+                                    var conexion = g.DevuelveCadena(db);
+                                    var SQL = db.Parametros.FirstOrDefault().SQLPregArtCompra + "'" + ItemCode + "'";
+
+                                    SqlConnection Cn = new SqlConnection(conexion);
+                                    SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                    SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                    DataSet Ds = new DataSet();
+                                    Cn.Open();
+                                    Da.Fill(Ds, "Proveedor");
+                                    ArtCompra = Ds.Tables["Proveedor"].Rows[0]["PrchseItem"].ToString() == "Y" ? true : false;
+                                    Cn.Close();
+                                }
+                                catch (Exception ex)
+                                {
+
+                                }
+
+                                if (ArtCompra == false)
+                                {
+                                    throw new Exception("El Articulo " + ItemCode + " no esta seteado como Articulo de Compra");
+                                }
                                 ProductoHijo.Cantidad = DetBitacoraMovimiento.Cantidad;
                                 productosCompra.Add(ProductoHijo);
                             }
                         }
 
+                    }
+                    foreach (var item in productosCompra.GroupBy(a => a.Grupo))
+                    {
+
+                        var Llamada = db.LlamadasServicios.Where(a => a.id == BT.idLlamada).FirstOrDefault();
+                        var DocEntry = Llamada == null ? "" : Llamada.DocEntry.Value.ToString();
+                        var MovimientoAprobado = Llamada == null ? new EncMovimiento() : db.EncMovimiento.Where(a => a.NumLlamada == DocEntry && a.Aprobada == true).FirstOrDefault();
+                        SolicitudCompra solicitud = new SolicitudCompra();
+                        solicitud.idEncabezadoBitacora = bts.id;
+                        solicitud.idOfertaAprobada = MovimientoAprobado.id;
+                        solicitud.Fecha = DateTime.Now;
+                        solicitud.GrupoArticulo = item.Key.ToString();
+                        solicitud.DocEntry = 0;
+                        solicitud.DocNum = 0;
+                        solicitud.ProcesadaSAP = false;
+
+                        var conexion = g.DevuelveCadena(db);
+
+                        try
+                        {
+                            var SQL = db.Parametros.FirstOrDefault().SQLProveedorPredeterminado + "'" + item.FirstOrDefault().codSAP + "'";
+
+                            SqlConnection Cn = new SqlConnection(conexion);
+                            SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                            SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                            DataSet Ds = new DataSet();
+                            Cn.Open();
+                            Da.Fill(Ds, "Proveedor");
+                            solicitud.CardCode = Ds.Tables["Proveedor"].Rows[0]["Proveedor"].ToString();
+                            Cn.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            try
+                            {
+                                var SQL = db.Parametros.FirstOrDefault().SQLProveedorPredeterminado + "'" + item.LastOrDefault().codSAP + "'";
+
+                                SqlConnection Cn = new SqlConnection(conexion);
+                                SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                                DataSet Ds = new DataSet();
+                                Cn.Open();
+                                Da.Fill(Ds, "Proveedor");
+                                solicitud.CardCode = Ds.Tables["Proveedor"].Rows[0]["Proveedor"].ToString();
+                                Cn.Close();
+                            }
+                            catch (Exception ex2)
+                            {
+
+                                solicitud.CardCode = "";
+
+                            }
+
+
+                        }
+
+
+
+                        db.SolicitudCompra.Add(solicitud);
+                        db.SaveChanges();
+
+                        foreach (var item2 in item)
+                        {
+                            DetSolicitudCompra detsolicitud = new DetSolicitudCompra();
+                            detsolicitud.idEncabezado = solicitud.id;
+                            detsolicitud.idProducto = item2.id;
+                            detsolicitud.ItemCode = item2.codSAP;
+                            detsolicitud.Cantidad = item2.Cantidad;
+                            db.DetSolicitudCompra.Add(detsolicitud);
+                            db.SaveChanges();
+                        }
+                       
+
+                    }
+                    t.Commit();
+                    var SolicitudesGeneradas = db.SolicitudCompra.Where(a => a.idEncabezadoBitacora == bts.id).ToList();
+                    foreach(var item in SolicitudesGeneradas)
+                    {
+                        try
+                        {
+                            SolicitudesComprasController sc = new SolicitudesComprasController();
+                            sc.PostEnviarSAP(item);
+                        }
+                        catch (Exception e)
+                        {
+                            BitacoraErrores be = new BitacoraErrores();
+
+                            be.Descripcion = e.Message;
+                            be.StackTrace = e.StackTrace;
+                            be.Fecha = DateTime.Now;
+
+                            db2.BitacoraErrores.Add(be);
+                            db2.SaveChanges();
+                        }
                     }
 
                     if (db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).Count() > 0)
@@ -479,8 +600,8 @@ namespace WATickets.Controllers
                                 be.StackTrace = "Error al hacer el traslado";
                                 be.Fecha = DateTime.Now;
 
-                                db.BitacoraErrores.Add(be);
-                                db.SaveChanges();
+                                db2.BitacoraErrores.Add(be);
+                                db2.SaveChanges();
 
                                 var Detalles = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).ToList();
                                 foreach (var item in Detalles)
@@ -507,8 +628,8 @@ namespace WATickets.Controllers
                             be.StackTrace = ex1.StackTrace;
                             be.Fecha = DateTime.Now;
 
-                            db.BitacoraErrores.Add(be);
-                            db.SaveChanges();
+                            db2.BitacoraErrores.Add(be);
+                            db2.SaveChanges();
 
                             var Detalles = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.CantidadEnviar > 0).ToList();
                             foreach (var item in Detalles)
@@ -524,94 +645,6 @@ namespace WATickets.Controllers
                         }
                     }
 
-                    foreach(var item in productosCompra.GroupBy(a => a.Grupo))
-                    {
-
-                        var Llamada = db.LlamadasServicios.Where(a => a.id == BT.idLlamada).FirstOrDefault();
-                        var DocEntry = Llamada == null ? "" : Llamada.DocEntry.Value.ToString();
-                        var MovimientoAprobado = Llamada == null ? new EncMovimiento() : db.EncMovimiento.Where(a => a.NumLlamada == DocEntry && a.Aprobada == true).FirstOrDefault();
-                        SolicitudCompra solicitud = new SolicitudCompra();
-                        solicitud.idEncabezadoBitacora = bts.id;
-                        solicitud.idOfertaAprobada = MovimientoAprobado.id;
-                        solicitud.Fecha = DateTime.Now;
-                        solicitud.GrupoArticulo = item.Key.ToString();
-                        solicitud.DocEntry = 0;
-                        solicitud.DocNum = 0;
-                        solicitud.ProcesadaSAP = false;
-
-                        var conexion = g.DevuelveCadena(db);
-
-                        try
-                        {
-                            var SQL = db.Parametros.FirstOrDefault().SQLProveedorPredeterminado + "'" + item.FirstOrDefault().codSAP + "'";
-
-                            SqlConnection Cn = new SqlConnection(conexion);
-                            SqlCommand Cmd = new SqlCommand(SQL, Cn);
-                            SqlDataAdapter Da = new SqlDataAdapter(Cmd);
-                            DataSet Ds = new DataSet();
-                            Cn.Open();
-                            Da.Fill(Ds, "Proveedor");
-                            solicitud.CardCode = Ds.Tables["Proveedor"].Rows[0]["Proveedor"].ToString();
-                            Cn.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            try
-                            {
-                                var SQL = db.Parametros.FirstOrDefault().SQLProveedorPredeterminado + "'" + item.LastOrDefault().codSAP + "'";
-
-                                SqlConnection Cn = new SqlConnection(conexion);
-                                SqlCommand Cmd = new SqlCommand(SQL, Cn);
-                                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
-                                DataSet Ds = new DataSet();
-                                Cn.Open();
-                                Da.Fill(Ds, "Proveedor");
-                                solicitud.CardCode = Ds.Tables["Proveedor"].Rows[0]["Proveedor"].ToString();
-                                Cn.Close();
-                            }
-                            catch (Exception ex2)
-                            {
-
-                                solicitud.CardCode = "";
-                                 
-                            }
-
-
-                        }
-                     
-
-
-                        db.SolicitudCompra.Add(solicitud);
-                        db.SaveChanges();
-
-                        foreach (var item2 in item)
-                        {
-                            DetSolicitudCompra detsolicitud = new DetSolicitudCompra();
-                            detsolicitud.idEncabezado = solicitud.id;
-                            detsolicitud.idProducto = item2.id;
-                            detsolicitud.ItemCode = item2.codSAP;
-                            detsolicitud.Cantidad = item2.Cantidad;
-                            db.DetSolicitudCompra.Add(detsolicitud);
-                            db.SaveChanges();
-                        }
-                        try
-                        {
-                            SolicitudesComprasController sc = new SolicitudesComprasController();
-                            sc.PostEnviarSAP(solicitud);
-                        }
-                        catch(Exception e)
-                        {
-                            BitacoraErrores be = new BitacoraErrores();
-
-                            be.Descripcion = e.Message;
-                            be.StackTrace = e.StackTrace;
-                            be.Fecha = DateTime.Now;
-
-                            db.BitacoraErrores.Add(be);
-                            db.SaveChanges();
-                        }
-                        
-                    }
 
 
 
@@ -623,7 +656,6 @@ namespace WATickets.Controllers
                         return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ha ocurrido un error al enviar a SAP (" + errorSAP + ") , por lo tanto debe volver a intentarlo");
 
                     }
-                     
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
                     return Request.CreateResponse(HttpStatusCode.OK, BT);
@@ -638,14 +670,24 @@ namespace WATickets.Controllers
             }
             catch (Exception ex)
             {
+                try
+                {
+
+                    t.Rollback();
+                }
+                catch (Exception  )
+                {
+
+
+                }
                 BitacoraErrores be = new BitacoraErrores();
 
                 be.Descripcion = ex.Message;
                 be.StackTrace = ex.StackTrace;
                 be.Fecha = DateTime.Now;
 
-                db.BitacoraErrores.Add(be);
-                db.SaveChanges();
+                db2.BitacoraErrores.Add(be);
+                db2.SaveChanges();
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);

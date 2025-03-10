@@ -73,190 +73,148 @@ namespace WATickets.Controllers
                 var conexion = G.DevuelveCadena(db);
 
                 var SQL = parametros.SQLItemPadres;
-
-                SqlConnection Cn = new SqlConnection(conexion);
-                SqlCommand Cmd = new SqlCommand(SQL, Cn);
-                SqlDataAdapter Da = new SqlDataAdapter(Cmd);
-                DataSet Ds = new DataSet();
-                Cn.Open();
-                Da.Fill(Ds, "Productos");
-
-                foreach (DataRow item in Ds.Tables["Productos"].Rows)
+                using (SqlConnection Cn = new SqlConnection(conexion))
+                using (SqlCommand Cmd = new SqlCommand(SQL, Cn))
+                using (SqlDataAdapter Da = new SqlDataAdapter(Cmd))
                 {
-                    var itemcode = item["ItemCode"].ToString();
-                    var Prod = db.ProductosPadres.Where(a => a.codSAP == itemcode).FirstOrDefault();
-                    if(Prod == null)
+                    DataSet Ds = new DataSet();
+                    Cn.Open();
+                    Da.Fill(Ds, "Productos");
+
+                    // Cargar todos los productos existentes en memoria antes de iterar
+                    var productosExistentes = db.ProductosPadres.ToDictionary(p => p.codSAP);
+                    List<ProductosPadres> nuevosProductos = new List<ProductosPadres>();
+
+                    foreach (DataRow item in Ds.Tables["Productos"].Rows)
                     {
-                        try
+                        var itemcode = item["ItemCode"].ToString();
+                        if (!productosExistentes.TryGetValue(itemcode, out var producto))
                         {
-                            ProductosPadres productos = new ProductosPadres();
-                            productos.codSAP = item["ItemCode"].ToString();
-                            productos.Nombre = item["ItemName"].ToString();
-                            productos.Stock = Convert.ToDecimal(item["Stock"].ToString());
-                            productos.Precio = Convert.ToDecimal(item["Price"].ToString());
-                            db.ProductosPadres.Add(productos);
-                            db.SaveChanges();
+                            // Nuevo producto
+                            nuevosProductos.Add(new ProductosPadres
+                            {
+                                codSAP = item["ItemCode"].ToString(),
+                                Nombre = item["ItemName"].ToString(),
+                                Stock = Convert.ToDecimal(item["Stock"].ToString()),
+                                Precio = Convert.ToDecimal(item["Price"].ToString())
+                            });
                         }
-                        catch (Exception ex1)
+                        else
                         {
-
-                            BitacoraErrores be = new BitacoraErrores();
-
-                            be.Descripcion = ex1.Message;
-                            be.StackTrace = ex1.StackTrace;
-                            be.Fecha = DateTime.Now;
-
-                            db.BitacoraErrores.Add(be);
-                            db.SaveChanges();
+                            // Actualizar existente
+                            producto.Nombre = item["ItemName"].ToString();
+                            producto.Stock = Convert.ToDecimal(item["Stock"].ToString());
+                            producto.Precio = Convert.ToDecimal(item["Price"].ToString());
+                            db.Entry(producto).State = EntityState.Modified;
                         }
-                        
-                    }
-                    else
-                    {
-                        try
-                        {
-                            db.Entry(Prod).State = EntityState.Modified;
-                            Prod.codSAP = item["ItemCode"].ToString();
-                            Prod.Nombre = item["ItemName"].ToString();
-                            Prod.Stock = Convert.ToDecimal(item["Stock"].ToString());
-                            Prod.Precio = Convert.ToDecimal(item["Price"].ToString());
-
-                            db.SaveChanges();
-                        }
-                        catch (Exception ex1)
-                        {
-
-                            BitacoraErrores be = new BitacoraErrores();
-
-                            be.Descripcion = ex1.Message;
-                            be.StackTrace = ex1.StackTrace;
-                            be.Fecha = DateTime.Now;
-
-                            db.BitacoraErrores.Add(be);
-                            db.SaveChanges();
-                        }
-                       
                     }
 
-                    
+                    // Guardar los nuevos productos en una sola transacción
+                    try
+                    {
+                        if (nuevosProductos.Any())
+                            db.ProductosPadres.AddRange(nuevosProductos);
 
+                        db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        db.BitacoraErrores.Add(new BitacoraErrores
+                        {
+                            Descripcion = ex.Message,
+                            StackTrace = ex.StackTrace,
+                            Fecha = DateTime.Now
+                        });
+
+                        db.SaveChanges();
+                    }
                 }
 
-                Cn.Close();
 
 
 
 
                 /////
                 ///
-                 SQL = parametros.SQLItemHijos;
+                SQL = parametros.SQLItemHijos;
 
-                  Cn = new SqlConnection(conexion);
-                 Cmd = new SqlCommand(SQL, Cn);
-                 Da = new SqlDataAdapter(Cmd);
-                 Ds = new DataSet();
-                Cn.Open();
-                Da.Fill(Ds, "Productos");
-
-                foreach (DataRow item in Ds.Tables["Productos"].Rows)
+                using (SqlConnection Cn = new SqlConnection(conexion))
+                using (SqlCommand Cmd = new SqlCommand(SQL, Cn))
+                using (SqlDataAdapter Da = new SqlDataAdapter(Cmd))
                 {
-                    var itemcode = item["ItemCode"].ToString();
-                    var Prod = db.ProductosHijos.Where(a => a.codSAP == itemcode).FirstOrDefault();
-                    if (Prod == null)
+                    DataSet Ds = new DataSet();
+                    Cn.Open();
+                    Da.Fill(Ds, "Productos");
+                    // Cargar productos existentes en memoria para evitar múltiples accesos a la BD
+                    var productosExistentes = db.ProductosHijos.ToDictionary(p => p.codSAP);
+                    List<ProductosHijos> nuevosProductos = new List<ProductosHijos>();
+
+                    foreach (DataRow item in Ds.Tables["Productos"].Rows)
                     {
-                        try
+                        var itemcode = item["ItemCode"].ToString();
+                        if (!productosExistentes.TryGetValue(itemcode, out var producto))
                         {
-                            ProductosHijos productos = new ProductosHijos();
-                            productos.codSAP = item["ItemCode"].ToString();
-                            productos.Nombre = item["ItemName"].ToString();
-                            productos.Stock = Convert.ToDecimal(item["Stock"].ToString());
-                            productos.Precio = Convert.ToDecimal(item["Precio"].ToString());
-                            productos.Cantidad = 0;
-                            productos.Localizacion = item["localizacion"].ToString();
-                            productos.Costo = Convert.ToDecimal(item["Costo"].ToString());
-                            productos.PorMinimo = Convert.ToInt32(item["PorMinimo"].ToString());
-                            productos.Grupo = Convert.ToInt32(item["Grupo"].ToString());
-
-                            try
+                            // Nuevo producto
+                            nuevosProductos.Add(new ProductosHijos
                             {
-                            productos.Rate = Convert.ToDecimal(item["Rate"].ToString());
-
-                            }
-                            catch (Exception)
-                            {
-                                productos.Rate = Convert.ToDecimal(item["Rate"].ToString().Replace(".",","));
-
-                            }
-                            db.ProductosHijos.Add(productos);
-                            db.SaveChanges();
+                                codSAP = item["ItemCode"].ToString(),
+                                Nombre = item["ItemName"].ToString(),
+                                Stock = Convert.ToDecimal(item["Stock"].ToString()),
+                                Precio = Convert.ToDecimal(item["Precio"].ToString()),
+                                Cantidad = 0,
+                                Localizacion = item["localizacion"].ToString(),
+                                Costo = Convert.ToDecimal(item["Costo"].ToString()),
+                                PorMinimo = Convert.ToInt32(item["PorMinimo"].ToString()),
+                                Grupo = Convert.ToInt32(item["Grupo"].ToString()),
+                                Rate = Convert.ToDecimal(item["Rate"].ToString().Replace(".", ",")) // Manejo directo del replace
+                            });
                         }
-                        catch (Exception ex1)
+                        else
                         {
+                            // Actualizar existente
+                            producto.Nombre = item["ItemName"].ToString();
+                            producto.Stock = Convert.ToDecimal(item["Stock"].ToString());
+                            producto.Precio = Convert.ToDecimal(item["Precio"].ToString());
+                            producto.Localizacion = item["localizacion"].ToString();
+                            producto.Grupo = Convert.ToInt32(item["Grupo"].ToString());
+                            producto.Costo = Convert.ToDecimal(item["Costo"].ToString());
+                            producto.PorMinimo = Convert.ToInt32(item["PorMinimo"].ToString());
+                            producto.Rate = Convert.ToDecimal(item["Rate"].ToString().Replace(".", ","));
 
-                            BitacoraErrores be = new BitacoraErrores();
-
-                            be.Descripcion = ex1.Message;
-                            be.StackTrace = ex1.StackTrace;
-                            be.Fecha = DateTime.Now;
-
-                            db.BitacoraErrores.Add(be);
-                            db.SaveChanges();
+                            db.Entry(producto).State = EntityState.Modified;
                         }
-
-                    }
-                    else
-                    {
-                        try
-                        {
-                            db.Entry(Prod).State = EntityState.Modified;
-                            Prod.codSAP = item["ItemCode"].ToString();
-                            Prod.Nombre = item["ItemName"].ToString();
-                            Prod.Stock = Convert.ToDecimal(item["Stock"].ToString());
-                            //productos.Cantidad = 0;
-                            Prod.Precio = Convert.ToDecimal(item["Precio"].ToString());
-                            Prod.Localizacion = item["localizacion"].ToString();
-                            Prod.Grupo = Convert.ToInt32(item["Grupo"].ToString());
-                            Prod.Costo = Convert.ToDecimal(item["Costo"].ToString());
-                            Prod.PorMinimo = Convert.ToInt32(item["PorMinimo"].ToString());
-                            Prod.Rate = Convert.ToDecimal(item["Rate"].ToString());
-                            try
-                            {
-                                Prod.Rate = Convert.ToDecimal(item["Rate"].ToString());
-
-                            }
-                            catch (Exception)
-                            {
-                                Prod.Rate = Convert.ToDecimal(item["Rate"].ToString().Replace(".", ","));
-
-                            }
-                            db.SaveChanges();
-                        }
-                        catch (Exception ex1)
-                        {
-
-                            BitacoraErrores be = new BitacoraErrores();
-
-                            be.Descripcion = ex1.Message + " " + itemcode;
-                            be.StackTrace = ex1.StackTrace;
-                            be.Fecha = DateTime.Now;
-
-                            db.BitacoraErrores.Add(be);
-                            db.SaveChanges();
-                        }
-
                     }
 
+                    // Guardar los nuevos productos en una sola transacción
+                    try
+                    {
+                        if (nuevosProductos.Any())
+                            db.ProductosHijos.AddRange(nuevosProductos);
 
+                        db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        db.BitacoraErrores.Add(new BitacoraErrores
+                        {
+                            Descripcion = ex.Message,
+                            StackTrace = ex.StackTrace,
+                            Fecha = DateTime.Now
+                        });
 
+                        db.SaveChanges();
+                    }
                 }
 
-                Cn.Close();
+                   
+
+                
 
 
 
 
 
-                return Request.CreateResponse(HttpStatusCode.OK, Ds);
+                return Request.CreateResponse(HttpStatusCode.OK);
 
             }
             catch (Exception ex)
@@ -269,6 +227,7 @@ namespace WATickets.Controllers
                 db.SaveChanges();
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
+             
         }
 
         public async Task<HttpResponseMessage> Get([FromUri] Filtros filtro)
