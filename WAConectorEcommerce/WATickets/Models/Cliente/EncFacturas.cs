@@ -42,6 +42,7 @@ namespace WATickets.Models.Cliente
         public decimal Redondeo { get; set; }
 
         public DateTime FechaProcesadoPago { get; set; }
+        public string OC { get; set; }
     }
 
 }
