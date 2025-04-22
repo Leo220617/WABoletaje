@@ -235,6 +235,14 @@ namespace WATickets.Controllers
 
                 if (BT != null)
                 {
+                    var Llamadas = db.LlamadasServicios.Where(a => a.id == BT.idLlamada).FirstOrDefault();
+                    if(Llamadas != null)
+                    {
+                        if(Llamadas.Status == -1)
+                        {
+                            throw new Exception("La llamada ya se encuentra cerrada, por ende no podemos procesar esta solicitud");
+                        }
+                    }
                     db.Entry(BT).State = EntityState.Modified;
                     BT.Status = bts.Status;
                     db.SaveChanges();

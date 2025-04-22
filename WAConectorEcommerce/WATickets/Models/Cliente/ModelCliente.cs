@@ -73,6 +73,7 @@ namespace WATickets.Models.Cliente
         public virtual DbSet<AprobacionesFacturas> AprobacionesFacturas { get; set; }
         public virtual DbSet<SolicitudCompra> SolicitudCompra { get; set; }
         public virtual DbSet<DetSolicitudCompra> DetSolicitudCompra { get; set; }
+        public virtual DbSet<TipoCambios> TipoCambios { get; set; }
 
 
 

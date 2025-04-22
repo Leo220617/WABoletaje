@@ -287,6 +287,7 @@
     <Compile Include="Controllers\SucursalesController.cs" />
     <Compile Include="Controllers\TecnicosController.cs" />
     <Compile Include="Controllers\TiemposEntregasController.cs" />
+    <Compile Include="Controllers\TipoCambiosController.cs" />
     <Compile Include="Controllers\TiposCasosController.cs" />
     <Compile Include="Controllers\TokenGenerator.cs" />
     <Compile Include="Controllers\TokenValidationHandler.cs" />
@@ -352,6 +353,7 @@
     <Compile Include="Models\Cliente\Sucursales.cs" />
     <Compile Include="Models\Cliente\Tecnicos.cs" />
     <Compile Include="Models\Cliente\TiemposEntregas.cs" />
+    <Compile Include="Models\Cliente\TipoCambios.cs" />
     <Compile Include="Models\Cliente\TiposCasos.cs" />
     <Compile Include="Models\Cliente\Ubicaciones.cs" />
     <Compile Include="Models\ColeccionMovimientos.cs" />
