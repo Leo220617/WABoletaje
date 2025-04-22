@@ -65,6 +65,7 @@ namespace WATickets.Controllers
                          a.CreadoPor,
                          a.ConsecutivoHacienda,
                          a.ClaveHacienda,
+                         a.OC,
                          DetFactura = db.DetFacturas.Where(b => b.idEncabezado == a.id).ToList(),
                          Entrega = db.EncMovimiento.Where(b => b.TipoMovimiento == 2 && b.id == a.idEntrega).FirstOrDefault(),
                          MetodosPagos = db.MetodosPagosFacturas.Where(c => c.idEncabezado == a.id).ToList()
@@ -110,6 +111,7 @@ namespace WATickets.Controllers
                             a.ConsecutivoHacienda,
                             a.ClaveHacienda,
                             a.Redondeo,
+                            a.OC,
                             DetFactura = db.DetFacturas.Where(b => b.idEncabezado == a.id).ToList(),
                             Entrega = db.EncMovimiento.Where(b => b.TipoMovimiento == 2 && b.id == a.idEntrega).FirstOrDefault(),
                             MetodosPagos = db.MetodosPagosFacturas.Where(c => c.idEncabezado == a.id).ToList()
@@ -176,6 +178,7 @@ namespace WATickets.Controllers
                     a.ClaveHacienda,
                     a.PorDesc,
                     a.Redondeo,
+                    a.OC,
                     DetFactura = db.DetFacturas.Where(b => b.idEncabezado == a.id).ToList(),
                     Entrega = db.EncMovimiento.Where(b => b.TipoMovimiento == 2 && b.id == a.idEntrega).FirstOrDefault(),
                     MetodosPagos = db.MetodosPagosFacturas.Where(c => c.idEncabezado == a.id).ToList()
@@ -609,6 +612,11 @@ namespace WATickets.Controllers
 
                         documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoConsecutivo).Value = Factura.ConsecutivoHacienda; //"U_LDT_NumeroGTI"
                         documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoClave).Value = Factura.ClaveHacienda;       //"U_LDT_FiscalDoc"
+                        if (G.ObtenerConfig("Empresa") == "G")
+                        {
+                            documentoSAP.UserFields.Fields.Item("U_DYD_OtroTexto").Value = Factura.OC;
+
+                        }
                         if (Factura.Redondeo != 0)
                         {
                             documentoSAP.Rounding = BoYesNoEnum.tYES;
@@ -1287,6 +1295,7 @@ namespace WATickets.Controllers
                     Factura.ProcesadoSAPPago = false;
                     Factura.FechaProcesadoPago = DateTime.Now;
                     Factura.Redondeo = factura.Redondeo;
+                    Factura.OC = factura.OC;
                     db.EncFacturas.Add(Factura);
                     db.SaveChanges();
 
@@ -1448,6 +1457,12 @@ namespace WATickets.Controllers
                         documentoSAP.DocType = BoDocumentTypes.dDocument_Items;
                         documentoSAP.NumAtCard = "Boletaje FAC:" + " " + Factura.id;
                         documentoSAP.Comments = g.TruncarString(Factura.Comentarios, 200);
+                        if(G.ObtenerConfig("Empresa") == "G")
+                        {
+                            documentoSAP.UserFields.Fields.Item("U_DYD_OtroTexto").Value = Factura.OC;
+
+                        }
+
                         documentoSAP.PaymentGroupCode = Convert.ToInt32(db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault() == null ? "0" : db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault().codSAP);
                         var CondPago = db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault() == null ? "0" : db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault().Nombre;
                         documentoSAP.Series = CondPago.ToLower().Contains("contado") ? ParametrosFacturacion.SerieFECO : ParametrosFacturacion.SerieFECR;  //4;  //param.SerieProforma; //Quemada
