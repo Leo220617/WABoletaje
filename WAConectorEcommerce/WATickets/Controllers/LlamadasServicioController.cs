@@ -1546,6 +1546,22 @@ namespace WATickets.Controllers
                             client.Priority = Llamada.Prioridad == "L" ? BoSvcCallPriorities.scp_Low : Llamada.Prioridad == "M" ? BoSvcCallPriorities.scp_Medium : BoSvcCallPriorities.scp_High;
                             client.UserFields.Fields.Item("U_TPCASO").Value = Llamada.TipoCaso.Value.ToString();
 
+                            if(llamada.BorrarFechaProximoContacto)
+                            {
+                                client.UserFields.Fields.Item("U_FE_CONTAC").Value = "";
+                            }
+                            else
+                            {
+                                if (llamada.FechaProximoContacto != null)
+                                {
+                                    if (llamada.FechaProximoContacto != new DateTime())
+                                    {
+                                        client.UserFields.Fields.Item("U_FE_CONTAC").Value = llamada.FechaProximoContacto;
+
+                                    }
+                                }
+                            }
+                         
 
 
                             DateTime time2 = new DateTime();
