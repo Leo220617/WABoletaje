@@ -42,7 +42,7 @@ namespace WATickets.Controllers
                     client.Series = Parametros.SerieCliente;
                     client.CardForeignName = cliente.Cedula;
                     client.FederalTaxID = cliente.Cedula;
-                    client.Currency = "##";
+                    client.Currency = cliente.Moneda;//"##";
                     client.Phone1 = cliente.Telefono;
                     client.CardType = BoCardTypes.cCustomer;
                     client.Addresses.Add();

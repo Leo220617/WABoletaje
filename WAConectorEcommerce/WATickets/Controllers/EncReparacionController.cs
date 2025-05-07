@@ -441,10 +441,10 @@ namespace WATickets.Controllers
                     )
                     .Where(a => a.idTecnico == Encabezado.idTecnico && a.StatusLlamada == 47 && a.id != Encabezado.id).FirstOrDefault();
 
-                    if (ValidacionReparacionAnterior != null)
-                    {
-                        throw new Exception("Este tecnico ya tiene asignaciones de boletas con status 'EN TALLER'");
-                    }
+                    //if (ValidacionReparacionAnterior != null)
+                    //{
+                    //    throw new Exception("Este tecnico ya tiene asignaciones de boletas con status 'EN TALLER'");
+                    //}
                 }
                 
                 db.Entry(Encabezado).State = EntityState.Modified;
