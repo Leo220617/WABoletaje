@@ -267,7 +267,9 @@ namespace WATickets.Controllers
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorcentajeDescuento);
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = item.TaxCode;
+                            var TaxCode = Convert.ToDecimal(item.Impuesto);
+                            client.Lines.TaxCode = db.Impuestos.Where(a => a.Tarifa == TaxCode).FirstOrDefault() == null ? db.Impuestos.Where(a => a.Tarifa == 13.00M).FirstOrDefault().CodSAP : db.Impuestos.Where(a => a.Tarifa == TaxCode).FirstOrDefault().CodSAP;
+
                             client.Lines.TaxOnly = item.TaxOnly == true ? BoYesNoEnum.tYES : BoYesNoEnum.tNO;
 
 
@@ -436,7 +438,9 @@ namespace WATickets.Controllers
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorcentajeDescuento);
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = item.TaxCode;
+                            var TaxCode = Convert.ToDecimal(item.Impuesto);
+                            client.Lines.TaxCode = db.Impuestos.Where(a => a.Tarifa == TaxCode).FirstOrDefault() == null ? db.Impuestos.Where(a => a.Tarifa == 13.00M).FirstOrDefault().CodSAP : db.Impuestos.Where(a => a.Tarifa == TaxCode).FirstOrDefault().CodSAP;
+
                             client.Lines.TaxOnly = item.TaxOnly == true ? BoYesNoEnum.tYES : BoYesNoEnum.tNO;
 
 

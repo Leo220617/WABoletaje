@@ -280,7 +280,9 @@ namespace WATickets.Controllers
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.ItemDescription = item.ItemName.Length > 200 ? item.ItemName.Substring(0, 199) : item.ItemName ;
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = item.TaxCode;
+                            var TaxCode = Convert.ToDecimal(item.Impuesto);
+                            client.Lines.TaxCode = db.Impuestos.Where(a => a.Tarifa == TaxCode).FirstOrDefault() == null ? db.Impuestos.Where(a => a.Tarifa == 13.00M).FirstOrDefault().CodSAP : db.Impuestos.Where(a => a.Tarifa == TaxCode).FirstOrDefault().CodSAP;
+
                             client.Lines.TaxOnly = item.TaxOnly == true ? BoYesNoEnum.tYES : BoYesNoEnum.tNO;
 
 
@@ -428,7 +430,8 @@ namespace WATickets.Controllers
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.ItemDescription = item.ItemName.Length > 200 ? item.ItemName.Substring(0, 199) : item.ItemName;
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = item.TaxCode;
+                            var TaxCode = Convert.ToDecimal(item.Impuesto);
+                            client.Lines.TaxCode = db.Impuestos.Where(a => a.Tarifa == TaxCode).FirstOrDefault() == null ? db.Impuestos.Where(a => a.Tarifa == 13.00M).FirstOrDefault().CodSAP : db.Impuestos.Where(a => a.Tarifa == TaxCode).FirstOrDefault().CodSAP;
                             client.Lines.TaxOnly = item.TaxOnly == true ? BoYesNoEnum.tYES : BoYesNoEnum.tNO;
 
 
