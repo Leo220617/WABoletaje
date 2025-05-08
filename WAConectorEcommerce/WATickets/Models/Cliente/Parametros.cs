@@ -41,5 +41,6 @@ namespace WATickets.Models.Cliente
         public string SQLProveedorPredeterminado { get; set; }
         public string SQLPregArtCompra { get; set; }
         public string SQLTipoCambio { get; set; }
+        public string SQLVistaPlanificador { get; set; }
     }
 }

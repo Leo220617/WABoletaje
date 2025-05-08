@@ -272,6 +272,7 @@
     <Compile Include="Controllers\OfertaVentaController.cs" />
     <Compile Include="Controllers\OrdenVentaController.cs" />
     <Compile Include="Controllers\PersonasContactoController.cs" />
+    <Compile Include="Controllers\PlanificadorDiarioController.cs" />
     <Compile Include="Controllers\PlazosCreditosController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\ProductosFacturacionInicialController.cs" />
