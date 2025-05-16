@@ -1369,6 +1369,7 @@ namespace WATickets.Controllers
 
                 var Parametros = db.Parametros.FirstOrDefault();
                 var EncMovimiento = db.EncMovimiento.Where(a => a.id == encMovimiento.id).FirstOrDefault();
+                ParametrosFacturacion paramFac = new ParametrosFacturacion();
 
                 if (EncMovimiento != null)
                 {
@@ -1621,7 +1622,7 @@ namespace WATickets.Controllers
                         var client = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oQuotations);
                         client.DocObjectCode = BoObjectTypes.oQuotations;
                         client.CardCode = EncMovimiento.CardCode;
-                        client.DocCurrency = EncMovimiento.Moneda; // "COL";
+                        client.DocCurrency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; // "COL";
                         client.DocDate = DateTime.Now;//EncMovimiento.Fecha; //listo
                         client.DocDueDate = DateTime.Now.AddDays(3); //listo
                         client.DocNum = 0; //automatico
@@ -1660,7 +1661,7 @@ namespace WATickets.Controllers
                             client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                             client.Lines.CostingCode4 = "";
                             client.Lines.CostingCode5 = "";
-                            client.Lines.Currency = EncMovimiento.Moneda;
+                            client.Lines.Currency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones ;
                             client.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaInicial;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                             client.Lines.ItemCode = item.ItemCode;
@@ -1777,7 +1778,7 @@ namespace WATickets.Controllers
                             var orden = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oOrders);
                             orden.DocObjectCode = BoObjectTypes.oOrders;
                             orden.CardCode = EncMovimiento.CardCode;
-                            orden.DocCurrency = EncMovimiento.Moneda; //"COL";
+                            orden.DocCurrency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                             orden.DocDate = DateTime.Now;// EncMovimiento.Fecha; //listo
                             orden.DocDueDate = DateTime.Now.AddDays(3); //listo
                             orden.DocNum = 0; //automatico
@@ -1813,7 +1814,7 @@ namespace WATickets.Controllers
                                 orden.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                                 orden.Lines.CostingCode4 = "";
                                 orden.Lines.CostingCode5 = "";
-                                orden.Lines.Currency = EncMovimiento.Moneda; //"COL";
+                                orden.Lines.Currency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                                 orden.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
                                 orden.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                                 orden.Lines.ItemCode = item.ItemCode;
@@ -1988,7 +1989,7 @@ namespace WATickets.Controllers
                             var client = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
                             client.DocObjectCode = BoObjectTypes.oDeliveryNotes;
                             client.CardCode = EncMovimiento.CardCode;
-                            client.DocCurrency = EncMovimiento.Moneda; //"COL";
+                            client.DocCurrency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                             client.DocDate = DateTime.Now; //EncMovimiento.Fecha; //listo
                             client.DocDueDate = DateTime.Now.AddDays(3); //listo
                             client.DocNum = 0; //automatico
@@ -2023,7 +2024,7 @@ namespace WATickets.Controllers
                                 client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                                 client.Lines.CostingCode4 = "";
                                 client.Lines.CostingCode5 = "";
-                                client.Lines.Currency = EncMovimiento.Moneda; //"COL";
+                                client.Lines.Currency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                                 client.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
                                 client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                                 client.Lines.ItemCode = item.ItemCode;
@@ -2198,7 +2199,7 @@ namespace WATickets.Controllers
                                 var clientEntrega = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
                                 clientEntrega.DocObjectCode = BoObjectTypes.oDeliveryNotes;
                                 clientEntrega.CardCode = EncMovimiento.CardCode;
-                                clientEntrega.DocCurrency = EncMovimiento.Moneda; //"COL";
+                                clientEntrega.DocCurrency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                                 clientEntrega.DocDate = EncMovimiento.Fecha; //listo
                                 clientEntrega.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
                                 clientEntrega.DocNum = 0; //automatico
@@ -2230,7 +2231,7 @@ namespace WATickets.Controllers
                                     clientEntrega.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                                     clientEntrega.Lines.CostingCode4 = "";
                                     clientEntrega.Lines.CostingCode5 = "";
-                                    clientEntrega.Lines.Currency = EncMovimiento.Moneda; //"COL";
+                                    clientEntrega.Lines.Currency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                                     clientEntrega.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
                                     clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                                     clientEntrega.Lines.ItemCode = item.ItemCode;

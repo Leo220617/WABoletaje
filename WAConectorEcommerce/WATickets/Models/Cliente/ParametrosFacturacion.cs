@@ -30,5 +30,6 @@ namespace WATickets.Models.Cliente
         public string SQLDocumentoExoneracion { get; set; }
         public int SeriePago { get; set; }
         public string SQLProductosFacturar { get; set; }
+        public string MonedaDolaresSAP { get; set; }
     }
 }

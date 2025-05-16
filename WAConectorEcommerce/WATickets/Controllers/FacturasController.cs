@@ -82,7 +82,7 @@ namespace WATickets.Controllers
 
                     var Facturas = db.EncFacturas.Where(a => (filtro.FechaInicial != time ? a.Fecha >= filtro.FechaInicial : true)
                         && (filtro.FechaFinal != time ? a.Fecha <= filtro.FechaFinal : true)
-                        && ((filtro.Codigo2 > 0 && filtro.Codigo2!= null) ? a.idSucursal == filtro.Codigo2 : true)
+                        && ((filtro.Codigo2 > 0 && filtro.Codigo2 != null) ? a.idSucursal == filtro.Codigo2 : true)
                         ).Select(a => new
                         {
                             a.id,
@@ -382,14 +382,22 @@ namespace WATickets.Controllers
                                         pagoProcesado.VatDate = DateTime.Now;
                                         pagoProcesado.Remarks = "Pago procesado por Boletaje";
                                         pagoProcesado.CounterReference = "APP FAC" + Factura.id;
-                                        pagoProcesado.DocCurrency = "USD";
+                                        pagoProcesado.DocCurrency = ParametrosFacturacion.MonedaDolaresSAP;
                                         pagoProcesado.HandWritten = BoYesNoEnum.tNO;
                                         pagoProcesado.Invoices.InvoiceType = BoRcptInvTypes.it_Invoice;
                                         pagoProcesado.Invoices.DocEntry = Convert.ToInt32(Factura.DocEntry);
 
 
                                         var SumatoriaPagod = MetodosPagosDolares.Sum(a => a.Monto);
-                                        pagoProcesado.Invoices.AppliedFC = Convert.ToDouble(SumatoriaPagod);
+                                        if (G.ObtenerConfig("Pais") != "C")
+                                        {
+                                            pagoProcesado.Invoices.SumApplied = Convert.ToDouble(SumatoriaPagod);
+                                        }
+                                        else
+                                        {
+                                            pagoProcesado.Invoices.AppliedFC = Convert.ToDouble(SumatoriaPagod);
+                                        }
+
                                         pagoProcesado.Series = ParametrosFacturacion.SeriePago;//154; 161;
 
 
@@ -568,7 +576,7 @@ namespace WATickets.Controllers
 
                         documentoSAP.DocObjectCode = BoObjectTypes.oInvoices;
                         documentoSAP.CardCode = Factura.CardCode;
-                        documentoSAP.DocCurrency = Factura.Moneda == "COL" ? ParametrosFacturacion.MonedaSAPColones : Factura.Moneda;
+                        documentoSAP.DocCurrency = Factura.Moneda == "COL" ? ParametrosFacturacion.MonedaSAPColones : ParametrosFacturacion.MonedaDolaresSAP;
                         var Dias = db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault() == null ? 0 : db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault().Dias;
 
                         documentoSAP.DocDate = Factura.Fecha;
@@ -586,7 +594,16 @@ namespace WATickets.Controllers
 
                         if (Factura.Moneda == "USD")
                         {
-                            documentoSAP.DocTotalFc = Convert.ToDouble(Factura.TotalCompra);
+                            if (G.ObtenerConfig("Pais") != "C")
+                            {
+                                documentoSAP.DocTotal = Convert.ToDouble(Factura.TotalCompra);
+
+                            }
+                            else
+                            {
+
+                                documentoSAP.DocTotalFc = Convert.ToDouble(Factura.TotalCompra);
+                            }
                         }
                         else
                         {
@@ -608,10 +625,13 @@ namespace WATickets.Controllers
                                 documentoSAP.SalesPersonCode = Tecnico.Letra;
                             }
                         }
+                        if (G.ObtenerConfig("Pais") != "P")
+                        {
+                            documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoConsecutivo).Value = Factura.ConsecutivoHacienda; //"U_LDT_NumeroGTI"
+                            documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoClave).Value = Factura.ClaveHacienda;       //"U_LDT_FiscalDoc"
+                        }
 
 
-                        documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoConsecutivo).Value = Factura.ConsecutivoHacienda; //"U_LDT_NumeroGTI"
-                        documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoClave).Value = Factura.ClaveHacienda;       //"U_LDT_FiscalDoc"
                         if (G.ObtenerConfig("Empresa") == "G")
                         {
                             documentoSAP.UserFields.Fields.Item("U_DYD_OtroTexto").Value = Factura.OC;
@@ -631,7 +651,7 @@ namespace WATickets.Controllers
 
                             documentoSAP.Lines.SetCurrentLine(z);
 
-                            documentoSAP.Lines.Currency = Factura.Moneda == "COL" ? ParametrosFacturacion.MonedaSAPColones : Factura.Moneda;
+                            documentoSAP.Lines.Currency = Factura.Moneda == "COL" ? ParametrosFacturacion.MonedaSAPColones : ParametrosFacturacion.MonedaDolaresSAP;
                             documentoSAP.Lines.Quantity = Convert.ToDouble(item.Cantidad);
                             documentoSAP.Lines.DiscountPercent = Convert.ToDouble(item.PorDescto);
                             documentoSAP.Lines.ItemCode = item.ItemCode;
@@ -675,7 +695,7 @@ namespace WATickets.Controllers
                             documentoSAP.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
 
                             documentoSAP.Lines.WarehouseCode = item.CodBodega;
-                            if(Factura.idEntrega == 0)
+                            if (Factura.idEntrega == 0)
                             {
                                 if (!string.IsNullOrEmpty(ParametrosFacturacion.Norma))
                                 {
@@ -711,7 +731,7 @@ namespace WATickets.Controllers
                                     }
                                 }
                             }
-                           
+
 
                             try
                             {
@@ -809,7 +829,7 @@ namespace WATickets.Controllers
                             Factura.ProcesadoSAP = true;
                             Factura.FechaProcesado = DateTime.Now;
                             db.SaveChanges();
-                            if(Factura.idEntrega > 0)
+                            if (Factura.idEntrega > 0)
                             {
                                 var count = -1;
                                 try
@@ -875,8 +895,8 @@ namespace WATickets.Controllers
 
                                 }
                             }
-                            
-                            
+
+
 
                             //Procesamos el pago
                             var CondicionPago = db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault() == null ? db.CondicionesPagos.FirstOrDefault() : db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault();
@@ -1048,14 +1068,23 @@ namespace WATickets.Controllers
                                             pagoProcesado.VatDate = DateTime.Now;
                                             pagoProcesado.Remarks = "Pago procesado por Boletaje";
                                             pagoProcesado.CounterReference = "APP FAC" + Factura.id;
-                                            pagoProcesado.DocCurrency = "USD";
+                                            pagoProcesado.DocCurrency = ParametrosFacturacion.MonedaDolaresSAP;
                                             pagoProcesado.HandWritten = BoYesNoEnum.tNO;
                                             pagoProcesado.Invoices.InvoiceType = BoRcptInvTypes.it_Invoice;
                                             pagoProcesado.Invoices.DocEntry = Convert.ToInt32(Factura.DocEntry);
 
 
                                             var SumatoriaPagod = MetodosPagosDolares.Sum(a => a.Monto);
-                                            pagoProcesado.Invoices.AppliedFC = Convert.ToDouble(SumatoriaPagod);
+                                            if (G.ObtenerConfig("Pais") != "C")
+                                            {
+                                                pagoProcesado.Invoices.SumApplied = Convert.ToDouble(SumatoriaPagod);
+
+                                            }
+                                            else
+                                            {
+                                                pagoProcesado.Invoices.AppliedFC = Convert.ToDouble(SumatoriaPagod);
+
+                                            }
                                             pagoProcesado.Series = ParametrosFacturacion.SeriePago;//154; 161;
 
 
@@ -1248,12 +1277,12 @@ namespace WATickets.Controllers
 
                 if (Factura == null)
                 {
-                    if(factura.idEntrega == 0)
+                    if (factura.idEntrega == 0)
                     {
                         var Fecha = factura.Fecha.Date;
                         var VerificaExistencia = db.LlamadasFacturas.Where(a => a.CardCode == factura.CardCode && a.ItemCode == factura.ItemCode && a.Serie == factura.Serie && a.Fecha == Fecha).FirstOrDefault();
 
-                        if(VerificaExistencia != null)
+                        if (VerificaExistencia != null)
                         {
                             throw new Exception("YA existe una factura igual, favor revisar en el listado de facturas");
                         }
@@ -1291,7 +1320,7 @@ namespace WATickets.Controllers
                     Factura.TotalDescuento = factura.TotalDescuento;
                     Factura.TotalCompra = factura.TotalCompra;
                     Factura.CreadoPor = factura.CreadoPor;
-                    Factura.PorDesc = Math.Round(factura.PorDesc,6);
+                    Factura.PorDesc = Math.Round(factura.PorDesc, 6);
                     Factura.ProcesadoSAPPago = false;
                     Factura.FechaProcesadoPago = DateTime.Now;
                     Factura.Redondeo = factura.Redondeo;
@@ -1358,86 +1387,109 @@ namespace WATickets.Controllers
 
                     t.Commit();
 
-                    //Empieza la parte de fActuracion
-                    HttpClient cliente = new HttpClient();
-
-                    try
+                    if (G.ObtenerConfig("Pais") != "P")
                     {
+                        //Empieza la parte de fActuracion
+                        HttpClient cliente = new HttpClient();
 
-                        var Url = parametros.UrlFacturar.Replace("@DocNumR", Factura.id.ToString()).Replace("@ObjTypeR", (Factura.TipoDocumento != "03" ? "13" : "14")).Replace("@SucursalR", parametros.Sucursal);
-
-                        cliente.Timeout = TimeSpan.FromMinutes(30);
-                        HttpResponseMessage response = await cliente.GetAsync(Url);
-                        if (response.IsSuccessStatusCode)
+                        try
                         {
-                            response.Content.Headers.ContentType.MediaType = "application/json";
-                            var res = await response.Content.ReadAsAsync<RecibidoFacturacion>();
 
-                            db.Entry(Factura).State = EntityState.Modified;
-                            Factura.ClaveHacienda = res.ClaveHacienda;
-                            Factura.ConsecutivoHacienda = res.ConsecutivoHacienda;
+                            var Url = parametros.UrlFacturar.Replace("@DocNumR", Factura.id.ToString()).Replace("@ObjTypeR", (Factura.TipoDocumento != "03" ? "13" : "14")).Replace("@SucursalR", parametros.Sucursal);
 
-                            factura.ClaveHacienda = res.ClaveHacienda;
-                            factura.ConsecutivoHacienda = res.ConsecutivoHacienda;
-                            db.SaveChanges();
-
-                            if (Factura.idEntrega > 0)
+                            cliente.Timeout = TimeSpan.FromMinutes(30);
+                            HttpResponseMessage response = await cliente.GetAsync(Url);
+                            if (response.IsSuccessStatusCode)
                             {
-                                var Entrega = db.EncMovimiento.Where(a => a.id == Factura.idEntrega).FirstOrDefault();
-                                if (Entrega != null && res.code == 1)
+                                response.Content.Headers.ContentType.MediaType = "application/json";
+                                var res = await response.Content.ReadAsAsync<RecibidoFacturacion>();
+
+                                db.Entry(Factura).State = EntityState.Modified;
+                                Factura.ClaveHacienda = res.ClaveHacienda;
+                                Factura.ConsecutivoHacienda = res.ConsecutivoHacienda;
+
+                                factura.ClaveHacienda = res.ClaveHacienda;
+                                factura.ConsecutivoHacienda = res.ConsecutivoHacienda;
+                                db.SaveChanges();
+
+                                if (Factura.idEntrega > 0)
                                 {
-                                    db.Entry(Entrega).State = EntityState.Modified;
-                                    Entrega.Facturado = true;
+                                    var Entrega = db.EncMovimiento.Where(a => a.id == Factura.idEntrega).FirstOrDefault();
+                                    if (Entrega != null && res.code == 1)
+                                    {
+                                        db.Entry(Entrega).State = EntityState.Modified;
+                                        Entrega.Facturado = true;
+                                        db.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                        throw new Exception("Ha ocurrido un error al facturar: " + "el resultado de la factura es " + res.code);
+                                    }
+
+                                }
+
+
+                                try
+                                {
+                                    HttpClient cliente2 = new HttpClient();
+
+                                    var Url2 = parametros.UrlDocumentos.Replace("@ClaveR", Factura.ClaveHacienda.ToString()).Replace("@SucursalR", parametros.Sucursal);
+
+                                    HttpResponseMessage response2 = await cliente2.GetAsync(Url2);
+                                    if (response2.IsSuccessStatusCode)
+                                    {
+                                        response2.Content.Headers.ContentType.MediaType = "application/json";
+                                        var res2 = await response2.Content.ReadAsStringAsync();
+                                    }
+
+                                }
+                                catch (Exception ex)
+                                {
+
+                                    BitacoraErrores be = new BitacoraErrores();
+                                    be.Descripcion = ex.Message;
+                                    be.Fecha = DateTime.Now;
+                                    db.BitacoraErrores.Add(be);
                                     db.SaveChanges();
                                 }
-                                else
-                                {
-                                    throw new Exception("Ha ocurrido un error al facturar: " + "el resultado de la factura es " + res.code);
-                                }
 
                             }
 
+                        }
+                        catch (Exception ex)
+                        {
 
-                            try
+                            BitacoraErrores be = new BitacoraErrores();
+                            be.Descripcion = ex.Message;
+                            be.Fecha = DateTime.Now;
+                            db.BitacoraErrores.Add(be);
+                            db.SaveChanges();
+                            throw new Exception(ex.Message);
+                        }
+
+
+                        //Se termina el api de facturacion 
+                    }
+                    else
+                    {
+                        if (Factura.idEntrega > 0)
+                        {
+                            var Entrega = db.EncMovimiento.Where(a => a.id == Factura.idEntrega).FirstOrDefault();
+                            if (Entrega != null)
                             {
-                                HttpClient cliente2 = new HttpClient();
-
-                                var Url2 = parametros.UrlDocumentos.Replace("@ClaveR", Factura.ClaveHacienda.ToString()).Replace("@SucursalR", parametros.Sucursal);
-
-                                HttpResponseMessage response2 = await cliente2.GetAsync(Url2);
-                                if (response2.IsSuccessStatusCode)
-                                {
-                                    response2.Content.Headers.ContentType.MediaType = "application/json";
-                                    var res2 = await response2.Content.ReadAsStringAsync();
-                                }
-
-                            }
-                            catch (Exception ex)
-                            {
-
-                                BitacoraErrores be = new BitacoraErrores();
-                                be.Descripcion = ex.Message;
-                                be.Fecha = DateTime.Now;
-                                db.BitacoraErrores.Add(be);
+                                db.Entry(Entrega).State = EntityState.Modified;
+                                Entrega.Facturado = true;
                                 db.SaveChanges();
+                            }
+                            else
+                            {
+                                throw new Exception("Ha ocurrido un error al facturar: " + "el resultado de la factura es "  );
                             }
 
                         }
 
                     }
-                    catch (Exception ex)
-                    {
 
-                        BitacoraErrores be = new BitacoraErrores();
-                        be.Descripcion = ex.Message;
-                        be.Fecha = DateTime.Now;
-                        db.BitacoraErrores.Add(be);
-                        db.SaveChanges();
-                        throw new Exception(ex.Message);
-                    }
-
-
-                    //Se termina el api de facturacion 
 
                     //Empieza a mandar a SAP
                     try
@@ -1449,7 +1501,7 @@ namespace WATickets.Controllers
 
                         documentoSAP.DocObjectCode = BoObjectTypes.oInvoices;
                         documentoSAP.CardCode = Factura.CardCode;
-                        documentoSAP.DocCurrency = Factura.Moneda == "COL" ? ParametrosFacturacion.MonedaSAPColones : Factura.Moneda;
+                        documentoSAP.DocCurrency = Factura.Moneda == "COL" ? ParametrosFacturacion.MonedaSAPColones : ParametrosFacturacion.MonedaDolaresSAP;
                         var Dias = db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault() == null ? 0 : db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault().Dias;
 
                         documentoSAP.DocDate = Factura.Fecha;
@@ -1457,7 +1509,7 @@ namespace WATickets.Controllers
                         documentoSAP.DocType = BoDocumentTypes.dDocument_Items;
                         documentoSAP.NumAtCard = "Boletaje FAC:" + " " + Factura.id;
                         documentoSAP.Comments = g.TruncarString(Factura.Comentarios, 200);
-                        if(G.ObtenerConfig("Empresa") == "G")
+                        if (G.ObtenerConfig("Empresa") == "G")
                         {
                             documentoSAP.UserFields.Fields.Item("U_DYD_OtroTexto").Value = Factura.OC;
 
@@ -1473,7 +1525,16 @@ namespace WATickets.Controllers
 
                         if (Factura.Moneda == "USD")
                         {
-                            documentoSAP.DocTotalFc = Convert.ToDouble(Factura.TotalCompra);
+                            if (G.ObtenerConfig("Pais") != "C")
+                            {
+                                documentoSAP.DocTotal = Convert.ToDouble(Factura.TotalCompra);
+
+                            }
+                            else
+                            {
+
+                                documentoSAP.DocTotalFc = Convert.ToDouble(Factura.TotalCompra);
+                            }
                         }
                         else
                         {
@@ -1496,9 +1557,12 @@ namespace WATickets.Controllers
                                 documentoSAP.SalesPersonCode = Tecnico.Letra;
                             }
                         }
+                        if (G.ObtenerConfig("Pais") != "P")
+                        {
+                            documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoConsecutivo).Value = Factura.ConsecutivoHacienda; //"U_LDT_NumeroGTI"
+                            documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoClave).Value = Factura.ClaveHacienda;       //"U_LDT_FiscalDoc"
+                        }
 
-                        documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoConsecutivo).Value = Factura.ConsecutivoHacienda; //"U_LDT_NumeroGTI"
-                        documentoSAP.UserFields.Fields.Item(ParametrosFacturacion.CampoClave).Value = Factura.ClaveHacienda;       //"U_LDT_FiscalDoc"
                         if (Factura.Redondeo != 0)
                         {
                             documentoSAP.Rounding = BoYesNoEnum.tYES;
@@ -1513,7 +1577,7 @@ namespace WATickets.Controllers
 
                             documentoSAP.Lines.SetCurrentLine(z);
 
-                            documentoSAP.Lines.Currency = Factura.Moneda == "COL" ? ParametrosFacturacion.MonedaSAPColones : Factura.Moneda;
+                            documentoSAP.Lines.Currency = Factura.Moneda == "COL" ? ParametrosFacturacion.MonedaSAPColones : ParametrosFacturacion.MonedaDolaresSAP;
                             documentoSAP.Lines.Quantity = Convert.ToDouble(item.Cantidad);
                             documentoSAP.Lines.DiscountPercent = Convert.ToDouble(item.PorDescto);
                             documentoSAP.Lines.ItemCode = item.ItemCode;
@@ -1557,7 +1621,7 @@ namespace WATickets.Controllers
                             documentoSAP.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
 
                             documentoSAP.Lines.WarehouseCode = item.CodBodega;
-                            if(Factura.idEntrega == 0)
+                            if (Factura.idEntrega == 0)
                             {
                                 if (!string.IsNullOrEmpty(ParametrosFacturacion.Norma))
                                 {
@@ -1593,12 +1657,12 @@ namespace WATickets.Controllers
                                     }
                                 }
                             }
-                           
-                           
+
+
 
                             try
                             {
-                                if(Factura.idEntrega > 0)
+                                if (Factura.idEntrega > 0)
                                 {
                                     Documents delivery = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
                                     if (delivery.GetByKey(EncMovimiento.DocEntry))
@@ -1618,7 +1682,7 @@ namespace WATickets.Controllers
                                     }
                                 }
                                 // Get the delivery
-                                
+
                             }
                             catch (Exception ex)
                             {
@@ -1692,7 +1756,7 @@ namespace WATickets.Controllers
                             Factura.FechaProcesado = DateTime.Now;
                             db.SaveChanges();
 
-                            if(Factura.idEntrega > 0)
+                            if (Factura.idEntrega > 0)
                             {
                                 var count = -1;
                                 try
@@ -1758,7 +1822,7 @@ namespace WATickets.Controllers
 
                                 }
                             }
-                        
+
 
                             //Procesamos el pago
                             var CondicionPago = db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault() == null ? db.CondicionesPagos.FirstOrDefault() : db.CondicionesPagos.Where(a => a.id == Factura.idCondicionVenta).FirstOrDefault();
@@ -1930,14 +1994,23 @@ namespace WATickets.Controllers
                                             pagoProcesado.VatDate = DateTime.Now;
                                             pagoProcesado.Remarks = "Pago procesado por Boletaje";
                                             pagoProcesado.CounterReference = "APP FAC" + Factura.id;
-                                            pagoProcesado.DocCurrency = "USD";
+                                            pagoProcesado.DocCurrency = ParametrosFacturacion.MonedaDolaresSAP;
                                             pagoProcesado.HandWritten = BoYesNoEnum.tNO;
                                             pagoProcesado.Invoices.InvoiceType = BoRcptInvTypes.it_Invoice;
                                             pagoProcesado.Invoices.DocEntry = Convert.ToInt32(Factura.DocEntry);
 
 
                                             var SumatoriaPagod = MetodosPagosDolares.Sum(a => a.Monto);
-                                            pagoProcesado.Invoices.AppliedFC = Convert.ToDouble(SumatoriaPagod);
+                                            if (G.ObtenerConfig("Pais") != "C")
+                                            {
+                                                pagoProcesado.Invoices.SumApplied = Convert.ToDouble(SumatoriaPagod);
+
+                                            }
+                                            else
+                                            {
+                                                pagoProcesado.Invoices.AppliedFC = Convert.ToDouble(SumatoriaPagod);
+
+                                            }
                                             pagoProcesado.Series = ParametrosFacturacion.SeriePago;//154; 161;
 
 
