@@ -661,9 +661,17 @@ namespace WATickets.Controllers
                             var idImp = item.idImpuesto;
 
 
+                            if (G.ObtenerConfig("Pais") != "P")
+                            {
 
+                                documentoSAP.Lines.TaxCode = item.idDocumentoExoneracion > 0 ? (db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault() == null ? "EXE" : db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault().CodSAP) : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault() == null ? "IV" : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault().CodSAP;
+                            }
+                            else
+                            {
+                                documentoSAP.Lines.VatGroup = item.idDocumentoExoneracion > 0 ? (db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault() == null ? "EXE" : db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault().CodSAP) : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault() == null ? "IV" : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault().CodSAP;
 
-                            documentoSAP.Lines.TaxCode = item.idDocumentoExoneracion > 0 ? (db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault() == null ? "EXE" : db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault().CodSAP) : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault() == null ? "IV" : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault().CodSAP;
+                            }
+
                             if (item.idDocumentoExoneracion > 0)
                             {
                                 var conexion2 = g.DevuelveCadena(db);
@@ -1588,8 +1596,16 @@ namespace WATickets.Controllers
 
 
 
+                            if (G.ObtenerConfig("Pais") != "P")
+                            {
+                                documentoSAP.Lines.TaxCode = item.idDocumentoExoneracion > 0 ? (db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault() == null ? "EXE" : db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault().CodSAP) : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault() == null ? "IV" : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault().CodSAP;
 
-                            documentoSAP.Lines.TaxCode = item.idDocumentoExoneracion > 0 ? (db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault() == null ? "EXE" : db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault().CodSAP) : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault() == null ? "IV" : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault().CodSAP;
+                            }
+                            else
+                            {
+                                documentoSAP.Lines.VatGroup = item.idDocumentoExoneracion > 0 ? (db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault() == null ? "EXE" : db.Impuestos.Where(a => a.CodSAP.ToLower().Contains("EXE".ToLower())).FirstOrDefault().CodSAP) : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault() == null ? "IV" : db.Impuestos.Where(a => a.id == idImp).FirstOrDefault().CodSAP;
+
+                            }
                             if (item.idDocumentoExoneracion > 0)
                             {
                                 var conexion2 = g.DevuelveCadena(db);

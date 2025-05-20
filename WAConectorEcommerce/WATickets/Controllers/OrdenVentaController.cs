@@ -267,7 +267,16 @@ namespace WATickets.Controllers
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorcentajeDescuento);
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = item.TaxCode;
+                            if (G.ObtenerConfig("Pais") != "P")
+                            {
+
+                                client.Lines.TaxCode = item.TaxCode;
+                            }
+                            else
+                            {
+                                client.Lines.VatGroup = item.TaxCode;
+
+                            }
                             client.Lines.TaxOnly = item.TaxOnly == true ? BoYesNoEnum.tYES : BoYesNoEnum.tNO;
 
 
@@ -436,7 +445,16 @@ namespace WATickets.Controllers
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorcentajeDescuento);
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = item.TaxCode;
+                            if (G.ObtenerConfig("Pais") != "P")
+                            {
+
+                                client.Lines.TaxCode = item.TaxCode;
+                            }
+                            else
+                            {
+                                client.Lines.VatGroup = item.TaxCode;
+
+                            }
                             client.Lines.TaxOnly = item.TaxOnly == true ? BoYesNoEnum.tYES : BoYesNoEnum.tNO;
 
 
