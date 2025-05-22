@@ -284,7 +284,7 @@ namespace WATickets.Controllers
 
                             List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
                             html Html = new html();
-                            var bodyH = G.ObtenerConfig("Empresa") == "G" ? Html.textoOfertaGermantec : Html.textoOfertaAlsaraBackOffice;
+                            var bodyH = G.ObtenerConfig("Empresa") == "G" ? G.ObtenerConfig("Pais") == "P" ? Html.textoOfertaGermantecPanama : Html.textoOfertaGermantec : Html.textoOfertaAlsaraBackOffice;
                             bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                             bodyH = bodyH.Replace("@NombreCliente2", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                             bodyH = bodyH.Replace("@Email", Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString());
@@ -473,7 +473,7 @@ namespace WATickets.Controllers
 
                             List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
                             html Html = new html();
-                            var bodyH = G.ObtenerConfig("Empresa") == "G" ? Html.textoEntregaGermantec : Html.textoEntregaAlsara;
+                            var bodyH = G.ObtenerConfig("Empresa") == "G" ? G.ObtenerConfig("Pais") == "P" ? Html.textoEntregaGermantecPanama : Html.textoEntregaGermantec : Html.textoEntregaAlsara;
                             bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                             bodyH = bodyH.Replace("@TelefonoCliente", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
                             bodyH = bodyH.Replace("@Celular", "      ");
