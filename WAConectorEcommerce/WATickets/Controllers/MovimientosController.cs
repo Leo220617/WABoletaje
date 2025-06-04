@@ -284,7 +284,7 @@ namespace WATickets.Controllers
 
                             List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
                             html Html = new html();
-                            var bodyH = G.ObtenerConfig("Empresa") == "G" ? Html.textoOfertaGermantec : Html.textoOfertaAlsaraBackOffice;
+                            var bodyH = G.ObtenerConfig("Empresa") == "G" ? G.ObtenerConfig("Pais") == "P" ? Html.textoOfertaGermantecPanama : Html.textoOfertaGermantec : Html.textoOfertaAlsaraBackOffice;
                             bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                             bodyH = bodyH.Replace("@NombreCliente2", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                             bodyH = bodyH.Replace("@Email", Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString());
@@ -473,7 +473,7 @@ namespace WATickets.Controllers
 
                             List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
                             html Html = new html();
-                            var bodyH = G.ObtenerConfig("Empresa") == "G" ? Html.textoEntregaGermantec : Html.textoEntregaAlsara;
+                            var bodyH = G.ObtenerConfig("Empresa") == "G" ? G.ObtenerConfig("Pais") == "P" ? Html.textoEntregaGermantecPanama : Html.textoEntregaGermantec : Html.textoEntregaAlsara;
                             bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                             bodyH = bodyH.Replace("@TelefonoCliente", Ds.Tables["Encabezado"].Rows[0]["Phone1"].ToString());
                             bodyH = bodyH.Replace("@Celular", "      ");
@@ -679,7 +679,7 @@ namespace WATickets.Controllers
                     && (filtro.FiltrarFacturado ? (filtro.NoFacturado ? a.Facturado == false : a.Facturado == true) : true)
                     && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
                      && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
-                     && (filtro.Codigo5 > 0 ? !a.AprobadaSuperior: true)
+                     && (filtro.Codigo5 > 0 ? !a.AprobadaSuperior : true)
                     ).Select(a => new
                     {
                         a.id,
@@ -945,7 +945,7 @@ namespace WATickets.Controllers
         a.CardName,
         a.NumLlamada,
         idLlamada = a.Llamada?.id ?? 0,
-        EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "", 
+        EmailPersonaContacto = a.Llamada?.EmailPersonaContacto ?? "",
         PrioridadAtencion = a.Llamada?.PrioridadAtencion ?? "",
         StatusLlamada = a.Llamada?.Status ?? 0,
         TipoCaso = a.Llamada?.TipoCaso ?? 0,
@@ -1014,7 +1014,7 @@ namespace WATickets.Controllers
 
 
                                 var encMovimientos = db.EncMovimiento
-                                    .Where(a => !llamadas.Contains(a.NumLlamada) && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true) 
+                                    .Where(a => !llamadas.Contains(a.NumLlamada) && (filtro.Codigo1 > 0 ? a.TipoMovimiento == filtro.Codigo1 : true)
                                     && (filtro.DocEntryGenerado > 0 ? a.DocEntry > 0 : true)
                                      && (filtro.Codigo5 > 0 ? !a.AprobadaSuperior : true))
                                .Select(a => new
@@ -1369,6 +1369,7 @@ namespace WATickets.Controllers
 
                 var Parametros = db.Parametros.FirstOrDefault();
                 var EncMovimiento = db.EncMovimiento.Where(a => a.id == encMovimiento.id).FirstOrDefault();
+                ParametrosFacturacion paramFac = new ParametrosFacturacion();
 
                 if (EncMovimiento != null)
                 {
@@ -1453,7 +1454,7 @@ namespace WATickets.Controllers
                                 Det.Garantia = item.Garantia;
                                 Det.idImpuesto = item.idImpuesto;
                                 Det.Opcional = item.Opcional;
-                                Det.idDocumentoExoneracion = item.idDocumentoExoneracion; 
+                                Det.idDocumentoExoneracion = item.idDocumentoExoneracion;
                                 db.DetMovimiento.Add(Det);
                                 db.SaveChanges();
                                 try
@@ -1499,7 +1500,7 @@ namespace WATickets.Controllers
                         EncMovimiento.Descuento = encMovimiento.Descuento;
                         EncMovimiento.Impuestos = encMovimiento.Impuestos;
                         EncMovimiento.Subtotal = encMovimiento.Subtotal;
-                        EncMovimiento.PorDescuento = Math.Round(encMovimiento.PorDescuento,6);
+                        EncMovimiento.PorDescuento = Math.Round(encMovimiento.PorDescuento, 6);
                         EncMovimiento.TotalComprobante = encMovimiento.TotalComprobante;
                         EncMovimiento.Comentarios = encMovimiento.Comentarios;
                         EncMovimiento.Moneda = encMovimiento.Moneda;
@@ -1549,7 +1550,7 @@ namespace WATickets.Controllers
                             Det.Garantia = item.Garantia;
                             Det.idImpuesto = item.idImpuesto;
                             Det.Opcional = item.Opcional;
-                            Det.idDocumentoExoneracion = item.idDocumentoExoneracion; 
+                            Det.idDocumentoExoneracion = item.idDocumentoExoneracion;
                             db.DetMovimiento.Add(Det);
                             db.SaveChanges();
                             try
@@ -1621,7 +1622,7 @@ namespace WATickets.Controllers
                         var client = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oQuotations);
                         client.DocObjectCode = BoObjectTypes.oQuotations;
                         client.CardCode = EncMovimiento.CardCode;
-                        client.DocCurrency = EncMovimiento.Moneda; // "COL";
+                        client.DocCurrency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; // "COL";
                         client.DocDate = DateTime.Now;//EncMovimiento.Fecha; //listo
                         client.DocDueDate = DateTime.Now.AddDays(3); //listo
                         client.DocNum = 0; //automatico
@@ -1660,13 +1661,22 @@ namespace WATickets.Controllers
                             client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                             client.Lines.CostingCode4 = "";
                             client.Lines.CostingCode5 = "";
-                            client.Lines.Currency = EncMovimiento.Moneda;
+                            client.Lines.Currency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones;
                             client.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaInicial;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;//"IVA-13";
+                            if (G.ObtenerConfig("Pais") != "P")
+                            {
+                                client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;//"IVA-13";
+
+                            }
+                            else
+                            {
+                                client.Lines.VatGroup = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;//"IVA-13";
+
+                            }
                             client.Lines.TaxOnly = BoYesNoEnum.tNO;
                             client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
                             if (item.idDocumentoExoneracion > 0)
@@ -1777,7 +1787,7 @@ namespace WATickets.Controllers
                             var orden = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oOrders);
                             orden.DocObjectCode = BoObjectTypes.oOrders;
                             orden.CardCode = EncMovimiento.CardCode;
-                            orden.DocCurrency = EncMovimiento.Moneda; //"COL";
+                            orden.DocCurrency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                             orden.DocDate = DateTime.Now;// EncMovimiento.Fecha; //listo
                             orden.DocDueDate = DateTime.Now.AddDays(3); //listo
                             orden.DocNum = 0; //automatico
@@ -1813,13 +1823,22 @@ namespace WATickets.Controllers
                                 orden.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                                 orden.Lines.CostingCode4 = "";
                                 orden.Lines.CostingCode5 = "";
-                                orden.Lines.Currency = EncMovimiento.Moneda; //"COL";
+                                orden.Lines.Currency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                                 orden.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
                                 orden.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                                 orden.Lines.ItemCode = item.ItemCode;
                                 orden.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                                 orden.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                                orden.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+                                if (G.ObtenerConfig("Pais") != "P")
+                                {
+
+                                    orden.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+                                }
+                                else
+                                {
+                                    orden.Lines.VatGroup = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+
+                                }
                                 orden.Lines.TaxOnly = BoYesNoEnum.tNO;
                                 orden.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
                                 if (item.idDocumentoExoneracion > 0)
@@ -1988,7 +2007,7 @@ namespace WATickets.Controllers
                             var client = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
                             client.DocObjectCode = BoObjectTypes.oDeliveryNotes;
                             client.CardCode = EncMovimiento.CardCode;
-                            client.DocCurrency = EncMovimiento.Moneda; //"COL";
+                            client.DocCurrency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                             client.DocDate = DateTime.Now; //EncMovimiento.Fecha; //listo
                             client.DocDueDate = DateTime.Now.AddDays(3); //listo
                             client.DocNum = 0; //automatico
@@ -2023,13 +2042,22 @@ namespace WATickets.Controllers
                                 client.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                                 client.Lines.CostingCode4 = "";
                                 client.Lines.CostingCode5 = "";
-                                client.Lines.Currency = EncMovimiento.Moneda; //"COL";
+                                client.Lines.Currency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                                 client.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
                                 client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                                 client.Lines.ItemCode = item.ItemCode;
                                 client.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                                 client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                                client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+                                if (G.ObtenerConfig("Pais") != "P")
+                                {
+
+                                    client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+                                }
+                                else
+                                {
+                                    client.Lines.VatGroup = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+
+                                }
                                 client.Lines.TaxOnly = BoYesNoEnum.tNO;
                                 client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
                                 if (item.idDocumentoExoneracion > 0)
@@ -2198,7 +2226,7 @@ namespace WATickets.Controllers
                                 var clientEntrega = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oDeliveryNotes);
                                 clientEntrega.DocObjectCode = BoObjectTypes.oDeliveryNotes;
                                 clientEntrega.CardCode = EncMovimiento.CardCode;
-                                clientEntrega.DocCurrency = EncMovimiento.Moneda; //"COL";
+                                clientEntrega.DocCurrency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                                 clientEntrega.DocDate = EncMovimiento.Fecha; //listo
                                 clientEntrega.DocDueDate = EncMovimiento.Fecha.AddDays(3); //listo
                                 clientEntrega.DocNum = 0; //automatico
@@ -2230,13 +2258,22 @@ namespace WATickets.Controllers
                                     clientEntrega.Lines.CostingCode3 = Parametros.CostingCode; //"TA-01";
                                     clientEntrega.Lines.CostingCode4 = "";
                                     clientEntrega.Lines.CostingCode5 = "";
-                                    clientEntrega.Lines.Currency = EncMovimiento.Moneda; //"COL";
+                                    clientEntrega.Lines.Currency = EncMovimiento.Moneda == "USD" ? paramFac.MonedaDolaresSAP : paramFac.MonedaSAPColones; //"COL";
                                     clientEntrega.Lines.WarehouseCode = db.Parametros.FirstOrDefault().BodegaFinal;
                                     clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                                     clientEntrega.Lines.ItemCode = item.ItemCode;
                                     clientEntrega.Lines.DiscountPercent = Convert.ToDouble(item.PorDescuento);
                                     clientEntrega.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                                    clientEntrega.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+                                    if (G.ObtenerConfig("Pais") != "P")
+                                    {
+
+                                        clientEntrega.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+                                    }
+                                    else
+                                    {
+                                        clientEntrega.Lines.VatGroup = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+
+                                    }
                                     clientEntrega.Lines.TaxOnly = BoYesNoEnum.tNO;
                                     clientEntrega.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
                                     if (item.idDocumentoExoneracion > 0)
@@ -2420,7 +2457,7 @@ namespace WATickets.Controllers
 
                                 foreach (var item in DetalleSAPEntrega)
                                 {
-                                    item.idEncabezado = EncMovimientoEntrega.id; 
+                                    item.idEncabezado = EncMovimientoEntrega.id;
                                     db.DetMovimiento.Add(item);
                                     db.SaveChanges();
 
@@ -2591,8 +2628,8 @@ namespace WATickets.Controllers
                                 oEntrega.Lines.SetCurrentLine(i);
                                 oDevolucion.Lines.BaseType = (int)BoObjectTypes.oDeliveryNotes;
                                 oDevolucion.Lines.BaseEntry = oEntrega.DocEntry;
-                                oDevolucion.Lines.BaseLine = oEntrega.Lines.LineNum; 
-                                oDevolucion.Lines.Quantity = oEntrega.Lines.Quantity; 
+                                oDevolucion.Lines.BaseLine = oEntrega.Lines.LineNum;
+                                oDevolucion.Lines.Quantity = oEntrega.Lines.Quantity;
                                 oDevolucion.Lines.Add();
                             } // Agregar la devolución a SAP 
                             int retCode = oDevolucion.Add();
@@ -2604,7 +2641,7 @@ namespace WATickets.Controllers
                             {
                                 try
                                 {
-                                    
+
                                     var conexion = g.DevuelveCadena(db);
                                     var valorAFiltrar = "Boletaje DEV: " + EncMovimiento.id.ToString();
                                     var filtroSQL = "NumAtCard like '%" + valorAFiltrar + "%' order by DocEntry desc";

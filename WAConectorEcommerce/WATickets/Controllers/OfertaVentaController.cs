@@ -280,7 +280,16 @@ namespace WATickets.Controllers
                             client.Lines.ItemCode = item.ItemCode;
                             client.Lines.ItemDescription = item.ItemName.Length > 200 ? item.ItemName.Substring(0, 199) : item.ItemName ;
                             client.Lines.Quantity = Convert.ToDouble(item.Cantidad);
-                            client.Lines.TaxCode = item.TaxCode;
+                            if (G.ObtenerConfig("Pais") != "P")
+                            {
+
+                                client.Lines.TaxCode = item.TaxCode;
+                            }
+                            else
+                            {
+                                client.Lines.VatGroup = item.TaxCode;
+
+                            }
                             client.Lines.TaxOnly = item.TaxOnly == true ? BoYesNoEnum.tYES : BoYesNoEnum.tNO;
 
 
@@ -641,7 +650,7 @@ namespace WATickets.Controllers
 
                         List<System.Net.Mail.Attachment> adjuntos = new List<System.Net.Mail.Attachment>();
                         html Html = new html();
-                        var bodyH = G.ObtenerConfig("Empresa") == "G" ? Html.textoOfertaGermantec : Html.textoOfertaAlsara;
+                        var bodyH = G.ObtenerConfig("Empresa") == "G" ? G.ObtenerConfig("Pais") == "P" ? Html.textoOfertaGermantecPanama : Html.textoOfertaGermantec : Html.textoOfertaAlsara;
                         bodyH = bodyH.Replace("@NombreCliente", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                         bodyH = bodyH.Replace("@NombreCliente2", Ds.Tables["Encabezado"].Rows[0]["CardName"].ToString());
                         bodyH = bodyH.Replace("@Email", Ds.Tables["Encabezado"].Rows[0]["E_Mail"].ToString());

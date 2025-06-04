@@ -670,7 +670,7 @@ namespace WATickets.Controllers
                                                         detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                         detMovimiento.PorDescuento = 0;
                                                         detMovimiento.Descuento = 0;
-                                                        detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                        detMovimiento.Impuestos = G.ObtenerConfig("Pais") == "C" ? Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13)) : Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.07));
                                                         detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
                                                         detMovimiento.idError = item2.idError;
                                                         detMovimiento.Garantia = false;
@@ -911,7 +911,7 @@ namespace WATickets.Controllers
                                                         detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                         detMovimiento.PorDescuento = 0;
                                                         detMovimiento.Descuento = 0;
-                                                        detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                        detMovimiento.Impuestos = G.ObtenerConfig("Pais") == "C" ? Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13)) : Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.07));
                                                         detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
                                                         detMovimiento.idError = item2.idError;
                                                         detMovimiento.Garantia = false;
@@ -1035,7 +1035,7 @@ namespace WATickets.Controllers
                                 encMovimiento.Descuento = 0;
                                 encMovimiento.Impuestos = 0;
                                 encMovimiento.TotalComprobante = 0;
-                                encMovimiento.Moneda = "COL";
+                                encMovimiento.Moneda = G.ObtenerConfig("Pais") != "C" ? "USD" :"COL";
                                 encMovimiento.Aprobada = false;
                                 encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false : true;
                                 encMovimiento.idCondPago = 0;
@@ -1121,7 +1121,7 @@ namespace WATickets.Controllers
                                                     detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                     detMovimiento.PorDescuento = 0;
                                                     detMovimiento.Descuento = 0;
-                                                    detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                                    detMovimiento.Impuestos = G.ObtenerConfig("Pais") == "C" ? Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13)) : Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.07));
                                                     detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
                                                     detMovimiento.idError = item2.idError;
                                                     detMovimiento.Garantia = false;
@@ -1418,7 +1418,7 @@ namespace WATickets.Controllers
                             encMovimiento.Impuestos = 0;
                             encMovimiento.TotalComprobante = 0;
                             encMovimiento.DocEntry = 0;
-                            encMovimiento.Moneda = "COL";
+                            encMovimiento.Moneda = G.ObtenerConfig("Pais") != "C" ? "USD" : "COL";
                             encMovimiento.Aprobada = false;
                             encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false : true;
                             encMovimiento.idCondPago = 0;
@@ -1504,7 +1504,7 @@ namespace WATickets.Controllers
                                             detMovimiento.Cantidad = item2.Cantidad - item2.CantidadFaltante;
                                             detMovimiento.PorDescuento = 0;
                                             detMovimiento.Descuento = 0;
-                                            detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                            detMovimiento.Impuestos = G.ObtenerConfig("Pais") == "C" ? Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13)) : Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.07));
                                             detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
                                             detMovimiento.idError = item2.idError;
                                             detMovimiento.Garantia = false;
@@ -1670,7 +1670,7 @@ namespace WATickets.Controllers
                             encMovimiento.Impuestos = 0;
                             encMovimiento.TotalComprobante = 0;
                             encMovimiento.DocEntry = 0;
-                            encMovimiento.Moneda = "COL";
+                            encMovimiento.Moneda = G.ObtenerConfig("Pais") != "C" ? "USD" : "COL";
                             encMovimiento.Aprobada = false;
                             encMovimiento.AprobadaSuperior = MesesAtrasLlamada ? false :true;
                             encMovimiento.idCondPago = 0;
@@ -1736,7 +1736,7 @@ namespace WATickets.Controllers
                                 detMovimiento.Cantidad = item.Cantidad;
                                 detMovimiento.PorDescuento = 0;
                                 detMovimiento.Descuento = 0;
-                                detMovimiento.Impuestos = Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13));
+                                detMovimiento.Impuestos = G.ObtenerConfig("Pais") == "C" ? Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.13)) : Convert.ToDecimal((detMovimiento.Cantidad * detMovimiento.PrecioUnitario) * Convert.ToDecimal(0.07));
                                 detMovimiento.TotalLinea = (detMovimiento.Cantidad * detMovimiento.PrecioUnitario) + detMovimiento.Impuestos;
                                 detMovimiento.idError = item.idError;
                                 detMovimiento.Garantia = false;
