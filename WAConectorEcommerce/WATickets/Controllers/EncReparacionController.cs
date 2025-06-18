@@ -1865,7 +1865,35 @@ namespace WATickets.Controllers
                 //Primer descarte, si no tiene el codigo crear
                 if(!db.DetMovimiento.Where(a => a.idEncabezado == Movimiento.id && a.ItemCode.Contains(Parametros.CodigoProdCrear)).Any())
                 {
-                    
+                    var NumLLamada = Convert.ToInt32(Movimiento.NumLlamada);
+                    var LLamada = db.LlamadasServicios.Where(a => a.DocEntry == NumLLamada).FirstOrDefault();
+                    var PrecioMaquina = db.ProductosPadres.Where(a => a.codSAP == LLamada.ItemCode).FirstOrDefault() == null ? 0 : db.ProductosPadres.Where(a => a.codSAP == LLamada.ItemCode).FirstOrDefault().Precio;
+                    if (Movimiento.Moneda == "USD")
+                    {
+                        PrecioMaquina = PrecioMaquina / db.ProductosHijos.FirstOrDefault().Rate;
+                    }
+
+                    var PrecioTotalDoc = Movimiento.TotalComprobante;
+
+                    var Semaforo = PrecioMaquina != 0 ? (PrecioTotalDoc / PrecioMaquina) * 100 : 0;
+                    if (Semaforo == 0)
+                    {
+                        throw new Exception("Precio de la maquina: " + LLamada.ItemCode + " no se encuentra registrado, en la reparacion de la llamada: #" + LLamada.DocEntry);
+                    }
+
+                    if (Movimiento.TipoMovimiento == 1 || Movimiento.TipoMovimiento == 3) //Es Oferta
+                    {
+                        
+                        if(Semaforo < Parametros.PorcentajeSemaforo)
+                        {
+
+                        }
+
+
+                    }else if(Movimiento.TipoMovimiento == 2) //Es Entrega
+                    {
+
+                    }
                 }
 
 
