@@ -573,7 +573,15 @@ namespace WATickets.Controllers
                                                         detMovimiento.NumLinea = 1;
                                                         detMovimiento.ItemCode = itemCode;
                                                         detMovimiento.ItemName = itemName;
-                                                        detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                        var PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                        var rate = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 1 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Rate;
+                                                        if (encMovimiento.Moneda == "USD")
+                                                        {
+                                                            PrecioUnitario = PrecioUnitario / rate;
+                                                        }
+
+                                                        detMovimiento.PrecioUnitario = PrecioUnitario;
+                                                       // detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
                                                         detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                         detMovimiento.PorDescuento = 0;
                                                         detMovimiento.Descuento = 0;
@@ -777,7 +785,14 @@ namespace WATickets.Controllers
                                                         detMovimiento.NumLinea = 1;
                                                         detMovimiento.ItemCode = itemCode;
                                                         detMovimiento.ItemName = itemName;
-                                                        detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                        var PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                        var rate = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 1 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Rate;
+                                                        if (encMovimiento.Moneda == "USD")
+                                                        {
+                                                            PrecioUnitario = PrecioUnitario / rate;
+                                                        }
+
+                                                        detMovimiento.PrecioUnitario = PrecioUnitario;
                                                         detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                         detMovimiento.PorDescuento = 0;
                                                         detMovimiento.Descuento = 0;
@@ -950,7 +965,15 @@ namespace WATickets.Controllers
                                                     detMovimiento.NumLinea = 1;
                                                     detMovimiento.ItemCode = itemCode;
                                                     detMovimiento.ItemName = itemName;
-                                                    detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                    var PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                                    var rate = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 1 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Rate;
+                                                    if (encMovimiento.Moneda == "USD")
+                                                    {
+                                                        PrecioUnitario = PrecioUnitario / rate;
+                                                    }
+
+                                                    detMovimiento.PrecioUnitario = PrecioUnitario;
+                                                   // detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
                                                     detMovimiento.Cantidad = DetBitacoraMovimientosSAP.Cantidad; //item2.Cantidad - item2.CantidadFaltante;
                                                     detMovimiento.PorDescuento = 0;
                                                     detMovimiento.Descuento = 0;
@@ -1291,7 +1314,15 @@ namespace WATickets.Controllers
                                             detMovimiento.NumLinea = 1;
                                             detMovimiento.ItemCode = itemCode;
                                             detMovimiento.ItemName = itemName;
-                                            detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                            var PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
+                                            var rate = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 1 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Rate;
+                                            if (encMovimiento.Moneda == "USD")
+                                            {
+                                                PrecioUnitario = PrecioUnitario / rate;
+                                            }
+
+                                            detMovimiento.PrecioUnitario = PrecioUnitario;
+                                            //detMovimiento.PrecioUnitario = db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault() == null ? 0 : db.ProductosHijos.Where(a => a.id == item2.idProducto).FirstOrDefault().Precio;
                                             detMovimiento.Cantidad = item2.Cantidad - item2.CantidadFaltante;
                                             detMovimiento.PorDescuento = 0;
                                             detMovimiento.Descuento = 0;
