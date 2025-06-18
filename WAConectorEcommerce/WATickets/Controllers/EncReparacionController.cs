@@ -439,8 +439,10 @@ namespace WATickets.Controllers
                 var Parametro = db.Parametros.FirstOrDefault();
                 var Encabezado = db.EncReparacion.Where(a => a.id == coleccion.EncReparacion.id).FirstOrDefault();
                 var Llamada = db.LlamadasServicios.Where(a => a.id == Encabezado.idLlamada).FirstOrDefault();
-                var MesesAtrasLlamada = false;
-                if(Llamada.LugarReparacion != 2)
+                var MesesAtrasLlamada = false; 
+                var OptimizacionSemaforoPasar = true;
+                var idMovimientoCreado = 0;
+                if(Llamada.LugarReparacion != 2) // Si NO es visita
                 {
                     try
                     {
@@ -472,6 +474,41 @@ namespace WATickets.Controllers
                         db.SaveChanges();
 
                     }
+
+                    try
+                    {
+                        var conexion = g.DevuelveCadena(db);
+                        var SQL = Parametro.SQLClienteTOP + "'" + Llamada.CardCode + "'";
+
+                        SqlConnection Cn = new SqlConnection(conexion);
+                        SqlCommand Cmd = new SqlCommand(SQL, Cn);
+                        SqlDataAdapter Da = new SqlDataAdapter(Cmd);
+                        DataSet Ds = new DataSet();
+                        Cn.Open();
+                        Da.Fill(Ds, "Cliente");
+                        var ClienteTOP = Ds.Tables["Cliente"].Rows[0]["ClienteTop"].ToString();
+                        if (ClienteTOP == "1")
+                        {
+                            OptimizacionSemaforoPasar = false;
+                        }
+                        Cn.Close();
+                    }
+                    catch (Exception ex1)
+                    {
+                        BitacoraErrores be = new BitacoraErrores();
+
+                        be.Descripcion = "Error en la llamada #" + Llamada.id + " , al conseguir el cliente top -> " + ex1.Message;
+                        be.StackTrace = ex1.StackTrace;
+                        be.Fecha = DateTime.Now;
+
+                        db.BitacoraErrores.Add(be);
+                        db.SaveChanges();
+
+                    }
+                }
+                else
+                {
+                    OptimizacionSemaforoPasar = false;
                 }
                 
 
@@ -557,6 +594,8 @@ namespace WATickets.Controllers
                                     encMovimiento.Redondeo = OfertaAprobada.Redondeo;
                                     db.EncMovimiento.Add(encMovimiento);
                                     db.SaveChanges();
+                                    //Se guarda el id para saber que se creo
+                                    idMovimientoCreado = encMovimiento.id;
 
                                     var DetalleOfertaAprobada = db.DetMovimiento.Where(a => a.idEncabezado == OfertaAprobada.id).ToList();
                                     foreach (var item in DetalleOfertaAprobada)
@@ -760,6 +799,8 @@ namespace WATickets.Controllers
                                         encMovimiento.TotalComprobante = MovimientosDetalles.Sum(a => a.TotalLinea);
                                         db.SaveChanges();
                                     }
+
+                                    //Aqui iria donde mandamos a SAP la entrega
                                 }
                                 else // Si hay entregas anteriores
                                 {
@@ -817,7 +858,8 @@ namespace WATickets.Controllers
                                     encMovimiento.Redondeo = OfertaAprobada.Redondeo;
                                     db.EncMovimiento.Add(encMovimiento);
                                     db.SaveChanges();
-
+                                    //Se guarda el id para saber que se creo
+                                    idMovimientoCreado = encMovimiento.id;
                                     foreach (var item in DetalleAGenerar)
                                     {
                                         DetMovimiento detMovimiento = new DetMovimiento();
@@ -1005,6 +1047,7 @@ namespace WATickets.Controllers
 
                                 }
 
+                                
                             }
                             else
                             {
@@ -1047,7 +1090,8 @@ namespace WATickets.Controllers
                                 encMovimiento.Redondeo = 0;
                                 db.EncMovimiento.Add(encMovimiento);
                                 db.SaveChanges();
-
+                                //Se guarda el id para saber que se creo
+                                idMovimientoCreado = encMovimiento.id;
 
                                 var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
                                                                                                                              //Separamos las entradas de las salidas
@@ -1431,7 +1475,8 @@ namespace WATickets.Controllers
                             encMovimiento.Redondeo = 0;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
-
+                            //Se guarda el id para saber que se creo
+                            idMovimientoCreado = encMovimiento.id;
 
                             var Bitacoras = db.BitacoraMovimientos.Where(a => a.idEncabezado == Encabezado.id).ToList(); //Hago el llamado de las bitacoras de movimiento que tengan el id del encabezado de repracion
                             //Separamos las entradas de las salidas
@@ -1682,7 +1727,8 @@ namespace WATickets.Controllers
                             encMovimiento.Redondeo = 0;
                             db.EncMovimiento.Add(encMovimiento);
                             db.SaveChanges();
-
+                            //Se guarda el id para saber que se creo
+                            idMovimientoCreado = encMovimiento.id;
 
 
 
@@ -1784,6 +1830,11 @@ namespace WATickets.Controllers
 
                     }
                 }
+
+               if(OptimizacionSemaforoPasar)
+                {
+                    OptimizacionSemaforo(idMovimientoCreado, OptimizacionSemaforoPasar);
+                }
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.OK, coleccion);
@@ -1800,7 +1851,39 @@ namespace WATickets.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
+        public bool OptimizacionSemaforo(int idMovimientoCreado, bool SemaforoPasar)
+        {
+            try
+            {
 
+                var Movimiento = db.EncMovimiento.Where(a => a.id == idMovimientoCreado).FirstOrDefault();
+                var Parametros = db.ParametrosOptimizacionSemaforo.FirstOrDefault();
+                if(Movimiento == null)
+                {
+                    throw new Exception("No se encontro el movimiento");
+                }
+                //Primer descarte, si no tiene el codigo crear
+                if(!db.DetMovimiento.Where(a => a.idEncabezado == Movimiento.id && a.ItemCode.Contains(Parametros.CodigoProdCrear)).Any())
+                {
+                    
+                }
+
+
+                return true;
+            }
+            catch (Exception ex )
+            {
+
+                BitacoraErrores be = new BitacoraErrores();
+
+                be.Descripcion = "Error en la optimizacion de semaforo del movimiento #" + idMovimientoCreado + " -> " + ex.Message;
+                be.StackTrace = ex.StackTrace;
+                be.Fecha = DateTime.Now;
+                db.BitacoraErrores.Add(be);
+                db.SaveChanges();
+                return false;
+            }
+        }
         [HttpPost]
         [Route("api/EncReparacion/Actualizar")]
         public HttpResponseMessage Put([FromBody] ColeccionRepuestos coleccion)

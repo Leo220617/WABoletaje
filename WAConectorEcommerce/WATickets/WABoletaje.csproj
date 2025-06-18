@@ -271,6 +271,7 @@
     <Compile Include="Controllers\MovimientosController.cs" />
     <Compile Include="Controllers\OfertaVentaController.cs" />
     <Compile Include="Controllers\OrdenVentaController.cs" />
+    <Compile Include="Controllers\ParametrosOptimizacionSemaforoController.cs" />
     <Compile Include="Controllers\PersonasContactoController.cs" />
     <Compile Include="Controllers\PlanificadorDiarioController.cs" />
     <Compile Include="Controllers\PlazosCreditosController.cs" />
@@ -341,6 +342,7 @@
     <Compile Include="Models\Cliente\PadresHijosProductos.cs" />
     <Compile Include="Models\Cliente\Parametros.cs" />
     <Compile Include="Models\Cliente\ParametrosFacturacion.cs" />
+    <Compile Include="Models\Cliente\ParametrosOptimizacionSemaforo.cs" />
     <Compile Include="Models\Cliente\PlazosCreditos.cs" />
     <Compile Include="Models\Cliente\ProductosGarantias.cs" />
     <Compile Include="Models\Cliente\ProductosHijos.cs" />

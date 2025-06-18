@@ -74,7 +74,7 @@ namespace WATickets.Models.Cliente
         public virtual DbSet<SolicitudCompra> SolicitudCompra { get; set; }
         public virtual DbSet<DetSolicitudCompra> DetSolicitudCompra { get; set; }
         public virtual DbSet<TipoCambios> TipoCambios { get; set; }
-
+        public virtual DbSet<ParametrosOptimizacionSemaforo> ParametrosOptimizacionSemaforo { get; set; }
 
 
 
