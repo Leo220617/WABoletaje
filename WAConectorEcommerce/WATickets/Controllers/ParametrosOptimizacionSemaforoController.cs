@@ -104,6 +104,24 @@ namespace WATickets.Controllers
                     {
                         Param.StatusCotizacionGarantia = param.StatusCotizacionGarantia;
                     }
+
+                    if (!string.IsNullOrEmpty(param.TipoCasoCotizacionGarantiaV))
+                    {
+                        Param.TipoCasoCotizacionGarantiaV = param.TipoCasoCotizacionGarantiaV;
+                    }
+                    if (!string.IsNullOrEmpty(param.TipoCasoCotizacionSinGarantiaV))
+                    {
+                        Param.TipoCasoCotizacionSinGarantiaV = param.TipoCasoCotizacionSinGarantiaV;
+                    }
+                    if (!string.IsNullOrEmpty(param.TipoCasoEntregaGarantiaV))
+                    {
+                        Param.TipoCasoEntregaGarantiaV = param.TipoCasoEntregaGarantiaV;
+                    }
+                    if (!string.IsNullOrEmpty(param.TipoCasoEntregaSinGarantiaV))
+                    {
+                        Param.TipoCasoEntregaSinGarantiaV = param.TipoCasoEntregaSinGarantiaV;
+                    }
+
                     db.SaveChanges();
 
                 }
