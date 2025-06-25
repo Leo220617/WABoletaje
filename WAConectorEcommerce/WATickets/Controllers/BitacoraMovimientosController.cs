@@ -413,6 +413,15 @@ namespace WATickets.Controllers
                                 db.Entry(BT).State = EntityState.Modified;
                                 BT.Status = "0";
                                 db.SaveChanges();
+                                foreach (var item in bts.Detalle)
+                                {
+                                    var DetBitacoraMovimiento = db.DetBitacoraMovimientos.Where(a => a.idEncabezado == BT.id && a.idProducto == item.idProducto && a.idError == item.idError).FirstOrDefault();
+                                    db.Entry(DetBitacoraMovimiento).State = EntityState.Modified;
+                                    DetBitacoraMovimiento.CantidadEnviar = 0;
+                                    //       DetBitacoraMovimiento.CantidadFaltante = DetBitacoraMovimiento.CantidadFaltante - DetBitacoraMovimiento.CantidadEnviar;
+                                    db.SaveChanges();
+
+                                }
                                 errorSAP = Conexion.Company.GetLastErrorDescription();
                                 BitacoraErrores be = new BitacoraErrores();
                                 be.DocNum = Encabezado.idLlamada.ToString();
