@@ -1830,11 +1830,14 @@ namespace WATickets.Controllers
 
                     }
                 }
-
-                if (OptimizacionSemaforoPasar)
+                if(G.ObtenerConfig("OptimizacionSemaforo") == "1")
                 {
-                    OptimizacionSemaforo(idMovimientoCreado, OptimizacionSemaforoPasar, coleccion.TipoCasoLlamada, coleccion.TipoGarantiaLlamada);
+                    if (OptimizacionSemaforoPasar)
+                    {
+                        OptimizacionSemaforo(idMovimientoCreado, OptimizacionSemaforoPasar, coleccion.TipoCasoLlamada, coleccion.TipoGarantiaLlamada);
+                    }
                 }
+                
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 return Request.CreateResponse(HttpStatusCode.OK, coleccion);
@@ -2164,6 +2167,10 @@ namespace WATickets.Controllers
                             }
                         }
                     }
+                }
+                else
+                {
+                    throw new Exception("No se puede pasar por optimizacion porque contiene el codigo CREAR");
                 }
 
 
@@ -2909,6 +2916,7 @@ namespace WATickets.Controllers
         {
             try
             {
+                G g = new G();
                 ParametrosFacturacion paramFac = db.ParametrosFacturacion.FirstOrDefault();
                 var Parametros = db.Parametros.FirstOrDefault();
                 var client = (Documents)Conexion.Company.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oQuotations);
