@@ -481,7 +481,7 @@ namespace WATickets.Controllers
             try
             {
                 var Parametros = db.Parametros.FirstOrDefault();
-                var Actividades = db.Actividades.Take(100).Where(a => a.ProcesadaSAP == false).ToList();
+                var Actividades = db.Actividades.Where(a => a.ProcesadaSAP == false).Take(100).ToList();
 
                 foreach (var item in Actividades)
                 {

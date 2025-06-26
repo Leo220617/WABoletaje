@@ -14,5 +14,6 @@ namespace WATickets.Models
         public int EstadoLlamada { get; set; }
         public int TipoCasoLlamada { get; set; }
         public int TipoGarantiaLlamada { get; set; }
+        public bool Semaforo { get; set; }
     }
 }

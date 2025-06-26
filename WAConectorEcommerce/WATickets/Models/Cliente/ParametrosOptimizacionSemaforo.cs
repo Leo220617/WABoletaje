@@ -30,5 +30,6 @@ namespace WATickets.Models.Cliente
         public string TipoCasoCotizacionSinGarantiaV { get; set; }
         public string TipoCasoEntregaGarantiaV { get; set; }
         public string TipoCasoEntregaSinGarantiaV { get; set; }
+        public int idLoginActividad { get; set; }
     }
 }

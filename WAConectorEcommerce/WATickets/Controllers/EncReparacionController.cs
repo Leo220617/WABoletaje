@@ -1835,6 +1835,7 @@ namespace WATickets.Controllers
                     if (OptimizacionSemaforoPasar)
                     {
                         OptimizacionSemaforo(idMovimientoCreado, OptimizacionSemaforoPasar, coleccion.TipoCasoLlamada, coleccion.TipoGarantiaLlamada);
+                        coleccion.Semaforo = true;
                     }
                 }
                 
@@ -1854,7 +1855,7 @@ namespace WATickets.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
         }
-        public bool OptimizacionSemaforo(int idMovimientoCreado, bool SemaforoPasar, int tpReparacion, int tpGarantia)
+        private bool OptimizacionSemaforo(int idMovimientoCreado, bool SemaforoPasar, int tpReparacion, int tpGarantia)
         {
             try
             {
@@ -1903,8 +1904,8 @@ namespace WATickets.Controllers
                                     Actividad.Detalle = "Se ha creado una oferta automaticamente por garantia y se ha notificado al cliente";
                                     Actividad.DocEntry = 0;
                                     Actividad.ProcesadaSAP = false;
-                                    Actividad.UsuarioCreador = LLamada.TratadoPor.Value;
-                                    Actividad.idLogin = 0;
+                                    Actividad.UsuarioCreador = Parametros.idLoginActividad;
+                                    Actividad.idLogin = Parametros.idLoginActividad;
                                     db.Actividades.Add(Actividad);
                                     db.SaveChanges();
 
@@ -1915,16 +1916,34 @@ namespace WATickets.Controllers
                                         {
                                             db.Entry(LLamada).State = EntityState.Modified;
                                             LLamada.Status = Convert.ToInt32(Parametros.StatusCotizacionGarantia);
+                                            LLamada.TipoCaso = Convert.ToInt32(Parametros.TipoCasoCotizacionGarantiaV);
+                                            LLamada.Garantia = tpGarantia;
                                             db.SaveChanges();
-                                            LlamadasServicioViewModel llamada = new LlamadasServicioViewModel();
-                                            llamada.id = LLamada.id;
-                                            llamada.Status = LLamada.Status;
-                                            llamada.TipoCaso = LLamada.TipoCaso;
-                                            llamada.FechaSISO = LLamada.FechaSISO;
-                                            llamada.LugarReparacion = LLamada.LugarReparacion;
-                                            llamada.PIN = LLamada.PIN;
-                                            LlamadasServicioController llamadasServicioController = new LlamadasServicioController();
-                                            llamadasServicioController.Put(llamada);
+                                            try
+                                            {
+                                                LlamadasServicioViewModel llamada = new LlamadasServicioViewModel();
+                                                llamada.id = LLamada.id;
+                                                llamada.Status = LLamada.Status;
+                                                llamada.TipoCaso = LLamada.TipoCaso;
+                                                llamada.FechaSISO = LLamada.FechaSISO;
+                                                llamada.LugarReparacion = LLamada.LugarReparacion;
+                                                llamada.PIN = LLamada.PIN;
+                                                llamada.Garantia = LLamada.Garantia;
+                                                LlamadasServicioController llamadasServicioController = new LlamadasServicioController();
+                                                llamadasServicioController.Put(llamada);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                BitacoraErrores be = new BitacoraErrores();
+
+                                                be.Descripcion = ex.Message;
+                                                be.StackTrace = ex.StackTrace;
+                                                be.Fecha = DateTime.Now;
+                                                db.BitacoraErrores.Add(be);
+                                                db.SaveChanges();
+
+                                            }
+                                          
                                             Actividad = new Actividades();
                                             Actividad.TipoActividad = 6;
                                             Actividad.idLlamada = LLamada.id;
@@ -1932,8 +1951,8 @@ namespace WATickets.Controllers
                                             Actividad.Detalle = "Se ha cambiado el status a la llamada automaticamente por garantia";
                                             Actividad.DocEntry = 0;
                                             Actividad.ProcesadaSAP = false;
-                                            Actividad.UsuarioCreador = LLamada.TratadoPor.Value;
-                                            Actividad.idLogin = 0;
+                                            Actividad.UsuarioCreador = Parametros.idLoginActividad;
+                                            Actividad.idLogin = Parametros.idLoginActividad;
                                             db.Actividades.Add(Actividad);
                                             db.SaveChanges();
                                         }
@@ -1960,9 +1979,24 @@ namespace WATickets.Controllers
                             {
                                 if (CrearOfertaSAP(Movimiento, LLamada))
                                 {
-                                    //Se envia el correo con el movimiento
-                                    MovimientosController movimientosController = new MovimientosController();
-                                    movimientosController.GetCorreo(Movimiento.id, LLamada.EmailPersonaContacto);
+                                    try
+                                    {
+                                        //Se envia el correo con el movimiento
+                                        MovimientosController movimientosController = new MovimientosController();
+                                        movimientosController.GetCorreo(Movimiento.id, LLamada.EmailPersonaContacto);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        BitacoraErrores be = new BitacoraErrores();
+
+                                        be.Descripcion = ex.Message;
+                                        be.StackTrace = ex.StackTrace;
+                                        be.Fecha = DateTime.Now;
+                                        db.BitacoraErrores.Add(be);
+                                        db.SaveChanges();
+
+                                    }
+                                   
                                     //Se crea la actividad
                                     var Actividad = new Actividades();
                                     Actividad.TipoActividad = 6;
@@ -1971,8 +2005,8 @@ namespace WATickets.Controllers
                                     Actividad.Detalle = "Se ha creado una oferta automaticamente y se ha notificado al cliente. ";
                                     Actividad.DocEntry = 0;
                                     Actividad.ProcesadaSAP = false;
-                                    Actividad.UsuarioCreador = LLamada.TratadoPor.Value;
-                                    Actividad.idLogin = 0;
+                                    Actividad.UsuarioCreador = Parametros.idLoginActividad;
+                                    Actividad.idLogin = Parametros.idLoginActividad;
                                     db.Actividades.Add(Actividad);
                                     db.SaveChanges();
                                     //Se cambia el status
@@ -1982,16 +2016,32 @@ namespace WATickets.Controllers
                                         {
                                             db.Entry(LLamada).State = EntityState.Modified;
                                             LLamada.Status = Convert.ToInt32(Parametros.StatusCotizacionSinGarantia);
+                                            LLamada.TipoCaso = Convert.ToInt32(Parametros.TipoCasoCotizacionSinGarantiaV);
                                             db.SaveChanges();
-                                            LlamadasServicioViewModel llamada = new LlamadasServicioViewModel();
-                                            llamada.id = LLamada.id;
-                                            llamada.Status = LLamada.Status;
-                                            llamada.TipoCaso = LLamada.TipoCaso;
-                                            llamada.FechaSISO = LLamada.FechaSISO;
-                                            llamada.LugarReparacion = LLamada.LugarReparacion;
-                                            llamada.PIN = LLamada.PIN;
-                                            LlamadasServicioController llamadasServicioController = new LlamadasServicioController();
-                                            llamadasServicioController.Put(llamada);
+                                            try
+                                            {
+                                                LlamadasServicioViewModel llamada = new LlamadasServicioViewModel();
+                                                llamada.id = LLamada.id;
+                                                llamada.Status = LLamada.Status;
+                                                llamada.TipoCaso = LLamada.TipoCaso;
+                                                llamada.FechaSISO = LLamada.FechaSISO;
+                                                llamada.LugarReparacion = LLamada.LugarReparacion;
+                                                llamada.PIN = LLamada.PIN;
+                                                LlamadasServicioController llamadasServicioController = new LlamadasServicioController();
+                                                llamadasServicioController.Put(llamada);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                BitacoraErrores be = new BitacoraErrores();
+
+                                                be.Descripcion = ex.Message;
+                                                be.StackTrace = ex.StackTrace;
+                                                be.Fecha = DateTime.Now;
+                                                db.BitacoraErrores.Add(be);
+                                                db.SaveChanges();
+
+                                            }
+                                        
                                             Actividad = new Actividades();
                                             Actividad.TipoActividad = 6;
                                             Actividad.idLlamada = LLamada.id;
@@ -1999,8 +2049,8 @@ namespace WATickets.Controllers
                                             Actividad.Detalle = "Se ha cambiado el status a la llamada automaticamente.";
                                             Actividad.DocEntry = 0;
                                             Actividad.ProcesadaSAP = false;
-                                            Actividad.UsuarioCreador = LLamada.TratadoPor.Value;
-                                            Actividad.idLogin = 0;
+                                            Actividad.UsuarioCreador = Parametros.idLoginActividad;
+                                            Actividad.idLogin = Parametros.idLoginActividad;
                                             db.Actividades.Add(Actividad);
                                             db.SaveChanges();
                                         }
@@ -2045,8 +2095,8 @@ namespace WATickets.Controllers
                                     Actividad.Detalle = "Se ha creado una entrega automaticamente por garantia y se ha notificado al cliente";
                                     Actividad.DocEntry = 0;
                                     Actividad.ProcesadaSAP = false;
-                                    Actividad.UsuarioCreador = LLamada.TratadoPor.Value;
-                                    Actividad.idLogin = 0;
+                                    Actividad.UsuarioCreador = Parametros.idLoginActividad;
+                                    Actividad.idLogin = Parametros.idLoginActividad;
                                     db.Actividades.Add(Actividad);
                                     db.SaveChanges();
 
@@ -2057,17 +2107,34 @@ namespace WATickets.Controllers
                                         {
                                             db.Entry(LLamada).State = EntityState.Modified;
                                             LLamada.Status = Convert.ToInt32(Parametros.StatusEntregaGarantia);
-                                            LLamada.TipoCaso = Convert.ToInt32(Parametros.TipoCasoEntregaGarantia); 
+                                            LLamada.TipoCaso = Convert.ToInt32(Parametros.TipoCasoEntregaGarantia);
+                                            LLamada.Garantia = tpGarantia;
                                             db.SaveChanges();
-                                            LlamadasServicioViewModel llamada = new LlamadasServicioViewModel();
-                                            llamada.id = LLamada.id;
-                                            llamada.Status = LLamada.Status;
-                                            llamada.TipoCaso = LLamada.TipoCaso;
-                                            llamada.FechaSISO = LLamada.FechaSISO;
-                                            llamada.LugarReparacion = LLamada.LugarReparacion;
-                                            llamada.PIN = LLamada.PIN;
-                                            LlamadasServicioController llamadasServicioController = new LlamadasServicioController();
-                                            llamadasServicioController.Put(llamada);
+                                            try
+                                            {
+                                                LlamadasServicioViewModel llamada = new LlamadasServicioViewModel();
+                                                llamada.id = LLamada.id;
+                                                llamada.Status = LLamada.Status;
+                                                llamada.TipoCaso = LLamada.TipoCaso;
+                                                llamada.FechaSISO = LLamada.FechaSISO;
+                                                llamada.LugarReparacion = LLamada.LugarReparacion;
+                                                llamada.PIN = LLamada.PIN;
+                                                llamada.Garantia = LLamada.Garantia;
+
+                                                LlamadasServicioController llamadasServicioController = new LlamadasServicioController();
+                                                llamadasServicioController.Put(llamada);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                BitacoraErrores be = new BitacoraErrores();
+
+                                                be.Descripcion = ex.Message;
+                                                be.StackTrace = ex.StackTrace;
+                                                be.Fecha = DateTime.Now;
+                                                db.BitacoraErrores.Add(be);
+                                                db.SaveChanges();
+
+                                            }
                                             Actividad = new Actividades();
                                             Actividad.TipoActividad = 6;
                                             Actividad.idLlamada = LLamada.id;
@@ -2075,8 +2142,8 @@ namespace WATickets.Controllers
                                             Actividad.Detalle = "Se ha cambiado el status y tipo de caso a la llamada automaticamente por garantia";
                                             Actividad.DocEntry = 0;
                                             Actividad.ProcesadaSAP = false;
-                                            Actividad.UsuarioCreador = LLamada.TratadoPor.Value;
-                                            Actividad.idLogin = 0;
+                                            Actividad.UsuarioCreador = Parametros.idLoginActividad;
+                                            Actividad.idLogin = Parametros.idLoginActividad;
                                             db.Actividades.Add(Actividad);
                                             db.SaveChanges();
                                         }
@@ -2102,9 +2169,24 @@ namespace WATickets.Controllers
                             {
                                 if (CrearEntregaSAP(Movimiento, LLamada))
                                 {
-                                    //Se envia el correo con el movimiento
-                                    MovimientosController movimientosController = new MovimientosController();
-                                    movimientosController.GetCorreo(Movimiento.id, LLamada.EmailPersonaContacto);
+                                    try
+                                    {
+                                        //Se envia el correo con el movimiento
+                                        MovimientosController movimientosController = new MovimientosController();
+                                        movimientosController.GetCorreo(Movimiento.id, LLamada.EmailPersonaContacto);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        BitacoraErrores be = new BitacoraErrores();
+
+                                        be.Descripcion = ex.Message;
+                                        be.StackTrace = ex.StackTrace;
+                                        be.Fecha = DateTime.Now;
+                                        db.BitacoraErrores.Add(be);
+                                        db.SaveChanges();
+
+                                    }
+                                    
                                     //Se crea la actividad
                                     var Actividad = new Actividades();
                                     Actividad.TipoActividad = 6;
@@ -2113,8 +2195,8 @@ namespace WATickets.Controllers
                                     Actividad.Detalle = "Se ha creado una entrega sin garantia automaticamente y se ha notificado al cliente. ";
                                     Actividad.DocEntry = 0;
                                     Actividad.ProcesadaSAP = false;
-                                    Actividad.UsuarioCreador = LLamada.TratadoPor.Value;
-                                    Actividad.idLogin = 0;
+                                    Actividad.UsuarioCreador = Parametros.idLoginActividad;
+                                    Actividad.idLogin = Parametros.idLoginActividad;
                                     db.Actividades.Add(Actividad);
                                     db.SaveChanges();
                                     //Se cambia el status
@@ -2126,15 +2208,29 @@ namespace WATickets.Controllers
                                             LLamada.Status = Convert.ToInt32(Parametros.StatusCotizacionSinGarantia);
                                             LLamada.TipoCaso = Convert.ToInt32(Parametros.TipoCasoEntregaSinGarantia);
                                             db.SaveChanges();
-                                            LlamadasServicioViewModel llamada = new LlamadasServicioViewModel();
-                                            llamada.id = LLamada.id;
-                                            llamada.Status = LLamada.Status;
-                                            llamada.TipoCaso = LLamada.TipoCaso;
-                                            llamada.FechaSISO = LLamada.FechaSISO;
-                                            llamada.LugarReparacion = LLamada.LugarReparacion;
-                                            llamada.PIN = LLamada.PIN;
-                                            LlamadasServicioController llamadasServicioController = new LlamadasServicioController();
-                                            llamadasServicioController.Put(llamada);
+                                            try
+                                            {
+                                                LlamadasServicioViewModel llamada = new LlamadasServicioViewModel();
+                                                llamada.id = LLamada.id;
+                                                llamada.Status = LLamada.Status;
+                                                llamada.TipoCaso = LLamada.TipoCaso;
+                                                llamada.FechaSISO = LLamada.FechaSISO;
+                                                llamada.LugarReparacion = LLamada.LugarReparacion;
+                                                llamada.PIN = LLamada.PIN;
+                                                LlamadasServicioController llamadasServicioController = new LlamadasServicioController();
+                                                llamadasServicioController.Put(llamada);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                BitacoraErrores be = new BitacoraErrores();
+
+                                                be.Descripcion = ex.Message;
+                                                be.StackTrace = ex.StackTrace;
+                                                be.Fecha = DateTime.Now;
+                                                db.BitacoraErrores.Add(be);
+                                                db.SaveChanges();
+
+                                            }
                                             Actividad = new Actividades();
                                             Actividad.TipoActividad = 6;
                                             Actividad.idLlamada = LLamada.id;
@@ -2142,8 +2238,8 @@ namespace WATickets.Controllers
                                             Actividad.Detalle = "Se ha cambiado el status y tipo de caso a la llamada automaticamente.";
                                             Actividad.DocEntry = 0;
                                             Actividad.ProcesadaSAP = false;
-                                            Actividad.UsuarioCreador = LLamada.TratadoPor.Value;
-                                            Actividad.idLogin = 0;
+                                            Actividad.UsuarioCreador = Parametros.idLoginActividad;
+                                            Actividad.idLogin = Parametros.idLoginActividad;
                                             db.Actividades.Add(Actividad);
                                             db.SaveChanges();
                                         }
@@ -2190,7 +2286,7 @@ namespace WATickets.Controllers
             }
         }
 
-        public bool CrearEntregaSAP(EncMovimiento EncMovimiento, LlamadasServicios llamada)
+        private bool CrearEntregaSAP(EncMovimiento EncMovimiento, LlamadasServicios llamada)
         {
             try
             {
@@ -2912,7 +3008,7 @@ namespace WATickets.Controllers
                 return false;
             }
         }
-        public bool CrearOfertaSAP(EncMovimiento EncMovimiento, LlamadasServicios llamada)
+        private bool CrearOfertaSAP(EncMovimiento EncMovimiento, LlamadasServicios llamada)
         {
             try
             {
