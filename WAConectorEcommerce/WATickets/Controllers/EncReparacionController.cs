@@ -2563,11 +2563,16 @@ namespace WATickets.Controllers
                         {
 
                             client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
+                            db.Entry(item).State = EntityState.Modified;
+                            item.idImpuesto = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? db.Impuestos.Where(a => a.CodSAP == Parametros.TaxCode).FirstOrDefault().id : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().id;
+                            db.SaveChanges();
                         }
                         else
                         {
                             client.Lines.VatGroup = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;// "IVA-13";
-
+                            db.Entry(item).State = EntityState.Modified;
+                            item.idImpuesto = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? db.Impuestos.Where(a => a.CodSAP == Parametros.TaxCode).FirstOrDefault().id : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().id;
+                            db.SaveChanges();
                         }
                         client.Lines.TaxOnly = BoYesNoEnum.tNO;
                         client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
@@ -3066,12 +3071,16 @@ namespace WATickets.Controllers
                     if (G.ObtenerConfig("Pais") != "P")
                     {
                         client.Lines.TaxCode = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;//"IVA-13";
-
+                        db.Entry(item).State = EntityState.Modified;
+                        item.idImpuesto = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? db.Impuestos.Where(a => a.CodSAP == Parametros.TaxCode).FirstOrDefault().id : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().id;
+                        db.SaveChanges();
                     }
                     else
                     {
                         client.Lines.VatGroup = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? Parametros.TaxCode : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().CodSAP;  //Parametros.TaxCode;//"IVA-13";
-
+                        db.Entry(item).State = EntityState.Modified;
+                        item.idImpuesto = db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault() == null ? db.Impuestos.Where(a => a.CodSAP == Parametros.TaxCode).FirstOrDefault().id : db.Impuestos.Where(a => a.id == item.idImpuesto).FirstOrDefault().id;
+                        db.SaveChanges();
                     }
                     client.Lines.TaxOnly = BoYesNoEnum.tNO;
                     client.Lines.UnitPrice = Convert.ToDouble(item.PrecioUnitario);
